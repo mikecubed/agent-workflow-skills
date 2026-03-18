@@ -109,3 +109,27 @@ Validate the plugin layout and publishing metadata with:
 ```bash
 npm run validate:plugin
 ```
+
+Before publishing, verify the packaged artifact surface with:
+
+```bash
+npm pack --dry-run
+```
+
+When editing skills:
+
+1. update the relevant `skills/<skill-name>/SKILL.md` file;
+2. keep the `name` frontmatter aligned with the directory name;
+3. keep the required sections intact so the shared layout tests continue to pass;
+4. reload the plugin in Claude Code with `/reload-plugins` when testing locally.
+
+When adding a new shared skill:
+
+1. create `skills/<skill-name>/SKILL.md`;
+2. add the skill directory name to `test/plugin-layout.test.js`;
+3. run `npm test` before opening a pull request.
+
+Manifest path conventions are intentionally different across runtimes:
+
+- `plugin.json` uses `["skills/"]` because Copilot CLI accepts component paths as a string or array.
+- `.claude-plugin/plugin.json` uses `"./skills/"` because Claude plugin custom paths are relative to the plugin root and start with `./`.

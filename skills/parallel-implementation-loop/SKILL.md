@@ -60,7 +60,7 @@ If in doubt, serialize.
 
 ### 2. TDD stays mandatory on every code-bearing track
 
-Each implementation track should:
+Each implementation track must:
 
 1. add or update failing tests first when behavior changes;
 2. implement only enough to make the tests pass;
@@ -68,7 +68,18 @@ Each implementation track should:
 
 Do not allow implementation-first drift just because work is parallel.
 
-### 3. Temporary work surfaces are disposable, not permanent state
+### 3. Keep concurrency within human review capacity
+
+Default to 2-3 concurrent tracks unless the repository already has strong task isolation,
+independent validation paths, and a proven sandbox strategy such as dedicated worktrees.
+
+More concurrency is only worth it when:
+
+1. the track boundaries are obvious;
+2. the validation surface for each track is small;
+3. the final integrator can still review and merge each track deliberately.
+
+### 4. Temporary work surfaces are disposable, not permanent state
 
 If the workflow uses worktrees, branches, or other sandboxes:
 
@@ -81,6 +92,22 @@ If the workflow uses worktrees, branches, or other sandboxes:
    - validation commands;
    - current state (`active`, `merged`, `abandoned`, `blocked`);
 4. do not silently discard dirty track state.
+
+## Example Track Definition
+
+Use a compact artifact format before launching each track. For example:
+
+```text
+Track: api-validation
+Tasks: task-12, task-14
+Files: src/api/validators.js, test/api/validators.test.js
+Dependencies: task-11 done
+Validation: npm test -- test/api/validators.test.js
+Work surface: git worktree ../wt-api-validation
+State: active
+```
+
+Persist the same fields in whatever task tracker, scratch file, or branch note the repository uses.
 
 ## Workflow
 
@@ -159,6 +186,17 @@ After all track work is integrated:
 3. run the final PR-readiness workflow on the stable integrated diff;
 4. retire clean temporary work surfaces;
 5. keep any retained work surface only with an explicit reason.
+
+### 7. Record the batch outcome
+
+Before stopping, publish one durable batch summary that includes:
+
+1. merged tracks;
+2. retained or abandoned tracks;
+3. validations run;
+4. unresolved follow-ups.
+
+Prefer a durable artifact over chat-only memory when the repository has a place for it.
 
 ## Required Gates
 

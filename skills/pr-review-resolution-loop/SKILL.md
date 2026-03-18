@@ -90,13 +90,22 @@ For each item, classify whether it is:
 
 Then decide whether to fix, decline, or clarify first.
 
+Process accepted items in this default priority order:
+
+1. security issues;
+2. correctness issues;
+3. contract mismatches;
+4. missing or weak tests;
+5. architecture concerns;
+6. lower-priority polish.
+
 ### 3. Batch independent fixes when safe
 
 If multiple accepted fixes are independent:
 
 1. group them into separate fix tracks;
 2. keep tightly coupled fixes serial;
-3. reuse the implementation-loop rules for isolation, review, and cleanup.
+3. reuse the `/copilot-skills:parallel-implementation-loop` rules for isolation, review, and cleanup.
 
 If review items interact heavily, resolve them serially.
 
@@ -143,6 +152,14 @@ After all relevant review items are handled:
 3. run the final PR-readiness workflow on the stable diff;
 4. summarize remaining concerns, if any.
 
+## Example Thread Responses
+
+Use short, concrete replies that make the outcome obvious. For example:
+
+- fixed: `Fixed in 9ab12cd by tightening the null-path guard and adding coverage for the empty-input case.`
+- declined: `Declining this one because the current contract intentionally allows duplicate labels during draft creation. Keeping the existing behavior.`
+- clarify first: `I could address this either in the serializer or in the caller. Which boundary did you intend to own the normalization rule?`
+
 ## Required Gates
 
 ### Comment gate
@@ -170,3 +187,13 @@ The batch is not complete until:
 - repository validation passes;
 - the final readiness workflow has been run;
 - remaining issues are explicitly reported.
+
+## Stop Conditions
+
+- the review surface has moved enough that the original comments are no longer reliable;
+- accepted fixes begin conflicting on the same files or contract;
+- reviewer and implementer disagree without a repository rule to break the tie;
+- required validation commands or thread-resolution expectations are still unknown;
+- the developer asks to stop.
+
+When that happens, stop batching, restate the blocker, and continue only after the review surface is stable again.
