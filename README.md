@@ -25,7 +25,13 @@ without maintaining two separate copies of the skills.
 
 ## Install in GitHub Copilot CLI
 
-From the parent directory of this repo:
+If you are inside this repository:
+
+```bash
+copilot plugin install .
+```
+
+If you are in the parent directory of this repo:
 
 ```bash
 copilot plugin install ./copilot-skills
