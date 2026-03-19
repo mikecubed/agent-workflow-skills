@@ -1,5 +1,5 @@
 {
-  "name": "copilot-skills",
+  "name": "agent-workflow-skills",
   "version": "0.1.0",
   "description": "Shared plugin repo for GitHub Copilot CLI and Claude Code skills",
   "type": "module",
@@ -7,7 +7,8 @@
   "private": true,
   "scripts": {
     "test": "node --test test/**/*.test.js",
-    "validate:plugin": "node --test test/**/*.test.js"
+    "validate:plugin": "node --test test/**/*.test.js",
+    "validate:runtime": "node scripts/verify-runtime.mjs"
   },
   "files": [
     "plugin.json",

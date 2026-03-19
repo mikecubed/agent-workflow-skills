@@ -70,6 +70,12 @@ If the stable diff is:
 
 Do not force code-only tooling onto a non-code diff.
 
+When multiple checker options exist, prefer the most semantic one available:
+
+1. repository-specific structured reviewers or MCP-backed analyzers;
+2. language-aware tooling such as LSP-backed or AST-aware checks;
+3. text-only grep-style checks as a fallback.
+
 ### 3. Run structured checks in report-only mode
 
 When a structured checker applies:
@@ -77,6 +83,9 @@ When a structured checker applies:
 1. scope it to the stable integrated diff;
 2. keep it report-only;
 3. collect findings without automatically changing files.
+
+If the diff is large enough that a single pass becomes noisy, split the review into
+coherent slices first and preserve one final whole-diff judgment at the end.
 
 Focus on:
 
@@ -130,6 +139,25 @@ Summarize:
 
 The result should make the next action obvious.
 
+## Example Readiness Report
+
+Use a durable report shape so the next actor can make a decision quickly. For example:
+
+```text
+Review surface: PR #128 against main
+Structured checker: codex review + repo test suite
+Blockers:
+- Missing null-path coverage in src/api/createWidget.js
+Fix-now:
+- Rename duplicate option key in plugin.json example
+Follow-ups:
+- Consider extracting shared validation helper after merge
+Skipped checks:
+- None
+Verdict:
+- ready with follow-ups
+```
+
 ## Required Gates
 
 A final readiness pass is not complete until:
@@ -138,3 +166,13 @@ A final readiness pass is not complete until:
 - any structured findings were triaged when applicable;
 - a final substantive review was performed;
 - an explicit readiness verdict was produced.
+
+## Stop Conditions
+
+- the review surface is still changing materially;
+- structured findings conflict and no human tie-breaker is available;
+- required validation commands or comparison baseline are still unknown;
+- the diff is too large to judge coherently without first reducing or chunking it;
+- the developer asks to stop.
+
+When that happens, stop the final gate, report why it is not yet trustworthy, and resume only on a stable diff.

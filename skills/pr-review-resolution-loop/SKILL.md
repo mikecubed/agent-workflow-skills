@@ -90,13 +90,22 @@ For each item, classify whether it is:
 
 Then decide whether to fix, decline, or clarify first.
 
+Process accepted items in this default priority order:
+
+1. security issues;
+2. correctness issues;
+3. contract mismatches;
+4. missing or weak tests;
+5. architecture concerns;
+6. lower-priority polish.
+
 ### 3. Batch independent fixes when safe
 
 If multiple accepted fixes are independent:
 
 1. group them into separate fix tracks;
 2. keep tightly coupled fixes serial;
-3. reuse the implementation-loop rules for isolation, review, and cleanup.
+3. reuse the `/agent-workflow-skills:parallel-implementation-loop` rules for isolation, review, and cleanup.
 
 If review items interact heavily, resolve them serially.
 
@@ -141,7 +150,37 @@ After all relevant review items are handled:
 1. run the repository's real quality gates;
 2. verify any new behavior has test coverage;
 3. run the final PR-readiness workflow on the stable diff;
-4. summarize remaining concerns, if any.
+4. publish one durable review-resolution summary that captures decisions, validation, and remaining concerns when the repository has a place for it.
+
+## Example Review-Resolution Summary
+
+Use a durable summary shape so another reviewer or contributor can quickly see what was fixed, declined, or left open. For example:
+
+```text
+Review surface: PR #128 against main
+Reviewer source: GitHub review
+Decisions:
+- comment-14 | correctness | fixed | Added a null-input guard and coverage for the empty payload path
+- comment-19 | test | fixed | Strengthened the regression test to assert the exact status code
+- comment-23 | stale | declined | Current diff already removed the old helper the comment referred to
+Validation:
+- npm test
+- npm run validate:plugin
+Result:
+- pass
+Remaining concerns:
+- Waiting on reviewer confirmation for one clarify-first thread about ownership of normalization
+```
+
+Prefer the repository's canonical review-resolution artifact template when one exists.
+
+### Example Thread Responses
+
+Use short, concrete replies that make the outcome obvious. For example:
+
+- fixed: `Fixed in 9ab12cd by tightening the null-path guard and adding coverage for the empty-input case.`
+- declined: `Declining this one because the current contract intentionally allows duplicate labels during draft creation. Keeping the existing behavior.`
+- clarify first: `I could address this either in the serializer or in the caller. Which boundary did you intend to own the normalization rule?`
 
 ## Required Gates
 
@@ -170,3 +209,13 @@ The batch is not complete until:
 - repository validation passes;
 - the final readiness workflow has been run;
 - remaining issues are explicitly reported.
+
+## Stop Conditions
+
+- the review surface has moved enough that the original comments are no longer reliable;
+- accepted fixes begin conflicting on the same files or contract;
+- reviewer and implementer disagree without a repository rule to break the tie;
+- required validation commands or thread-resolution expectations are still unknown;
+- the developer asks to stop.
+
+When that happens, stop batching, restate the blocker, and continue only after the review surface is stable again.
