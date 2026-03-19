@@ -15,13 +15,35 @@ const skillNames = [
   'final-pr-readiness-gate',
 ];
 
-function hasCommand(command) {
-  try {
-    execFileSync('which', [command], { stdio: 'ignore' });
-    return true;
-  } catch {
-    return false;
+function executableNames(command) {
+  if (process.platform !== 'win32' || /\.[^./\\]+$/.test(command)) {
+    return [command];
   }
+
+  const pathExt = (process.env.PATHEXT ?? '.EXE;.CMD;.BAT;.COM')
+    .split(';')
+    .filter(Boolean);
+
+  return [command, ...pathExt.map((extension) => `${command}${extension}`)];
+}
+
+function hasCommand(command) {
+  for (const directory of (process.env.PATH ?? '').split(path.delimiter).filter(Boolean)) {
+    for (const candidate of executableNames(command)) {
+      const executablePath = path.join(directory, candidate);
+
+      try {
+        fs.accessSync(executablePath, fs.constants.X_OK);
+        return true;
+      } catch {
+        if (process.platform === 'win32' && fs.existsSync(executablePath)) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }
 
 function run(command, args, options = {}) {
@@ -31,6 +53,21 @@ function run(command, args, options = {}) {
     stdio: ['ignore', 'pipe', 'pipe'],
     ...options,
   });
+}
+
+function outputIncludesToken(output, expectedToken) {
+  return output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .some((line) => line.split(/\s+/).includes(expectedToken));
+}
+
+function outputIncludesQualifiedSkill(output, qualifiedSkillName) {
+  return (
+    outputIncludesToken(output, qualifiedSkillName) ||
+    outputIncludesToken(output, `/${qualifiedSkillName}`)
+  );
 }
 
 function verifyCopilotRuntime() {
@@ -47,7 +84,10 @@ function verifyCopilotRuntime() {
     run('copilot', ['plugin', 'install', '--config-dir', configDir, ROOT]);
 
     const installed = run('copilot', ['plugin', 'list', '--config-dir', configDir]);
-    assert.match(installed, new RegExp(`\\b${pluginName}\\b`));
+    assert.ok(
+      outputIncludesToken(installed, pluginName),
+      `Expected Copilot plugin list to include ${pluginName}.\n${installed}`,
+    );
 
     const loadedSkills = run('copilot', [
       '-p',
@@ -60,7 +100,11 @@ function verifyCopilotRuntime() {
     ]);
 
     for (const skillName of skillNames) {
-      assert.match(loadedSkills, new RegExp(`${pluginName}:${skillName}`));
+      const qualifiedSkillName = `${pluginName}:${skillName}`;
+      assert.ok(
+        outputIncludesQualifiedSkill(loadedSkills, qualifiedSkillName),
+        `Expected Copilot runtime output to include ${qualifiedSkillName}.\n${loadedSkills}`,
+      );
     }
 
     run('copilot', ['plugin', 'uninstall', '--config-dir', configDir, pluginName]);
@@ -89,7 +133,11 @@ function verifyClaudePlugin() {
   ]);
 
   for (const skillName of skillNames) {
-    assert.match(loadedSkills, new RegExp(`${pluginName}:${skillName}`));
+    const qualifiedSkillName = `${pluginName}:${skillName}`;
+    assert.ok(
+      outputIncludesQualifiedSkill(loadedSkills, qualifiedSkillName),
+      `Expected Claude runtime output to include ${qualifiedSkillName}.\n${loadedSkills}`,
+    );
   }
 }
 

@@ -1,6 +1,6 @@
 # Skills Evaluation
 
-This document evaluates the workflow skills and packaging structure in this repository, compares them with the themes in `/home/mikecubed/projects/ai-stuff/ai-agent-dev-summary.md`, and synthesizes two independent deep reviews run with `claude-opus-4.6` and `gpt-5.4`.
+This document evaluates the workflow skills and packaging structure in this repository, compares them with the themes in the companion `ai-agent-dev-summary.md` reference used during the original review, and synthesizes two independent deep reviews run with `claude-opus-4.6` and `gpt-5.4`.
 
 ## Executive summary
 

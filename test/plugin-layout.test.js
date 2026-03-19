@@ -42,10 +42,11 @@ function readPackedFiles() {
 describe('plugin manifests', () => {
   it('defines a Copilot plugin manifest with the shared skills directory', () => {
     const manifest = readJson('plugin.json');
+    const packageManifest = readJson('package.json');
 
     assert.equal(manifest.name, 'agent-workflow-skills');
     assert.deepEqual(manifest.skills, ['skills/']);
-    assert.equal(manifest.version, '0.1.0');
+    assert.equal(manifest.version, packageManifest.version);
     assert.equal(manifest.category, 'developer-tools');
     assert.ok(Array.isArray(manifest.tags));
   });
@@ -72,12 +73,17 @@ describe('marketplace metadata', () => {
     const pluginEntry = marketplace.plugins.find((entry) => entry.name === 'agent-workflow-skills');
 
     assert.equal(marketplace.name, 'agent-workflow-skills-marketplace');
+    assert.equal(marketplace.owner.name, copilotManifest.author.name);
+    assert.equal(marketplace.metadata.version, copilotManifest.version);
     assert.ok(pluginEntry, 'expected agent-workflow-skills plugin entry');
     assert.equal(pluginEntry.source, '.');
     assert.deepEqual(pluginEntry.skills, ['skills/']);
     assert.equal(pluginEntry.version, copilotManifest.version);
     assert.equal(pluginEntry.description, copilotManifest.description);
+    assert.equal(pluginEntry.author.name, copilotManifest.author.name);
+    assert.equal(pluginEntry.license, copilotManifest.license);
     assert.equal(pluginEntry.category, copilotManifest.category);
+    assert.deepEqual(pluginEntry.keywords, copilotManifest.keywords);
     assert.deepEqual(pluginEntry.tags, copilotManifest.tags);
   });
 });

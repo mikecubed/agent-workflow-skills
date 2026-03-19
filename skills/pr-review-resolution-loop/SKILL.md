@@ -150,9 +150,31 @@ After all relevant review items are handled:
 1. run the repository's real quality gates;
 2. verify any new behavior has test coverage;
 3. run the final PR-readiness workflow on the stable diff;
-4. summarize remaining concerns, if any.
+4. publish one durable review-resolution summary that captures decisions, validation, and remaining concerns when the repository has a place for it.
 
-## Example Thread Responses
+## Example Review-Resolution Summary
+
+Use a durable summary shape so another reviewer or contributor can quickly see what was fixed, declined, or left open. For example:
+
+```text
+Review surface: PR #128 against main
+Reviewer source: GitHub review
+Decisions:
+- comment-14 | correctness | fixed | Added a null-input guard and coverage for the empty payload path
+- comment-19 | test | fixed | Strengthened the regression test to assert the exact status code
+- comment-23 | stale | declined | Current diff already removed the old helper the comment referred to
+Validation:
+- npm test
+- npm run validate:plugin
+Result:
+- pass
+Remaining concerns:
+- Waiting on reviewer confirmation for one clarify-first thread about ownership of normalization
+```
+
+Prefer the repository's canonical review-resolution artifact template when one exists.
+
+### Example Thread Responses
 
 Use short, concrete replies that make the outcome obvious. For example:
 
