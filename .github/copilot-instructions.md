@@ -5,6 +5,7 @@
 - Use Node 22 or newer. The repo is ESM-only and `package.json` declares `node >=22.0.0`.
 - Install dependencies with `npm install`.
 - Run the full validation suite with `npm run validate:plugin` or `npm test`. Both execute `node --test test/**/*.test.js`.
+- Run local runtime verification with `npm run validate:runtime`. It performs an isolated Copilot install/list/uninstall check and a real plugin-load check in both Copilot CLI and Claude Code, so it requires authenticated CLIs and may consume model requests.
 - Run the single test file with `node --test test/plugin-layout.test.js`.
 - Run a single named test with `node --test --test-name-pattern "plugin manifests" test/plugin-layout.test.js`.
 

@@ -12,11 +12,9 @@ Most of the first-wave recommendations from this review are now complete on `fea
 - the previously unneeded scaffolding has been removed;
 - all three skills now include examples, and the weaker skills now include stop conditions and clearer recovery guidance.
 
-The main remaining gaps are narrower:
+The main remaining gap is now procedural rather than structural:
 
-- durable artifact expectations are still described only at the skill-text level rather than enforced by repo structure;
-- some longer-horizon repo hygiene ideas remain open, such as a dedicated `CONTRIBUTING.md`, changelog, or Claude-side repo instructions;
-- the current tests still validate structure and package surface, not real runtime loading in Copilot CLI or Claude Code.
+- the current runtime verification is intentionally opt-in developer validation rather than a CI gate.
 
 Both subagent reviews agreed on the same broad recommendation: preserve the current skill decomposition and gate-driven style, then strengthen the repository's executable guardrails and reduce ambiguity around artifacts and packaging. That guidance still holds, but a large part of it has now been implemented.
 
@@ -26,14 +24,16 @@ Both subagent reviews agreed on the same broad recommendation: preserve the curr
 | --- | --- | --- |
 | Stronger skill-layout tests | Complete | Tests now enforce more required sections, frontmatter name alignment, and metadata consistency. |
 | Packaging smoke coverage | Complete | `npm pack --json --dry-run` is exercised in the test suite. |
+| Runtime-level verification | Complete | The repo now provides `npm run validate:runtime` for isolated Copilot install/list/uninstall and real plugin loading checks in both Copilot CLI and Claude Code. |
 | Example content in skills | Complete | Added example track definition, thread responses, and readiness report. |
 | Stronger TDD/recovery guidance | Complete | Parallel skill tightened to `must`; weaker skills gained stop conditions and recovery language. |
 | Semantic-tool guidance | Complete | Final readiness skill now prefers semantic/MCP/LSP-style checkers when available. |
 | Review priority ordering | Complete | Added to `pr-review-resolution-loop`. |
 | README contributor guidance | Complete | README now covers skill editing, adding skills, package verification, and manifest path conventions. |
 | Ambiguous scaffolding cleanup | Complete | The removed scaffolding is no longer part of the tracked repo shape. |
-| Durable artifact/report expectations | Partial | Skills recommend durable summaries, but the repo does not provide a canonical artifact location or schema outside the skill prose. |
-| Additional repo docs (`CONTRIBUTING.md`, changelog, Claude repo instructions) | Remaining | Still potentially useful, but not required for the current plugin to function correctly. |
+| Durable artifact/report expectations | Complete | `docs/workflow-artifact-templates.md` now defines canonical artifact locations and templates for track reports, review-resolution summaries, and readiness reports. |
+| Additional repo docs (`CONTRIBUTING.md`, Claude repo instructions) | Complete | The repo now includes `CONTRIBUTING.md` and `CLAUDE.md` alongside the existing Copilot instructions. |
+| `CHANGELOG.md` | Complete | The repo now includes a lightweight changelog with an unreleased section and the current plugin baseline. |
 
 ## What is already strong
 
@@ -124,7 +124,7 @@ flowchart TD
 - Complete: added an example track definition block.
 - Complete: recommended a safe default like `2-3` concurrent tracks.
 - Complete: upgraded TDD wording from `should` to `must`.
-- Remaining: define a repository-level artifact format for track reports and ownership maps if the project wants those outputs standardized outside the skill prose.
+- Complete: the repository now provides canonical workflow artifact templates outside the skill prose.
 
 ## `pr-review-resolution-loop`
 
@@ -290,29 +290,9 @@ Done with an `npm pack --json --dry-run` based test.
 
 ## Remaining
 
-### 1. Add explicit artifact expectations beyond the skill prose
+No substantive documentation recommendations remain from the original review.
 
-The skills now recommend durable summaries, but the repository still does not define a canonical artifact location, template, or persistence mechanism for:
-
-- track reports;
-- readiness reports;
-- review-resolution summaries.
-
-### 2. Decide whether to add more repo-level contributor docs
-
-Still optional, but potentially useful:
-
-- `CONTRIBUTING.md`
-- `CHANGELOG.md`
-- Claude-side repo instructions mirroring `.github/copilot-instructions.md`
-
-### 3. Consider runtime-level verification
-
-The package surface is tested, but the repo still does not automatically validate:
-
-- `copilot plugin install .`
-- `claude --plugin-dir ./copilot-skills`
-- plugin visibility/runtime loading in the actual tools
+The only notable open choice is whether runtime verification should remain a developer-run command or eventually become part of a stricter CI path.
 
 ## Recommendation roadmap
 
@@ -339,8 +319,4 @@ This repository already fits many of the best practices in `ai-agent-dev-summary
 
 The highest-value recommendations from the original review are now complete. The repo has moved from "good reusable skill pack with soft spots" to "well-guarded reusable skill pack with stronger tests, clearer skill contracts, and better packaging verification."
 
-The remaining work is mostly about polish and standardization:
-
-- defining canonical artifact outputs;
-- adding optional contributor-facing docs;
-- and, if desired, adding runtime-level install/load verification.
+The remaining work is now about deciding how much live-runtime verification belongs in CI rather than about missing repository guidance.

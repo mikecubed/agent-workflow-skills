@@ -60,6 +60,8 @@ describe('plugin manifests', () => {
     assert.equal(claudeManifest.description, copilotManifest.description);
     assert.equal(claudeManifest.skills, './skills/');
     assert.equal(packageManifest.version, copilotManifest.version);
+    assert.equal(packageManifest.scripts['validate:runtime'], 'node scripts/verify-runtime.mjs');
+    assert.ok(fs.existsSync(path.join(ROOT, 'scripts', 'verify-runtime.mjs')));
   });
 });
 

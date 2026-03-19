@@ -110,6 +110,18 @@ Validate the plugin layout and publishing metadata with:
 npm run validate:plugin
 ```
 
+Verify the runtime integration without touching your normal plugin state with:
+
+```bash
+npm run validate:runtime
+```
+
+That command:
+
+- installs the Copilot plugin into a temporary config directory, checks that the plugin and skills appear, then removes it again;
+- validates the Claude plugin manifest and then loads the plugin in a session-only Claude run;
+- exercises real CLI/plugin loading, so it may consume model requests and requires authenticated CLIs.
+
 Before publishing, verify the packaged artifact surface with:
 
 ```bash
@@ -133,3 +145,11 @@ Manifest path conventions are intentionally different across runtimes:
 
 - `plugin.json` uses `["skills/"]` because Copilot CLI accepts component paths as a string or array.
 - `.claude-plugin/plugin.json` uses `"./skills/"` because Claude plugin custom paths are relative to the plugin root and start with `./`.
+
+For repository-specific contributor guidance, see:
+
+- `CONTRIBUTING.md`
+- `CHANGELOG.md`
+- `CLAUDE.md`
+- `.github/copilot-instructions.md`
+- `docs/workflow-artifact-templates.md`
