@@ -17,9 +17,27 @@ function readText(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
+function readFrontmatter(text) {
+  const normalizedText = text.replace(/\r\n/g, '\n');
+  const match = normalizedText.match(/^---\n([\s\S]*?)\n---(?:\n|$)/);
+
+  assert.ok(match, 'expected YAML frontmatter block');
+
+  const values = new Map();
+
+  for (const line of match[1].split('\n')) {
+    const keyValueMatch = line.match(/^([A-Za-z0-9_-]+):\s*(.+)$/);
+
+    if (keyValueMatch) {
+      values.set(keyValueMatch[1], keyValueMatch[2].trim());
+    }
+  }
+
+  return values;
+}
+
 function frontmatterValue(text, key) {
-  const match = text.match(new RegExp(`^${key}:\\s+(.+)$`, 'm'));
-  return match?.[1];
+  return readFrontmatter(text).get(key);
 }
 
 let packedFiles;

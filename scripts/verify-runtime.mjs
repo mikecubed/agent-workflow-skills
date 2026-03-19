@@ -8,12 +8,22 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
-const pluginName = 'agent-workflow-skills';
-const skillNames = [
-  'parallel-implementation-loop',
-  'pr-review-resolution-loop',
-  'final-pr-readiness-gate',
-];
+
+function readJson(relativePath) {
+  return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), 'utf8'));
+}
+
+function listSkillNames() {
+  return fs.readdirSync(path.join(ROOT, 'skills'), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((skillName) => fs.existsSync(path.join(ROOT, 'skills', skillName, 'SKILL.md')))
+    .sort();
+}
+
+const pluginManifest = readJson('plugin.json');
+const pluginName = pluginManifest.name;
+const skillNames = listSkillNames();
 
 function executableNames(command) {
   if (process.platform !== 'win32' || /\.[^./\\]+$/.test(command)) {
