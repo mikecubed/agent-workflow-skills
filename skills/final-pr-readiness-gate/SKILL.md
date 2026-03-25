@@ -32,10 +32,29 @@ Before you start, identify:
 
 Use:
 
-- an optional structured checker for code-bearing diffs;
-- a separate final reviewer for whole-diff judgment.
+- an optional **structured checker** for code-bearing diffs;
+- a separate **final reviewer** for whole-diff judgment.
 
 If no structured checker exists, continue with the final reviewer only.
+
+### Model Selection
+
+Resolve the active model for each role using this priority chain:
+
+1. **Project config** — look for `.copilot/models.md` in the current project root. If found, read and use the values defined there.
+2. **Session cache** — if models were already confirmed earlier in this session, reuse them without asking again.
+3. **Baked-in defaults** — if neither is found, show the defaults below, ask the user to confirm or override them once, then cache the answer for the rest of the session.
+
+#### Default models
+
+| Runtime       | Role             | Default model       |
+|---------------|------------------|---------------------|
+| Copilot CLI   | Structured check | `gpt-5.4`           |
+| Copilot CLI   | Final reviewer   | `claude-opus-4.6`   |
+| Claude Code   | Structured check | `claude-opus-4.6`   |
+| Claude Code   | Final reviewer   | `claude-opus-4.6`   |
+
+To permanently override defaults for a project, copy `docs/models-config-template.md` from this plugin to `.copilot/models.md` in the project root and edit the values there.
 
 ## Preconditions
 

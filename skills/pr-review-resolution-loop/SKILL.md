@@ -32,10 +32,29 @@ Before you start, identify:
 
 Use separate roles for:
 
-- an implementer that makes accepted fixes;
-- a reviewer that inspects each fix and the final integrated result.
+- an **implementer** that makes accepted fixes;
+- a **reviewer** that inspects each fix and the final integrated result.
 
 In Claude Code, spawn each role as a separate agent using the Agent tool. Pass the implementer the exact fix scope and constraints. Pass the reviewer only the resulting diff and the review criteria.
+
+### Model Selection
+
+Resolve the active model for each role using this priority chain:
+
+1. **Project config** — look for `.copilot/models.md` in the current project root. If found, read and use the values defined there.
+2. **Session cache** — if models were already confirmed earlier in this session, reuse them without asking again.
+3. **Baked-in defaults** — if neither is found, show the defaults below, ask the user to confirm or override them once, then cache the answer for the rest of the session.
+
+#### Default models
+
+| Runtime       | Role        | Default model       |
+|---------------|-------------|---------------------|
+| Copilot CLI   | Implementer | `claude-opus-4.6`   |
+| Copilot CLI   | Reviewer    | `gpt-5.4`           |
+| Claude Code   | Implementer | `claude-opus-4.6`   |
+| Claude Code   | Reviewer    | `claude-opus-4.6`   |
+
+To permanently override defaults for a project, copy `docs/models-config-template.md` from this plugin to `.copilot/models.md` in the project root and edit the values there.
 
 ## Core Rules
 
