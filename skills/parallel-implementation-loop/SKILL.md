@@ -190,17 +190,17 @@ For each track:
    - Fleet or agent-team mode only for explicitly approved, high-leverage tracks;
 2. create an isolated work surface if the repository uses them;
 3. provide the implementer with:
-    - exact task IDs;
-    - exact files or modules;
-    - TDD expectations;
-    - reuse constraints;
-    - validation commands;
-    - instruction to stay within scope;
+   - exact task IDs;
+   - exact files or modules;
+   - TDD expectations;
+   - reuse constraints;
+   - validation commands;
+   - instruction to stay within scope;
 4. require the track to report:
-    - files changed;
-    - tests added or updated;
-    - validation performed;
-    - uncertainties or blockers.
+   - files changed;
+   - tests added or updated;
+   - validation performed;
+   - uncertainties or blockers.
 
 ### 3. Review each completed track
 

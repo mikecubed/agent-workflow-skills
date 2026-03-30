@@ -6,9 +6,12 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-03-30
+
 ### Added
 
 - optional Fleet / Claude Code agent-team escalation guidance across the shared workflow skills, with explicit cost-aware opt-in instead of making team orchestration the default
+- explicit Azure DevOps PR discussion guidance in the review-resolution workflow and artifact template
 
 ### Changed
 
