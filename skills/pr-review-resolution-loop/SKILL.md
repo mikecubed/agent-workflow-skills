@@ -23,7 +23,9 @@ Activate when the developer asks for things like:
 Before you start, identify:
 
 - the active branch or review surface;
+- the review platform or source system in use, such as GitHub, Azure DevOps, or a local review artifact;
 - where review comments and threads are collected;
+- how that platform models discussion items, thread states, and resolution actions;
 - the repository's validation commands;
 - how the team expects resolved comments to be replied to and closed;
 - whether the repository allows parallel fix tracks or prefers serial review fixes.
@@ -105,9 +107,9 @@ For comments that become fixes:
 2. implement the smallest fix that resolves the issue;
 3. refactor only while tests stay green.
 
-### 3. Close the loop on every thread
+### 3. Close the loop on every discussion item
 
-Every review thread should end in one of these states:
+Every review thread or platform-equivalent discussion item should end in one of these states:
 
 - fixed and resolved;
 - declined with a clear rationale;
@@ -121,7 +123,7 @@ Do not stop with code changes only.
 
 Before making changes:
 
-1. collect open review threads and relevant general comments;
+1. collect open review threads, comment chains, or equivalent discussion items, plus relevant general comments;
 2. read the current code and nearby tests;
 3. confirm the latest branch diff and validation status.
 
@@ -184,13 +186,15 @@ After each fix:
    - security concerns;
    - material design regressions.
 
-### 6. Reply to and resolve review threads
+### 6. Reply to and close review discussions
 
 After each fix or decline:
 
-- if fixed, reply briefly with what changed and resolve the thread;
-- if declined, reply with the concrete reason and resolve it if appropriate;
-- if clarification is still needed, post the question and leave the thread open intentionally.
+- if fixed, reply briefly with what changed and use the platform-appropriate action to mark the discussion addressed;
+- if declined, reply with the concrete reason and apply the repository's expected decline or close action when appropriate;
+- if clarification is still needed, post the question and leave the discussion open intentionally.
+
+GitHub and Azure DevOps expose different thread status labels, but the workflow outcome should still map to the same three states above: fixed, declined, or intentionally left open.
 
 Silent declines are not allowed.
 
@@ -208,8 +212,8 @@ After all relevant review items are handled:
 Use a durable summary shape so another reviewer or contributor can quickly see what was fixed, declined, or left open. For example:
 
 ```text
-Review surface: PR #128 against main
-Reviewer source: GitHub review
+Review surface: PR 128 against main
+Reviewer source: Azure DevOps PR review
 Decisions:
 - comment-14 | correctness | fixed | Added a null-input guard and coverage for the empty payload path
 - comment-19 | test | fixed | Strengthened the regression test to assert the exact status code
@@ -227,7 +231,7 @@ Prefer the repository's canonical review-resolution artifact template when one e
 
 ### Example Thread Responses
 
-Use short, concrete replies that make the outcome obvious. For example:
+Use short, concrete replies that make the outcome obvious, then apply the matching platform action. For example:
 
 - fixed: `Fixed in 9ab12cd by tightening the null-path guard and adding coverage for the empty-input case.`
 - declined: `Declining this one because the current contract intentionally allows duplicate labels during draft creation. Keeping the existing behavior.`
