@@ -37,6 +37,21 @@ Use:
 
 If no structured checker exists, continue with the final reviewer only.
 
+### Escalation: Fleet / Agent Team Mode
+
+If the active runtime offers a higher-cost orchestration mode such as a Fleet command or Claude Code agent teams, keep it optional and reserve it for unusually large or high-risk final review surfaces.
+
+In most cases, one structured checker and one final reviewer are enough. Before escalating, explain the expected benefit and ask the developer whether they want the extra token cost.
+
+Escalate only when:
+
+1. the integrated diff is large enough that one reviewer would be noisy or shallow;
+2. multiple specialized audit roles would materially improve the final judgment;
+3. the review surface is already stable enough to coordinate as a team;
+4. the developer explicitly opts in.
+
+If team mode is approved, keep one final reviewer responsible for the single readiness verdict so the outcome does not fragment across agents.
+
 ### Model Selection
 
 Resolve the active model for each role using this priority chain:
@@ -115,7 +130,8 @@ When a structured checker applies:
 
 1. scope it to the stable integrated diff;
 2. keep it report-only;
-3. collect findings without automatically changing files.
+3. collect findings without automatically changing files;
+4. if Fleet or agent-team mode is in use, require one aggregated finding summary before the final reviewer starts.
 
 If the diff is large enough that a single pass becomes noisy, split the review into
 coherent slices first and preserve one final whole-diff judgment at the end.

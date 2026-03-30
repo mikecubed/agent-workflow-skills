@@ -37,6 +37,21 @@ Use separate roles for:
 
 In Claude Code, spawn each role as a separate agent using the Agent tool. Pass the implementer the exact fix scope and constraints. Pass the reviewer only the resulting diff and the review criteria.
 
+### Escalation: Fleet / Agent Team Mode
+
+If the active runtime offers a higher-cost orchestration mode such as a Fleet command or Claude Code agent teams, use it only as an optional escalation path for large review batches.
+
+Default to standard implementer and reviewer agents first. Before escalating, tell the developer why the larger team would help and ask whether they want the added token spend.
+
+Escalate only when:
+
+1. many accepted review items can be fixed independently;
+2. the review surface is large enough that a single implementer would become a bottleneck;
+3. specialized fix roles or audit roles would materially improve coverage;
+4. the developer explicitly opts in.
+
+If team mode is approved, still keep one durable triage view and one final reviewer accountable for the integrated result.
+
 ### Model Selection
 
 Resolve the active model for each role using this priority chain:
@@ -140,7 +155,8 @@ If multiple accepted fixes are independent:
 
 1. group them into separate fix tracks;
 2. keep tightly coupled fixes serial;
-3. invoke `/agent-workflow-skills:parallel-implementation-loop` for each independent fix batch.
+3. invoke `/agent-workflow-skills:parallel-implementation-loop` for each independent fix batch;
+4. use Fleet or agent-team mode only for batches that were explicitly approved for the higher-cost path.
 
 If review items interact heavily, resolve them serially.
 

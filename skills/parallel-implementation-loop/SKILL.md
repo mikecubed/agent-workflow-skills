@@ -47,6 +47,26 @@ Keep implementation and review separate whenever possible.
 
 In Claude Code, spawn each role as a separate agent using the Agent tool. Pass the implementer a scoped prompt with exact task, file, and TDD constraints. Pass the reviewer only the diff and the review criteria. Do not share context between roles.
 
+### Escalation: Fleet / Agent Team Mode
+
+If the active runtime offers a higher-cost orchestration mode such as a Fleet command or Claude Code agent teams, treat it as an explicit escalation path rather than the default execution mode.
+
+Default to standard per-role agents first. Before escalating, explain why the extra coordination would help and ask the developer whether they want the higher-cost mode.
+
+Escalate only when:
+
+1. there are more than 2 clearly independent ready tracks;
+2. each track has enough local context that repeated handoffs would be inefficient;
+3. specialized sub-roles would materially improve throughput or review quality;
+4. the developer confirms the extra token spend is worth it.
+
+When team mode is approved:
+
+- preserve the same role separation;
+- assign one clear owner per track;
+- keep reviewer authority independent from implementers;
+- fall back to standard agents if coordination overhead becomes noisy or ambiguous.
+
 ### Model Selection
 
 Resolve the active model for each role using this priority chain:
@@ -165,19 +185,22 @@ Before launching tracks:
 
 For each track:
 
-1. create an isolated work surface if the repository uses them;
-2. provide the implementer with:
-   - exact task IDs;
-   - exact files or modules;
-   - TDD expectations;
-   - reuse constraints;
-   - validation commands;
-   - instruction to stay within scope;
-3. require the track to report:
-   - files changed;
-   - tests added or updated;
-   - validation performed;
-   - uncertainties or blockers.
+1. choose the execution mode:
+   - standard scoped agents by default;
+   - Fleet or agent-team mode only for explicitly approved, high-leverage tracks;
+2. create an isolated work surface if the repository uses them;
+3. provide the implementer with:
+    - exact task IDs;
+    - exact files or modules;
+    - TDD expectations;
+    - reuse constraints;
+    - validation commands;
+    - instruction to stay within scope;
+4. require the track to report:
+    - files changed;
+    - tests added or updated;
+    - validation performed;
+    - uncertainties or blockers.
 
 ### 3. Review each completed track
 
