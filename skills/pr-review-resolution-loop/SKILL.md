@@ -23,7 +23,9 @@ Activate when the developer asks for things like:
 Before you start, identify:
 
 - the active branch or review surface;
+- the review platform or source system in use, such as GitHub, Azure DevOps, or a local review artifact;
 - where review comments and threads are collected;
+- how that platform models discussion items, thread states, and resolution actions;
 - the repository's validation commands;
 - how the team expects resolved comments to be replied to and closed;
 - whether the repository allows parallel fix tracks or prefers serial review fixes.
@@ -36,6 +38,21 @@ Use separate roles for:
 - a **reviewer** that inspects each fix and the final integrated result.
 
 In Claude Code, spawn each role as a separate agent using the Agent tool. Pass the implementer the exact fix scope and constraints. Pass the reviewer only the resulting diff and the review criteria.
+
+### Escalation: Fleet / Agent Team Mode
+
+If the active runtime offers a higher-cost orchestration mode such as a Fleet command or Claude Code agent teams, use it only as an optional escalation path for large review batches.
+
+Default to standard implementer and reviewer agents first. Before escalating, tell the developer why the larger team would help and ask whether they want the added token spend.
+
+Escalate only when:
+
+1. many accepted review items can be fixed independently;
+2. the review surface is large enough that a single implementer would become a bottleneck;
+3. specialized fix roles or audit roles would materially improve coverage;
+4. the developer explicitly opts in.
+
+If team mode is approved, still keep one durable triage view and one final reviewer accountable for the integrated result.
 
 ### Model Selection
 
@@ -90,9 +107,9 @@ For comments that become fixes:
 2. implement the smallest fix that resolves the issue;
 3. refactor only while tests stay green.
 
-### 3. Close the loop on every thread
+### 3. Close the loop on every discussion item
 
-Every review thread should end in one of these states:
+Every review thread or platform-equivalent discussion item should end in one of these states:
 
 - fixed and resolved;
 - declined with a clear rationale;
@@ -106,7 +123,7 @@ Do not stop with code changes only.
 
 Before making changes:
 
-1. collect open review threads and relevant general comments;
+1. collect open review threads, comment chains, or equivalent discussion items, plus relevant general comments;
 2. read the current code and nearby tests;
 3. confirm the latest branch diff and validation status.
 
@@ -140,7 +157,8 @@ If multiple accepted fixes are independent:
 
 1. group them into separate fix tracks;
 2. keep tightly coupled fixes serial;
-3. invoke `/agent-workflow-skills:parallel-implementation-loop` for each independent fix batch.
+3. invoke `/agent-workflow-skills:parallel-implementation-loop` for each independent fix batch;
+4. use Fleet or agent-team mode only for batches that were explicitly approved for the higher-cost path.
 
 If review items interact heavily, resolve them serially.
 
@@ -168,13 +186,15 @@ After each fix:
    - security concerns;
    - material design regressions.
 
-### 6. Reply to and resolve review threads
+### 6. Reply to and close review discussions
 
 After each fix or decline:
 
-- if fixed, reply briefly with what changed and resolve the thread;
-- if declined, reply with the concrete reason and resolve it if appropriate;
-- if clarification is still needed, post the question and leave the thread open intentionally.
+- if fixed, reply briefly with what changed and use the platform-appropriate action to mark the discussion addressed;
+- if declined, reply with the concrete reason and apply the repository's expected decline or close action when appropriate;
+- if clarification is still needed, post the question and leave the discussion open intentionally.
+
+GitHub and Azure DevOps expose different thread status labels, but the workflow outcome should still map to the same three states above: fixed, declined, or intentionally left open.
 
 Silent declines are not allowed.
 
@@ -192,8 +212,8 @@ After all relevant review items are handled:
 Use a durable summary shape so another reviewer or contributor can quickly see what was fixed, declined, or left open. For example:
 
 ```text
-Review surface: PR #128 against main
-Reviewer source: GitHub review
+Review surface: PR 128 against main
+Reviewer source: Azure DevOps PR review
 Decisions:
 - comment-14 | correctness | fixed | Added a null-input guard and coverage for the empty payload path
 - comment-19 | test | fixed | Strengthened the regression test to assert the exact status code
@@ -211,7 +231,7 @@ Prefer the repository's canonical review-resolution artifact template when one e
 
 ### Example Thread Responses
 
-Use short, concrete replies that make the outcome obvious. For example:
+Use short, concrete replies that make the outcome obvious, then apply the matching platform action. For example:
 
 - fixed: `Fixed in 9ab12cd by tightening the null-path guard and adding coverage for the empty-input case.`
 - declined: `Declining this one because the current contract intentionally allows duplicate labels during draft creation. Keeping the existing behavior.`

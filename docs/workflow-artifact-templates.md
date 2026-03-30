@@ -40,7 +40,7 @@ Use for `pr-review-resolution-loop`.
 
 ```text
 Review surface: <branch or PR> against <target>
-Reviewer source: <GitHub review / comments / local review>
+Reviewer source: <GitHub review / Azure DevOps PR review / comments / local review>
 Decisions:
 - <comment-id> | <correctness / security / test / contract / architecture / stale> | <fixed / declined / clarify first> | <short rationale>
 Validation:
