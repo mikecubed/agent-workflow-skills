@@ -307,7 +307,7 @@ Before stopping, publish one durable batch summary that includes:
 3. validations run;
 4. unresolved follow-ups.
 
-Prefer a durable artifact over chat-only memory when the repository has a place for it.
+"Durable" means written to a repository-appropriate sink — a PR description, a committed document, an issue comment, or a task tracker entry — not necessarily a committed Markdown file. Choose the sink that fits the repository's conventions. The batch summary MUST be produced; chat-only memory is not sufficient.
 
 ## Required Gates
 
@@ -318,7 +318,8 @@ A track is not complete until:
 - tests were added or updated first when applicable;
 - track-local validation passes;
 - changed files stayed within scope;
-- review found no unresolved substantive issues.
+- review found no unresolved substantive issues;
+- a durable track report artifact has been updated to reflect the final track state (see `docs/workflow-artifact-templates.md` for the template).
 
 ### Batch gate
 
@@ -327,7 +328,8 @@ The batch is not complete until:
 - all integrated work is coherent;
 - repository quality gates pass;
 - the final readiness workflow has run on the stable integrated diff;
-- temporary work surfaces are cleaned up or explicitly retained.
+- temporary work surfaces are cleaned up or explicitly retained;
+- a durable batch summary artifact has been produced that captures merged tracks, retained or abandoned tracks, validations run, and unresolved follow-ups (see `docs/workflow-artifact-templates.md` for the template).
 
 ## Stop Conditions
 
