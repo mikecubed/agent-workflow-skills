@@ -45,7 +45,7 @@ Use separate roles for:
 
 Keep implementation and review separate whenever possible.
 
-In Claude Code, spawn each role as a separate agent using the Agent tool. Pass the implementer a scoped prompt with exact task, file, and TDD constraints. Pass the reviewer only the diff and the review criteria. Do not share context between roles.
+In Claude Code, spawn each role as a separate agent using the Agent tool. Pass the implementer a scoped prompt with exact task, file, and TDD constraints. Pass the reviewer only the diff and the review criteria. Keep implementation and review judgment separate. The coordinator may share a factual brief that includes task boundaries, files, validation commands, and known dependencies. Do not share proposed conclusions, review verdicts, or implementation rationale across roles.
 
 ### Escalation: Fleet / Agent Team Mode
 
@@ -75,7 +75,7 @@ Resolve the active model for each role using this priority chain:
    - Copilot CLI: `.copilot/models.yaml`
    - Claude Code: `.claude/models.yaml`
 
-   These are plain YAML files (no markdown, no fenced blocks). Read the `implementer` and `reviewer` keys directly. If a key is absent, fall back to the baked-in default for that role — do not re-prompt for a key that is missing.
+   These are plain YAML files (no markdown, no fenced blocks). Read the `implementer`, `reviewer`, and `scout` keys directly. If a key is absent, fall back to the baked-in default for that role — do not re-prompt for a key that is missing.
 
 2. **Session cache** — if models were already confirmed earlier in this session, reuse them without asking again.
 3. **Baked-in defaults** — if neither config file nor session cache exists, show the defaults below, ask the user to confirm or override them once, then cache the answer for the rest of the session.
@@ -87,6 +87,7 @@ The config files are plain YAML (not markdown). Create the file for the active r
 ```yaml
 implementer: <model-name>
 reviewer: <model-name>
+scout: <model-name>
 ```
 
 See `docs/models-config-template.md` in this plugin for ready-to-copy templates for both runtimes.
@@ -97,8 +98,10 @@ See `docs/models-config-template.md` in this plugin for ready-to-copy templates 
 |---------------|-------------|---------------------|
 | Copilot CLI   | Implementer | `claude-opus-4.6`   |
 | Copilot CLI   | Reviewer    | `gpt-5.4`           |
+| Copilot CLI   | Scout       | `claude-haiku-4.5`  |
 | Claude Code   | Implementer | `claude-opus-4.6`   |
 | Claude Code   | Reviewer    | `claude-opus-4.6`   |
+| Claude Code   | Scout       | `claude-haiku-4.5`  |
 
 ## Core Rules
 
@@ -181,7 +184,29 @@ Before launching tracks:
    - validation commands;
    - merge target.
 
-### 2. Launch implementation tracks
+### 2. Run discovery (or skip it)
+
+Before delegating to expensive implementers or reviewers, run one lightweight discovery pass using the **scout** model to produce a **discovery brief**. The scout gathers factual context — relevant files, task boundaries, validation commands, dependencies, and open questions — so that downstream roles do not repeat the same exploration.
+
+Run the scout **once per batch or session**, not once per track. Implementers and reviewers inherit only the slice of the brief they need.
+
+Use the discovery brief template from `docs/workflow-artifact-templates.md`:
+
+```text
+Task summary: <one-paragraph description of the work>
+Task shape: single-track | multi-track-batch | review-resolution-batch | large-diff-readiness
+Relevant files: <path>, <path>
+Task boundaries: <what is in scope and what is not>
+Validation commands: <command>, <command>
+Dependencies: <known dependencies or shared interfaces, if multi-track>
+Comparison baseline: <branch, commit, or PR reference, if review or readiness>
+Open questions: <questions requiring developer input, or none>
+Skip reason: <if discovery was skipped, why>
+```
+
+**Skip condition**: Skip the scout when the task is already narrow and fully scoped — one file, one well-defined bug fix, one known test failure, or one already-triaged review comment. When skipped, record the skip reason in the brief.
+
+### 3. Launch implementation tracks
 
 For each track:
 
@@ -202,7 +227,7 @@ For each track:
    - validation performed;
    - uncertainties or blockers.
 
-### 3. Review each completed track
+### 4. Review each completed track
 
 After a track finishes:
 
@@ -216,7 +241,7 @@ After a track finishes:
 
 Do not spend review budget on style-only nits.
 
-### 4. Revise if needed
+### 5. Revise if needed
 
 If the reviewer finds real issues:
 
@@ -226,7 +251,7 @@ If the reviewer finds real issues:
 
 Stop when the reviewer no longer finds meaningful issues.
 
-### 5. Integrate tracks carefully
+### 6. Integrate tracks carefully
 
 When tracks are ready:
 
@@ -235,7 +260,7 @@ When tracks are ready:
 3. run targeted integration validation after risky merges;
 4. stop and reconcile immediately if two tracks drifted on a shared interface.
 
-### 6. Final validation and cleanup
+### 7. Final validation and cleanup
 
 After all track work is integrated:
 
@@ -245,7 +270,7 @@ After all track work is integrated:
 4. retire clean temporary work surfaces;
 5. keep any retained work surface only with an explicit reason.
 
-### 7. Record the batch outcome
+### 8. Record the batch outcome
 
 Before stopping, publish one durable batch summary that includes:
 
