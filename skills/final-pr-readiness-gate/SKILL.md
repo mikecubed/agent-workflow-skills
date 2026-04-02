@@ -117,7 +117,7 @@ Evaluate the integrated result, not a partial local slice.
 
 Before proceeding to structured checks, run a fast scout pass to prepare the review surface for efficient downstream processing:
 
-1. if the review surface was already established by a preceding workflow (such as `parallel-implementation-loop` or `pr-review-resolution-loop`), reuse it directly instead of rediscovering;
+1. if diff scope, affected modules, or validation facts are already known from earlier in the current session, reuse those facts directly instead of rediscovering — this refers to context already present in the bounded session, not an artifact contract with another skill;
 2. identify the diff structure: affected modules, file categories (code, tests, config, docs), and approximate size;
 3. note high-risk or cross-cutting modules for prioritization during structured checks;
 4. produce a discovery brief per `docs/workflow-artifact-templates.md` with at least: task shape, relevant files, comparison baseline, and validation commands.
@@ -163,7 +163,7 @@ Focus on:
 
 If the structured checker exceeds its budget before completing the full diff:
 
-1. reduce the diff scope to the highest-risk modules identified during discovery;
+1. reduce the diff scope to the highest-risk modules — use the discovery brief when one was produced, or fall back to git-diff file-level heuristics (largest files, most cross-cutting paths) when discovery was skipped on a small or focused diff;
 2. skip non-critical checks that would not change the final verdict;
 3. serialize remaining checks rather than running them concurrently.
 
