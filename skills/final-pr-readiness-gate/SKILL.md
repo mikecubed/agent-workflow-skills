@@ -159,15 +159,16 @@ Focus on:
 - naming or complexity regressions;
 - observability and test-quality gaps that matter on the final diff.
 
-#### Handling structured checker stalls
+#### Rescue policy for structured-check delays
 
-If the structured checker exceeds its budget before completing the full diff:
+When the structured checker stalls, times out, or the diff is large enough to cause processing delays, apply the following rescue-before-abandon sequence instead of immediately stopping the gate:
 
-1. reduce the diff scope to the highest-risk modules — use the discovery brief when one was produced, or fall back to git-diff file-level heuristics (largest files, most cross-cutting paths) when discovery was skipped on a small or focused diff;
-2. skip non-critical checks that would not change the final verdict;
-3. serialize remaining checks rather than running them concurrently.
+1. **Narrow scope** — reduce the diff to the highest-risk modules. Use the discovery brief when one was produced, or fall back to git-diff file-level heuristics (largest files, most cross-cutting paths) when discovery was skipped on a small or focused diff.
+2. **Drop non-critical checks** — skip checks that would not change the final verdict, such as stylistic or low-severity rules.
+3. **Serialize remaining work** — run remaining checks sequentially rather than concurrently to avoid compounding resource pressure.
+4. **Re-evaluate after rescue** — if the reduced scope completes, proceed to triage and the final reviewer as normal. If the rescue itself stalls or produces no usable findings, record the failure and escalate to the developer before abandoning.
 
-Do not abandon the gate because a single checker stalled. Record any scope reductions or skipped checks in the readiness report.
+Do not abandon the gate because a single checker stalled or the diff was large. Always attempt at least one rescue pass and record any scope reductions, skipped checks, or processing-delay mitigations in the readiness report.
 
 ### 4. Triage structured findings
 
@@ -247,9 +248,9 @@ A final readiness pass is not complete until:
 - structured findings conflict and no human tie-breaker is available;
 - required validation commands or comparison baseline are still unknown;
 - the diff is too large to judge coherently without first reducing or chunking it;
-- a structured checker stalls and scope reduction cannot recover the pass;
+- a structured checker stalls, times out, or the diff causes processing delays, and rescue-before-abandon (see § Rescue policy for structured-check delays) has been attempted and failed;
 - the developer asks to stop.
 
-Before stopping because a structured checker stalled or the diff exceeded the review budget, attempt at least one rescue: narrow to the highest-risk modules, skip non-critical checks, or serialize the remaining work. Stop only after the rescue fails or the developer confirms abandonment.
+Before stopping because a structured checker stalled or the diff exceeded the review budget, always follow the rescue-before-abandon sequence defined in § Rescue policy for structured-check delays: narrow scope, drop non-critical checks, serialize, and re-evaluate. Stop only after the rescue pass fails or the developer confirms abandonment.
 
 When a hard stop is necessary, report why the gate is not yet trustworthy, record the rescue attempt and its outcome, and resume only on a stable diff.
