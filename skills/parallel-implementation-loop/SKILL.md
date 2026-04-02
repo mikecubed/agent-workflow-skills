@@ -214,14 +214,23 @@ For each track:
    - standard scoped agents by default;
    - Fleet or agent-team mode only for explicitly approved, high-leverage tracks;
 2. create an isolated work surface if the repository uses them;
-3. provide the implementer with:
+3. create or update a durable track report using the template shape in `docs/workflow-artifact-templates.md`, initializing the known fields:
+   - track name;
+   - owned tasks;
+   - owned files;
+   - dependencies;
+   - validation commands;
+   - work surface;
+   - current state;
+   - next action.
+4. provide the implementer with:
    - exact task IDs;
    - exact files or modules;
    - TDD expectations;
    - reuse constraints;
    - validation commands;
    - instruction to stay within scope;
-4. require the track to report:
+5. require the track to report:
    - files changed;
    - tests added or updated;
    - validation performed;
@@ -264,6 +273,8 @@ After a track finishes:
 
 Do not spend review budget on style-only nits.
 
+Update the track report after review so it records the current state, validation outcome, unresolved issues, and next action before moving to revision or integration.
+
 ### 6. Revise if needed
 
 If the reviewer finds real issues:
@@ -279,6 +290,8 @@ If the reviewer finds real issues:
 
 A resend is bounded follow-up work. It is not a restart of the full task and not an invitation to broaden scope. Limit revision to at most two consecutive resend rounds per issue. If an issue survives two rounds, escalate to the developer rather than continuing the loop.
 
+When a resend or rescue occurs, update the track report's state, revision rounds, rescue history, unresolved issues, and next action so the final track gate has a durable record of what changed.
+
 ### 7. Integrate tracks carefully
 
 When tracks are ready:
@@ -287,6 +300,8 @@ When tracks are ready:
 2. resolve cross-track conflicts explicitly;
 3. run targeted integration validation after risky merges;
 4. stop and reconcile immediately if two tracks drifted on a shared interface.
+
+After merge, update each track report to reflect the final track state (`merged`, `abandoned`, `blocked`, or retained for later work).
 
 ### 8. Final validation and cleanup
 
@@ -307,7 +322,7 @@ Before stopping, publish one durable batch summary that includes:
 3. validations run;
 4. unresolved follow-ups.
 
-"Durable" means written to a repository-appropriate sink — a PR description, a committed document, an issue comment, or a task tracker entry — not necessarily a committed Markdown file. Choose the sink that fits the repository's conventions. The batch summary MUST be produced; chat-only memory is not sufficient.
+"Durable" means written to a repository-appropriate sink using the template shape from `docs/workflow-artifact-templates.md` — for example, a PR description, a committed document, an issue comment, or a task tracker entry. In this repository, committed workflow artifacts live under `docs/`; other repositories may use a different durable sink. The batch summary MUST be produced; chat-only memory is not sufficient.
 
 ## Required Gates
 
