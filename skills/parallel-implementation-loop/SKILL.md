@@ -295,7 +295,7 @@ A resend is bounded follow-up work. It is not a restart of the full task and not
 
 Apply these rules during every revision round to prevent unbounded churn:
 
-1. **Repeated issue** — if a reviewer raises the same substantive issue a second time after a resend has already addressed it, escalate to the coordinator for rescue or re-scope. Do not send the issue back to the implementer a third time.
+1. **Repeated issue** — if a reviewer raises the same substantive issue a second time after a resend has already addressed it, stop the resend loop and apply rescue or re-scope immediately. Do not send the issue back to the implementer a third time. If rescue or re-scope still does not restore convergence, escalate to the developer.
 2. **Scope growth** — if a revision introduces changes beyond the original track boundary (new files, new features, or expanded contracts), stop the revision and re-scope the track before continuing. Scope growth during revision is a planning gap, not an implementation task.
 3. **Material disagreement** — if the implementer and reviewer disagree on whether a flagged issue is valid and one exchange has not resolved it, escalate to the developer for a decision. Do not let the loop continue without a tiebreaker.
 4. **Maximum revision rounds** — a track may complete at most the number of revision rounds specified in Project-Specific Inputs (default: 2). If the track still has unresolved issues after the maximum rounds, escalate to the developer with a summary of what remains and why convergence was not reached.
