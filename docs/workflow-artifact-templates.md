@@ -107,6 +107,35 @@ Skip reason: <if discovery was skipped, why — e.g., "single file, fully scoped
 
 **Skip condition**: Discovery is skipped when the task is already narrow and fully scoped — one file, one well-defined bug fix, one known test failure, or one already-triaged review comment. When skipped, record the `Skip reason` field.
 
+## Workflow outcome measures
+
+Use at the end of any workflow skill to record aggregate effectiveness signals. These fields are populated once, at workflow completion, in the batch summary or final report.
+
+```text
+discovery-reuse: yes | no | skipped
+rescue-attempts: <integer — total rescue attempts across all tracks, or 0>
+abandonment-events: <integer — tracks or items abandoned without resolution, or 0>
+re-review-loops:
+  <track-or-item>: <integer — extra review rounds beyond the first, or 0>
+final-gate-result: ready | ready-with-follow-ups | not-ready | stopped
+```
+
+**Field definitions**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `discovery-reuse` | `yes \| no \| skipped` | Whether the discovery brief was reused by downstream tracks or reviewers. `skipped` if discovery was not performed. |
+| `rescue-attempts` | integer | Total number of rescue attempts across all tracks during the workflow. |
+| `abandonment-events` | integer | Number of tracks or review items abandoned without resolution. |
+| `re-review-loops` | map of track → count | Per-track count of extra implementer-reviewer revision cycles beyond the initial review. |
+| `final-gate-result` | `ready \| ready-with-follow-ups \| not-ready \| stopped` | Outcome of the final readiness gate, or `stopped` if the workflow was halted before completion. |
+
+**Recording rules**
+
+- Populate all fields at workflow completion as part of the batch summary or final report.
+- If the workflow stops early — due to user interruption, escalation, or a stop condition — record whatever measures are available and append an interruption note explaining which fields are incomplete and why.
+- One outcome-measures block per workflow invocation. Do not aggregate across separate workflow runs.
+
 ## When to use these templates
 
 Use a committed artifact when:
