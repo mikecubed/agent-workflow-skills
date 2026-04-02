@@ -227,7 +227,30 @@ For each track:
    - validation performed;
    - uncertainties or blockers.
 
-### 4. Review each completed track
+### 4. Coordinator progress and rescue policy
+
+After launching tracks, the coordinator monitors each track through a bounded lifecycle of budget transitions. This policy prevents silent stalls and ensures partial work is never lost.
+
+**Budget transitions**
+
+1. **Soft budget** — the coordinator sets an expected completion window for each track based on task size. The window is advisory; the coordinator does not interrupt a track that is still making visible progress.
+2. **Progress visible** — a track is considered active when any of these indicators advance between checks:
+   - files modified since last check;
+   - tests added or updated;
+   - validation running or recently completed;
+   - partial results returned to the coordinator.
+   If at least one indicator has advanced, the track remains in soft-budget status.
+3. **Rescue** — if progress indicators stall before soft budget expires, or if soft budget expires with work still incomplete, the coordinator enters rescue:
+   - ask the track for a brief status and blockers;
+   - narrow scope to the smallest deliverable that preserves partial progress;
+   - allow one bounded retry with the narrowed scope;
+   - if the retry does not restore progress, escalate to the developer or stop the track.
+4. **Hard budget** — the coordinator defines a maximum total effort per track measured in delegation rounds, not wall time. When the hard budget is reached the track must stop regardless of remaining work.
+5. **Stopped** — a track enters the stopped state when it reaches hard budget, rescue fails, or the developer cancels it. Stopped tracks record partial results, files touched, tests written, and unresolved items in the batch summary before releasing their work surface.
+
+The coordinator re-evaluates budget status after every delegation round. Do not wait for a track to go fully silent before checking.
+
+### 5. Review each completed track
 
 After a track finishes:
 
@@ -241,17 +264,22 @@ After a track finishes:
 
 Do not spend review budget on style-only nits.
 
-### 5. Revise if needed
+### 6. Revise if needed
 
 If the reviewer finds real issues:
 
-1. send the issues back to the implementer;
-2. rerun targeted validation;
+1. send the issues back to the implementer as a **targeted resend** containing:
+   - unresolved issue IDs from the review;
+   - constrained scope limited to the flagged issues;
+   - acceptance criteria the resend must satisfy;
+   - validation commands to rerun;
+   - escalation condition: if the same issue recurs after one bounded resend, escalate to the coordinator for rescue or developer input.
+2. rerun targeted validation on the resend result;
 3. re-review only if the changes were substantial.
 
-Stop when the reviewer no longer finds meaningful issues.
+A resend is bounded follow-up work. It is not a restart of the full task and not an invitation to broaden scope. Limit revision to at most two consecutive resend rounds per issue. If an issue survives two rounds, escalate to the developer rather than continuing the loop.
 
-### 6. Integrate tracks carefully
+### 7. Integrate tracks carefully
 
 When tracks are ready:
 
@@ -260,7 +288,7 @@ When tracks are ready:
 3. run targeted integration validation after risky merges;
 4. stop and reconcile immediately if two tracks drifted on a shared interface.
 
-### 7. Final validation and cleanup
+### 8. Final validation and cleanup
 
 After all track work is integrated:
 
@@ -270,7 +298,7 @@ After all track work is integrated:
 4. retire clean temporary work surfaces;
 5. keep any retained work surface only with an explicit reason.
 
-### 8. Record the batch outcome
+### 9. Record the batch outcome
 
 Before stopping, publish one durable batch summary that includes:
 
@@ -306,6 +334,7 @@ The batch is not complete until:
 - review or fix churn continues without convergence;
 - track boundaries prove false;
 - required repository inputs are still unknown;
-- the developer asks to stop.
+- the developer asks to stop;
+- a track reaches hard budget after rescue has been attempted.
 
-When that happens, reduce concurrency and continue serially.
+Before abandoning a stalled track, the coordinator must attempt at least one rescue pass: narrow scope, request a status update, and offer one bounded retry. Only abandon the track if rescue fails or the developer explicitly cancels. When stopping, record partial results, unresolved items, and the reason for stopping. Then reduce concurrency and continue serially with the remaining work.
