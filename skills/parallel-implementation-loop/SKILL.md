@@ -32,7 +32,8 @@ Before you start, identify:
 - the validation commands for each track;
 - the repository's testing and quality gates;
 - the approved branch, worktree, or sandbox strategy;
-- any local rules for opening draft pull requests or track branches.
+- any local rules for opening draft pull requests or track branches;
+- the maximum revision rounds per track before escalation (default: 2).
 
 If any of those inputs are missing, stop and get them first.
 
@@ -290,6 +291,17 @@ If the reviewer finds real issues:
 
 A resend is bounded follow-up work. It is not a restart of the full task and not an invitation to broaden scope. Limit revision to at most two consecutive resend rounds per issue. If an issue survives two rounds, escalate to the developer rather than continuing the loop.
 
+#### Convergence rules
+
+Apply these rules during every revision round to prevent unbounded churn:
+
+1. **Repeated issue** — if a reviewer raises the same substantive issue a second time after a resend has already addressed it, escalate to the coordinator for rescue or re-scope. Do not send the issue back to the implementer a third time.
+2. **Scope growth** — if a revision introduces changes beyond the original track boundary (new files, new features, or expanded contracts), stop the revision and re-scope the track before continuing. Scope growth during revision is a planning gap, not an implementation task.
+3. **Material disagreement** — if the implementer and reviewer disagree on whether a flagged issue is valid and one exchange has not resolved it, escalate to the developer for a decision. Do not let the loop continue without a tiebreaker.
+4. **Maximum revision rounds** — a track may complete at most the number of revision rounds specified in Project-Specific Inputs (default: 2). If the track still has unresolved issues after the maximum rounds, escalate to the developer with a summary of what remains and why convergence was not reached.
+
+When a convergence rule fires, record the trigger, the action taken, and the outcome in the track report's rescue history before moving to the next step.
+
 When a resend or rescue occurs, update the track report's state, revision rounds, rescue history, unresolved issues, and next action so the final track gate has a durable record of what changed.
 
 ### 7. Integrate tracks carefully
@@ -320,7 +332,12 @@ Before stopping, publish one durable batch summary that includes:
 1. merged tracks;
 2. retained or abandoned tracks;
 3. validations run;
-4. unresolved follow-ups.
+4. unresolved follow-ups;
+5. workflow outcome measures using the template from `docs/workflow-artifact-templates.md`:
+   - `discovery-reuse` — whether the discovery brief was reused by downstream tracks;
+   - `rescue-attempts` — total rescue attempts across all tracks;
+   - `abandonment-events` — tracks abandoned without resolution;
+   - `re-review-loops` — per-track count of extra revision cycles beyond the initial review.
 
 "Durable" means written to a repository-appropriate sink using the template shape from `docs/workflow-artifact-templates.md` — for example, a PR description, a committed document, an issue comment, or a task tracker entry. In this repository, committed workflow artifacts live under `docs/`; other repositories may use a different durable sink. The batch summary MUST be produced; chat-only memory is not sufficient.
 
@@ -349,6 +366,10 @@ The batch is not complete until:
 ## Stop Conditions
 
 - review or fix churn continues without convergence;
+- a track exhausts its maximum revision rounds without resolving all issues;
+- a repeated issue survives two resend attempts without resolution;
+- material implementer-reviewer disagreement cannot be resolved without developer input;
+- scope growth during revision indicates a planning gap that must be addressed before continuing;
 - track boundaries prove false;
 - required repository inputs are still unknown;
 - the developer asks to stop;
