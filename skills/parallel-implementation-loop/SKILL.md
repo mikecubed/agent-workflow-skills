@@ -9,6 +9,8 @@ Use this skill when a developer wants to implement a reviewed plan or task list 
 
 This is an execution skill, not a planning skill. Use it only after the feature already has accepted requirements, a plan, or an actionable task list.
 
+Persistent team, squad, or fleet-style long-lived orchestration is out of scope for this skill. Use a separate orchestration layer if persistent coordination is needed.
+
 ## When to Use It
 
 Activate when the developer asks for things like:

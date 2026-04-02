@@ -9,6 +9,8 @@ Use this skill when a branch or pull request diff is finally stable and you want
 
 This is a final integrated gate, not an inline coding step.
 
+Persistent team, squad, or fleet-style long-lived orchestration is out of scope for this skill. Use a separate orchestration layer if persistent coordination is needed.
+
 ## When to Use It
 
 Activate when the developer asks for things like:

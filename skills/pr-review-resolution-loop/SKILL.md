@@ -9,6 +9,8 @@ Use this skill when a developer wants to work through pull request or branch rev
 
 This skill is for review resolution, not first-pass implementation. It assumes there is already an active branch or review surface and a set of comments or threads to evaluate.
 
+Persistent team, squad, or fleet-style long-lived orchestration is out of scope for this skill. Use a separate orchestration layer if persistent coordination is needed.
+
 ## When to Use It
 
 Activate when the developer asks for things like:
