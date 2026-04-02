@@ -217,6 +217,14 @@ Produce a readiness report following the template in `docs/workflow-artifact-tem
 - next action;
 - final readiness verdict.
 
+The report MUST also include the workflow outcome measures defined in `docs/workflow-artifact-templates.md`:
+
+- `discovery-reuse` — `yes`, `no`, or `skipped` (whether the discovery brief was reused by downstream checks);
+- `rescue-attempts` — integer count of rescue attempts during the gate, or `0`;
+- `final-gate-result` — one of `ready`, `ready-with-follow-ups`, `not-ready`, or `stopped` (must match the verdict above).
+
+Populate these fields once, at gate completion. If the gate stops early, record whatever measures are available and note which fields are incomplete.
+
 The result should make the next action obvious.
 
 ## Example Readiness Report
@@ -240,6 +248,9 @@ Unresolved questions:
 Next action: Send back for the one fix-now item, then rerun readiness
 Verdict:
 - ready with follow-ups
+discovery-reuse: yes
+rescue-attempts: 0
+final-gate-result: ready-with-follow-ups
 ```
 
 ## Required Gates
