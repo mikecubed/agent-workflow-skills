@@ -239,11 +239,6 @@ When the reviewer and implementer disagree on whether a comment should be fixed 
 2. allow one re-review round where both sides see the other's reasoning;
 3. if the conflict persists after the re-review, escalate to the developer with both rationales and the comment context.
 
-When a fix fails repeatedly on the same issue — the implementer cannot produce a change that satisfies the reviewer after exhausting the bounded resend loop:
-
-1. re-scope the fix to a smaller, defensible change;
-2. if re-scoping is not viable, decline the comment with documented rationale covering what was attempted and why convergence was not possible.
-
 Do not allow a fix-vs-decline disagreement to stall the rest of the batch. Move to the next independent item and return to the disputed comment after escalation or re-scoping resolves it.
 
 ### 6. Reply to and close review discussions
