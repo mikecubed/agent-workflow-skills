@@ -34,7 +34,7 @@ Validation outcome: pass | fail | partial | not-run
 Unresolved issues:
 - <open issue, or none>
 Rescue history:
-- <trigger> | <action> | <outcome> | <attempt number>, or none
+- <trigger> | <action> | <rationale> | <outcome> | <attempt number>, or none
 Next action: <what should happen next for this track>
 Revision rounds: <count of implementer-reviewer revision cycles completed, or 0>
 Summary: <short summary of what changed>
