@@ -1,6 +1,6 @@
 # Workflow Artifact Templates
 
-Use this document when you want a durable artifact for one of the shared workflow loops in this repository. These templates are intentionally repo-level and generic: they give contributors a standard place and shape for workflow outputs that would otherwise live only in chat.
+Use this document when you want a durable artifact for one of the shared workflow loops in this repository. These templates are intentionally repo-level and generic: they define the field shape for workflow outputs that would otherwise live only in chat, even when the final durable sink is not a committed Markdown file.
 
 ## Where to store artifacts
 
@@ -15,6 +15,8 @@ Suggested names:
 - `docs/track-report-<topic>.md`
 - `docs/review-resolution-<topic>.md`
 - `docs/readiness-report-<topic>.md`
+
+If this repository uses another durable sink for a workflow output — for example, a PR description, issue comment, or task tracker entry — reuse the same field structure from the matching template below.
 
 If the output is temporary or session-only, keep it out of the repository.
 
