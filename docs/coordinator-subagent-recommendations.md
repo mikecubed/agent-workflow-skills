@@ -81,6 +81,8 @@ flowchart LR
 
 ## Recommendation 1: add a scout/discovery tier
 
+> **Implementation status:** Addressed in plan Phase 1 (FR-001, FR-002). A discovery phase was added to all three skills — `parallel-implementation-loop` (T003), `pr-review-resolution-loop` (T004), and `final-pr-readiness-gate` (T005) — with a `scout` model key in `docs/models-config-template.md` (T002) and a Discovery Brief template in `docs/workflow-artifact-templates.md` (T001).
+
 **Yes, add a fast discovery tier.** This is the most important improvement.
 
 ### What the scout should do
@@ -125,6 +127,8 @@ Use the scout when there are multiple possible files, unclear boundaries, or mul
 
 ## Recommendation 2: stop treating "no shared context" as "no shared facts"
 
+> **Implementation status:** Addressed in plan Phase 1 (FR-001, FR-002). The factual-brief policy replaces the previous "do not share context between roles" language in `parallel-implementation-loop` (T003) and `pr-review-resolution-loop` (T004). `final-pr-readiness-gate` (T005) adopts the same shared-facts approach for its pre-slicer discovery step.
+
 The current skills are right to keep implementer and reviewer independent, but "do not share context between roles" is too blunt for the coordinator problem.
 
 Recommended wording change:
@@ -134,6 +138,8 @@ Recommended wording change:
 That preserves independence while removing repeated discovery work.
 
 ## Recommendation 3: add progress-based waiting and rescue rules
+
+> **Implementation status:** Addressed in plan Phase 2 (FR-003, FR-004). A "Coordinator Progress and Rescue Policy" subsection with soft-budget → rescue → hard-budget state transitions was added to `parallel-implementation-loop` (T007), `pr-review-resolution-loop` (T008), and `final-pr-readiness-gate` (T009). Bounded resend loops and rescue-before-abandon stop conditions are included.
 
 Right now the coordinator has too little middle ground between waiting and bailing out. Add an explicit state model:
 
@@ -168,6 +174,8 @@ The key change is that **lack of completion is not the same as lack of progress*
 
 ## Recommendation 4: make handoff artifacts part of execution, not just documentation
 
+> **Implementation status:** Addressed in plan Phase 3 (FR-005). Artifact templates were extended with workflow state tracking fields (T011). Durable artifact production was promoted to a gate requirement in `parallel-implementation-loop` (T012), `pr-review-resolution-loop` (T013), and `final-pr-readiness-gate` (T014).
+
 The repo already has good artifact templates in `docs/workflow-artifact-templates.md`. Use them as first-class workflow outputs, not optional reminders.
 
 ### Minimum artifacts to require
@@ -193,6 +201,8 @@ The coordinator should update these artifacts at major state changes instead of 
 
 ## Recommendation 5: add convergence and disagreement rules
 
+> **Implementation status:** Addressed in plan Phase 4 (FR-006). Convergence rules (same issue twice → escalate; scope growth → re-scope; material disagreement → developer escalation) were added to `parallel-implementation-loop` (T017) and `pr-review-resolution-loop` (T018). `final-pr-readiness-gate` (T019) records convergence-related outcome measures.
+
 Two failure modes are easy to miss:
 
 1. implementer and reviewer can ping-pong on the same issue;
@@ -207,6 +217,8 @@ Recommended additions:
 These rules are small, but they prevent slow, expensive churn.
 
 ## Recommendation 6: add basic orchestration metrics
+
+> **Implementation status:** Addressed in plan Phase 4 (FR-007). A "Workflow outcome measures" template section was added to `docs/workflow-artifact-templates.md` (T016). Recording requirements (discovery-reuse, rescue-attempts, abandonment-events, re-review-loops, final-gate-result) were added to `parallel-implementation-loop` (T017), `pr-review-resolution-loop` (T018), and `final-pr-readiness-gate` (T019).
 
 You do not need a full production observability stack to benefit from a few workflow metrics. Track at least:
 
@@ -291,6 +303,8 @@ For these skills, add **bounded resend loops** and **structured handoff artifact
 
 ## Would a pre-created persistent team be better?
 
+> **Non-goal for the current feature.** These sections describe potential future work that composes with the bounded workflow skills. They are not part of the current throughput improvement feature (see FR-008 in the plan). The improvements delivered in plan Phases 1–4 intentionally stay within the existing three-skill, bounded-execution architecture.
+
 **Usually not for the current skills.** A pre-created squad or long-lived team is better for ongoing, broad, ambiguous work. These skills are currently optimized for **task-shaped, phase-bounded execution**.
 
 ### Why persistent teams are attractive
@@ -354,6 +368,8 @@ Instead:
 3. let that orchestration skill call these existing skills as subroutines for implementation, review resolution, and final readiness.
 
 ## When team orchestration is worth it
+
+> **Non-goal for the current feature.** These sections describe potential future work that composes with the bounded workflow skills. They are not part of the current throughput improvement feature (see FR-008 in the plan). The improvements delivered in plan Phases 1–4 intentionally stay within the existing three-skill, bounded-execution architecture.
 
 A persistent team or fleet-style workflow is worth considering when most of these are true:
 
