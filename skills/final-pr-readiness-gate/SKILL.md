@@ -204,12 +204,17 @@ End with one of these outcomes:
 
 ### 7. Report clearly
 
-Produce a readiness report per the template in `docs/workflow-artifact-templates.md`. The report MUST include:
+Produce a readiness report following the template in `docs/workflow-artifact-templates.md`. The report MUST record:
 
+- review surface;
+- structured checker, or `none`;
+- current state;
 - blockers;
 - fix-now items;
 - follow-ups;
-- skipped-check reason, if the diff was not code-bearing;
+- skipped checks, if any;
+- unresolved questions;
+- next action;
 - final readiness verdict.
 
 The result should make the next action obvious.
@@ -221,6 +226,7 @@ Use a durable report shape so the next actor can make a decision quickly. For ex
 ```text
 Review surface: PR #128 against main
 Structured checker: codex review + repo test suite
+Current state: done
 Blockers:
 - Missing null-path coverage in src/api/createWidget.js
 Fix-now:
@@ -229,6 +235,9 @@ Follow-ups:
 - Consider extracting shared validation helper after merge
 Skipped checks:
 - None
+Unresolved questions:
+- None
+Next action: Send back for the one fix-now item, then rerun readiness
 Verdict:
 - ready with follow-ups
 ```
@@ -241,7 +250,7 @@ A final readiness pass is not complete until:
 - any structured findings were triaged when applicable;
 - a final substantive review was performed;
 - an explicit readiness verdict was produced;
-- a readiness report MUST be committed per `docs/workflow-artifact-templates.md`.
+- a durable readiness report following `docs/workflow-artifact-templates.md` has been published.
 
 ## Stop Conditions
 
