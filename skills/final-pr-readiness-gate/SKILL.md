@@ -204,7 +204,7 @@ End with one of these outcomes:
 
 ### 7. Report clearly
 
-Summarize:
+Produce a readiness report per the template in `docs/workflow-artifact-templates.md`. The report MUST include:
 
 - blockers;
 - fix-now items;
@@ -240,7 +240,8 @@ A final readiness pass is not complete until:
 - the stable diff was evaluated as a whole;
 - any structured findings were triaged when applicable;
 - a final substantive review was performed;
-- an explicit readiness verdict was produced.
+- an explicit readiness verdict was produced;
+- a readiness report MUST be committed per `docs/workflow-artifact-templates.md`.
 
 ## Stop Conditions
 
