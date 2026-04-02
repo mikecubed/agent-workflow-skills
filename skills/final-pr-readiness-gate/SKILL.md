@@ -32,10 +32,11 @@ Before you start, identify:
 
 Use:
 
+- an optional **scout** for pre-slicing large diffs and preparing factual context;
 - an optional **structured checker** for code-bearing diffs;
 - a separate **final reviewer** for whole-diff judgment.
 
-If no structured checker exists, continue with the final reviewer only.
+If no structured checker exists, continue with the final reviewer only. If the diff is small or focused, skip the scout and proceed directly.
 
 ### Escalation: Fleet / Agent Team Mode
 
@@ -60,7 +61,7 @@ Resolve the active model for each role using this priority chain:
    - Copilot CLI: `.copilot/models.yaml`
    - Claude Code: `.claude/models.yaml`
 
-   These are plain YAML files (no markdown, no fenced blocks). Read the `structured-check` and `final-reviewer` keys directly. If a key is absent, fall back to the baked-in default for that role — do not re-prompt for a key that is missing.
+   These are plain YAML files (no markdown, no fenced blocks). Read the `structured-check`, `final-reviewer`, and `scout` keys directly. If a key is absent, fall back to the baked-in default for that role — do not re-prompt for a key that is missing.
 
 2. **Session cache** — if models were already confirmed earlier in this session, reuse them without asking again.
 3. **Baked-in defaults** — if neither config file nor session cache exists, show the defaults below, ask the user to confirm or override them once, then cache the answer for the rest of the session.
@@ -72,6 +73,7 @@ The config files are plain YAML (not markdown). Create the file for the active r
 ```yaml
 structured-check: <model-name>
 final-reviewer: <model-name>
+scout: <model-name>
 ```
 
 See `docs/models-config-template.md` in this plugin for ready-to-copy templates for both runtimes.
@@ -82,8 +84,10 @@ See `docs/models-config-template.md` in this plugin for ready-to-copy templates 
 |---------------|------------------|---------------------|
 | Copilot CLI   | Structured check | `gpt-5.4`           |
 | Copilot CLI   | Final reviewer   | `gpt-5.4`           |
+| Copilot CLI   | Scout            | `claude-haiku-4.5`  |
 | Claude Code   | Structured check | `claude-opus-4.6`   |
 | Claude Code   | Final reviewer   | `claude-opus-4.6`   |
+| Claude Code   | Scout            | `claude-haiku-4.5`  |
 
 ## Preconditions
 
@@ -108,6 +112,17 @@ Before running the final gate:
    - otherwise the stable branch diff against the agreed baseline.
 
 Evaluate the integrated result, not a partial local slice.
+
+#### Pre-slicer discovery
+
+Before proceeding to structured checks, run a fast scout pass to prepare the review surface for efficient downstream processing:
+
+1. if the review surface was already established by a preceding workflow (such as `parallel-implementation-loop` or `pr-review-resolution-loop`), reuse it directly instead of rediscovering;
+2. identify the diff structure: affected modules, file categories (code, tests, config, docs), and approximate size;
+3. note high-risk or cross-cutting modules for prioritization during structured checks;
+4. produce a discovery brief per `docs/workflow-artifact-templates.md` with at least: task shape, relevant files, comparison baseline, and validation commands.
+
+Skip the scout pass when the diff is small or focused enough that a single reviewer can process it without pre-slicing — for example, fewer than roughly ten files in a single coherent module.
 
 ### 2. Decide whether a structured checker applies
 
@@ -143,6 +158,16 @@ Focus on:
 - dead code or duplicate wiring;
 - naming or complexity regressions;
 - observability and test-quality gaps that matter on the final diff.
+
+#### Handling structured checker stalls
+
+If the structured checker exceeds its budget before completing the full diff:
+
+1. reduce the diff scope to the highest-risk modules identified during discovery;
+2. skip non-critical checks that would not change the final verdict;
+3. serialize remaining checks rather than running them concurrently.
+
+Do not abandon the gate because a single checker stalled. Record any scope reductions or skipped checks in the readiness report.
 
 ### 4. Triage structured findings
 
@@ -222,6 +247,9 @@ A final readiness pass is not complete until:
 - structured findings conflict and no human tie-breaker is available;
 - required validation commands or comparison baseline are still unknown;
 - the diff is too large to judge coherently without first reducing or chunking it;
+- a structured checker stalls and scope reduction cannot recover the pass;
 - the developer asks to stop.
 
-When that happens, stop the final gate, report why it is not yet trustworthy, and resume only on a stable diff.
+Before stopping because a structured checker stalled or the diff exceeded the review budget, attempt at least one rescue: narrow to the highest-risk modules, skip non-critical checks, or serialize the remaining work. Stop only after the rescue fails or the developer confirms abandonment.
+
+When a hard stop is necessary, report why the gate is not yet trustworthy, record the rescue attempt and its outcome, and resume only on a stable diff.
