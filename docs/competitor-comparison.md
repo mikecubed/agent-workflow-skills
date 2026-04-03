@@ -7,42 +7,29 @@ Comparison of **copilot-skills** against [Superpowers](https://github.com/obra/s
 ## Plugin Architecture Overview
 
 ```mermaid
-graph TB
-    subgraph US["🔷 copilot-skills (ours)"]
-        direction TB
-        US1["clean-code-codex\n10 check sub-skills\nsec · tdd · arch · type\nnaming · size · dead · test\nobs · dep"]
-        US2["sdd-workflow\nsdd.specify\nsdd.plan\nsdd.tasks\nsdd-feature-workflow"]
-        US3["workflow-orchestration\nplanning-orchestration\nparallel-implementation-loop\npr-review-resolution-loop\nfinal-pr-readiness-gate"]
+graph TD
+    subgraph US["copilot-skills (ours)"]
+        direction LR
+        US1["clean-code-codex\nsec · tdd · arch · type · naming\nsize · dead · test · obs · dep"]
+        US2["sdd-workflow\nsdd.specify · sdd.plan · sdd.tasks"]
+        US3["workflow-orchestration\nplanning · parallel-impl · pr-review · readiness-gate"]
     end
 
-    subgraph SP["⚡ Superpowers"]
-        direction TB
-        SP1["brainstorming"]
-        SP2["writing-plans"]
-        SP3["subagent-driven-development"]
-        SP4["test-driven-development"]
-        SP5["systematic-debugging"]
-        SP6["using-git-worktrees"]
-        SP7["finishing-a-development-branch"]
-        SP8["dispatching-parallel-agents"]
-        SP9["requesting-code-review\nreceiving-code-review"]
-        SP10["verification-before-completion"]
-        SP11["executing-plans"]
-        SP12["writing-skills"]
+    subgraph SP["Superpowers"]
+        direction LR
+        SP1["ideation\nbrainstorming · writing-plans · writing-skills"]
+        SP2["implementation\nsubagent-driven-dev · executing-plans · dispatching-parallel-agents\nusing-git-worktrees · finishing-a-development-branch"]
+        SP3["quality\ntest-driven-development · verification-before-completion\nsystematic-debugging"]
+        SP4["review\nrequesting-code-review · receiving-code-review"]
     end
 
-    subgraph GSD["🚀 GSD"]
-        direction TB
-        GSD1["/gsd:new-project"]
-        GSD2["/gsd:discuss-phase"]
-        GSD3["/gsd:plan-phase"]
-        GSD4["/gsd:execute-phase"]
-        GSD5["/gsd:map-codebase"]
-        GSD6["/gsd:debug + forensics"]
-        GSD7["20+ specialist agents\n(planner · debugger · doc-writer\nui-auditor · security-auditor…)"]
-        GSD8["8 runtime hooks\n(context-monitor · statusline\nworkflow-guard · prompt-guard…)"]
-        GSD9["/gsd:autonomous\n/gsd:quick · fast · do"]
-        GSD10["pause/resume\nsession state"]
+    subgraph GSD["GSD"]
+        direction LR
+        GSD1["project lifecycle\nnew-project · discuss-phase · plan-phase · execute-phase · ship"]
+        GSD2["discovery\nmap-codebase · research-phase · 20+ specialist agents"]
+        GSD3["execution\nautonomous · wave execution · pause/resume · session-state"]
+        GSD4["runtime hooks\ncontext-monitor · workflow-guard · statusline · prompt-guard"]
+        GSD5["utilities\ndebug · forensics · ui-phase · secure-phase · docs-update"]
     end
 ```
 
