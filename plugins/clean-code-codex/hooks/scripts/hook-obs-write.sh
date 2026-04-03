@@ -115,16 +115,39 @@ PYEOF
       ;;
 
     rs)
-      # .unwrap() calls outside test blocks
-      # Scan all .unwrap() lines; skip those inside #[cfg(test)] sections
-      while IFS=: read -r _lineno _; do
+      # Swallowed/ignored Rust error handling
+      while IFS= read -r _lineno; do
         [[ -z "$_lineno" ]] && continue
-        # Check if this line is within a #[cfg(test)] block by looking backwards
-        _in_test_block="$(awk "NR<=$_lineno" "$_tmp_content" 2>/dev/null | grep -c '#\[cfg(test)\]' || echo 0)"
-        if ((_in_test_block == 0)); then
-          _emit_finding "$_lineno"
-        fi
-      done < <(grep -nP '\.unwrap\(\)' "$_tmp_content" 2>/dev/null || true)
+        _emit_finding "$_lineno"
+      done < <(
+        python3 - "$_tmp_content" <<'PYEOF'
+import re
+import sys
+
+content = open(sys.argv[1], encoding='utf-8', errors='replace').read()
+seen = set()
+
+def report(match):
+    line = content[:match.start()].count('\n') + 1
+    if line not in seen:
+        seen.add(line)
+        print(line)
+
+for match in re.finditer(r'(?m)^\s*let\s+_\s*=\s*[^;]+;', content):
+    report(match)
+
+patterns = [
+    r'if\s+let\s+Err\s*\([^)]*\)\s*=\s*[^{\n]+\{\s*(?://[^\n]*)?\s*\}',
+    r'if\s+let\s+Err\s*\([^)]*\)\s*=\s*[^{\n]+\{\s*\n(?:\s*//[^\n]*\n)?\s*\}',
+    r'Err\s*\([^)]*\)\s*=>\s*\{\s*(?://[^\n]*)?\s*\}',
+    r'Err\s*\([^)]*\)\s*=>\s*\{\s*\n(?:\s*//[^\n]*\n)?\s*\}',
+]
+
+for pattern in patterns:
+    for match in re.finditer(pattern, content):
+        report(match)
+PYEOF
+      )
       ;;
   esac
 

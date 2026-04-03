@@ -6,7 +6,7 @@
 #
 # Usage:
 #   scripts/token-budget.sh
-#   scripts/token-budget.sh --limit 6000   # override token limit (default: 8000)
+#   scripts/token-budget.sh --limit 6000   # override token limit (default: 9000)
 
 set -euo pipefail
 

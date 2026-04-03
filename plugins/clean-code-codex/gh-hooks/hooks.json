@@ -19,7 +19,7 @@
         "type": "command",
         "bash": "../hooks/scripts/hook-arch-write.sh",
         "timeoutSec": 10,
-        "description": "ARCH-1: Warn on circular dependency introduction before write (Claude Code: block, Copilot: warn-only)"
+        "description": "ARCH-1: Warn on domain-layer imports of app/infra before write (Claude Code: block, Copilot: warn-only)"
       }
     ],
     "postToolUse": [

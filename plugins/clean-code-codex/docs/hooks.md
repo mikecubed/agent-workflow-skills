@@ -170,7 +170,7 @@ Detects when a file in the `domain` layer imports code from the `application` or
 
 ### Layer map detection
 
-The hook generates a layer map the first time it runs and caches it at `/tmp/codex-layermap-{HASH}.json` (TTL: 1 hour). If no layers are detected (`confidence: "none"`), the hook exits 0 with no output — it never produces false positives when it cannot determine the architecture.
+The hook generates a layer map the first time it runs and caches it at `/tmp/codex-layermap-{HASH}.json` (TTL: 5 minutes). If no layers are detected (`confidence: "none"`), the hook exits 0 with no output — it never produces false positives when it cannot determine the architecture.
 
 ### Output format
 

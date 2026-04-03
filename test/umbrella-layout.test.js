@@ -9,7 +9,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 const WORKFLOW_ROOT = path.join(ROOT, 'plugins', 'workflow-orchestration');
-const CODEX_ROOT = path.join(ROOT, 'plugins', 'clean-code-codex');
 
 function readJson(root, relativePath) {
   return JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'));
