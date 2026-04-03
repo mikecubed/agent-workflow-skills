@@ -19,7 +19,7 @@ target/
 .output/
 __pycache__/
 .pytest_cache/
-*.egg-info/
+.egg-info/
 .eggs/
 
 # Minified / compiled assets

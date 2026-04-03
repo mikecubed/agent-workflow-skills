@@ -85,8 +85,117 @@ else
 fi
 
 # ── 5. Project hash and coverage file ────────────────────────────────────────
+_portable_project_hash() {
+  if command -v md5sum >/dev/null 2>&1; then
+    printf '%s' "$PWD" | md5sum 2>/dev/null | cut -c1-8
+    return 0
+  fi
+
+  if command -v md5 >/dev/null 2>&1; then
+    printf '%s' "$PWD" | md5 -q 2>/dev/null | cut -c1-8
+    return 0
+  fi
+
+  if command -v shasum >/dev/null 2>&1; then
+    printf '%s' "$PWD" | shasum 2>/dev/null | cut -c1-8
+    return 0
+  fi
+
+  if command -v python3 >/dev/null 2>&1; then
+    printf '%s' "$PWD" | python3 -c "import hashlib, sys; print(hashlib.md5(sys.stdin.buffer.read()).hexdigest()[:8])" 2>/dev/null
+    return 0
+  fi
+
+  echo "00000000"
+}
+
+_pcre_supported() {
+  printf 'probe' | grep -qP 'probe' >/dev/null 2>&1
+}
+
+_regex_matches() {
+  local pattern="$1"
+  local text="$2"
+
+  if _pcre_supported; then
+    printf '%s' "$text" | grep -qP -- "$pattern" 2>/dev/null
+    return $?
+  fi
+
+  python3 - "$pattern" <<'PYEOF' <<<"$text"
+import re
+import sys
+
+pattern = sys.argv[1]
+text = sys.stdin.read()
+sys.exit(0 if re.search(pattern, text, re.MULTILINE) else 1)
+PYEOF
+}
+
+_regex_first_match() {
+  local pattern="$1"
+  local text="$2"
+
+  if _pcre_supported; then
+    printf '%s' "$text" | grep -oP -- "$pattern" 2>/dev/null | head -1
+    return 0
+  fi
+
+  python3 - "$pattern" <<'PYEOF' <<<"$text"
+import re
+import sys
+
+pattern = sys.argv[1]
+text = sys.stdin.read()
+match = re.search(pattern, text, re.MULTILINE)
+if match:
+    print(match.group(0))
+PYEOF
+}
+
+_regex_first_line() {
+  local pattern="$1"
+  local text="$2"
+
+  if _pcre_supported; then
+    printf '%s' "$text" | grep -nP -- "$pattern" 2>/dev/null | head -1 | cut -d: -f1
+    return 0
+  fi
+
+  python3 - "$pattern" <<'PYEOF' <<<"$text"
+import re
+import sys
+
+pattern = sys.argv[1]
+text = sys.stdin.read()
+match = re.search(pattern, text, re.MULTILINE)
+if match:
+    print(text[:match.start()].count('\n') + 1)
+PYEOF
+}
+
+_regex_matching_lines() {
+  local pattern="$1"
+  local text="$2"
+
+  if _pcre_supported; then
+    printf '%s' "$text" | grep -nP -- "$pattern" 2>/dev/null || true
+    return 0
+  fi
+
+  python3 - "$pattern" <<'PYEOF' <<<"$text"
+import re
+import sys
+
+pattern = sys.argv[1]
+for lineno, line in enumerate(sys.stdin.read().splitlines(), start=1):
+    if re.search(pattern, line):
+        print(f"{lineno}:{line}")
+PYEOF
+}
+
 export PROJECT_HASH
-PROJECT_HASH="$(echo -n "$PWD" | md5sum | cut -c1-8 2>/dev/null || echo "00000000")"
+PROJECT_HASH="$(_portable_project_hash)"
 
 export COVERAGE_FILE="/tmp/codex-hook-coverage-${PROJECT_HASH}.jsonl"
 

@@ -42,9 +42,9 @@
   if [[ -f "${_PATTERNS_DIR}/secrets-high.txt" ]]; then
     while IFS= read -r pattern; do
       [[ -z "$pattern" || "$pattern" == \#* ]] && continue
-      if echo "$TOOL_CONTENT" | grep -qP "$pattern" 2>/dev/null; then
+      if _regex_matches "$pattern" "$TOOL_CONTENT"; then
         _found_high=1
-        _high_match="$(echo "$TOOL_CONTENT" | grep -oP "$pattern" 2>/dev/null | head -1 | cut -c1-40)"
+        _high_match="$(_regex_first_match "$pattern" "$TOOL_CONTENT" | cut -c1-40)"
         break
       fi
     done <"${_PATTERNS_DIR}/secrets-high.txt"
@@ -54,9 +54,9 @@
   if [[ -f "${_PATTERNS_DIR}/secrets-low.txt" ]]; then
     while IFS= read -r pattern; do
       [[ -z "$pattern" || "$pattern" == \#* ]] && continue
-      if echo "$TOOL_CONTENT" | grep -qP "$pattern" 2>/dev/null; then
+      if _regex_matches "$pattern" "$TOOL_CONTENT"; then
         _found_low=1
-        _low_match="$(echo "$TOOL_CONTENT" | grep -oP "$pattern" 2>/dev/null | head -1 | cut -c1-60)"
+        _low_match="$(_regex_first_match "$pattern" "$TOOL_CONTENT" | cut -c1-60)"
         break
       fi
     done <"${_PATTERNS_DIR}/secrets-low.txt"
@@ -68,7 +68,7 @@
     # Find the first line number in TOOL_CONTENT that matches the high pattern
     while IFS= read -r pattern; do
       [[ -z "$pattern" || "$pattern" == \#* ]] && continue
-      _ln="$(echo "$TOOL_CONTENT" | grep -nP "$pattern" 2>/dev/null | head -1 | cut -d: -f1)"
+      _ln="$(_regex_first_line "$pattern" "$TOOL_CONTENT")"
       if [[ -n "$_ln" ]]; then
         _line_num="$_ln"
         break

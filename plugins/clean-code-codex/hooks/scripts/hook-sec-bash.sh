@@ -29,9 +29,9 @@
   if [[ -f "${_PATTERNS_DIR}/bash-injection.txt" ]]; then
     while IFS= read -r pattern; do
       [[ -z "$pattern" || "$pattern" == \#* ]] && continue
-      if echo "$TOOL_COMMAND" | grep -qP "$pattern" 2>/dev/null; then
+      if _regex_matches "$pattern" "$TOOL_COMMAND"; then
         _found=1
-        _match="$(echo "$TOOL_COMMAND" | grep -oP "$pattern" 2>/dev/null | head -1 | cut -c1-60)"
+        _match="$(_regex_first_match "$pattern" "$TOOL_COMMAND" | cut -c1-60)"
         break
       fi
     done <"${_PATTERNS_DIR}/bash-injection.txt"

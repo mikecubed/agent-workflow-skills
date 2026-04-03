@@ -143,7 +143,7 @@ json.dump(data, open('${_LAYERMAP}', 'w'))
 
   # ── Extract import lines from TOOL_CONTENT ────────────────────────────────────
   # Lines starting with: import, from, use, require
-  _import_lines="$(echo "$TOOL_CONTENT" | grep -nP '^\s*(import|from|use|require)\b' 2>/dev/null || true)"
+  _import_lines="$(_regex_matching_lines '^\s*(import|from|use|require)\b' "$TOOL_CONTENT")"
 
   if [[ -z "$_import_lines" ]]; then
     exit 0
@@ -160,7 +160,7 @@ json.dump(data, open('${_LAYERMAP}', 'w'))
 
     # Check if import path contains application or infrastructure directory names
     for _app_d in $_app_dirs; do
-      if echo "$_content" | grep -qP "['\"/]${_app_d}['\"/\s]|/${_app_d}/|['\"]${_app_d}"; then
+      if [[ "$_content" == *"/${_app_d}/"* || "$_content" == *"\"${_app_d}"* || "$_content" == *"'${_app_d}"* || "$_content" == *"/${_app_d}"* ]]; then
         _blocked_import="$_content"
         _blocked_line="$_lineno"
         break 2
@@ -168,7 +168,7 @@ json.dump(data, open('${_LAYERMAP}', 'w'))
     done
 
     for _inf_d in $_inf_dirs; do
-      if echo "$_content" | grep -qP "['\"/]${_inf_d}['\"/\s]|/${_inf_d}/|['\"]${_inf_d}"; then
+      if [[ "$_content" == *"/${_inf_d}/"* || "$_content" == *"\"${_inf_d}"* || "$_content" == *"'${_inf_d}"* || "$_content" == *"/${_inf_d}"* ]]; then
         _blocked_import="$_content"
         _blocked_line="$_lineno"
         break 2

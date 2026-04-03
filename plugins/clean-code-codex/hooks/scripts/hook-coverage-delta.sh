@@ -23,7 +23,7 @@
   fi
 
   # Skip test files themselves
-  if echo "$TOOL_FILE" | grep -qP '(test|spec|__tests__|_test\.|_spec\.)'; then
+  if _regex_matches '(^|/)__tests__(/|$)|\.(test|spec)\.[^/]+$|(^|/)[^/]+_(test|spec)\.[^/]+$' "$TOOL_FILE"; then
     exit 0
   fi
 
@@ -104,7 +104,18 @@
     local fn_name="$1"
     case "$_cov_format" in
       lcov)
-        grep -qP "FN:[0-9]*,${fn_name}$" "$_cov_file" 2>/dev/null
+        python3 -c "
+import sys
+fn_name = sys.argv[1]
+with open('${_cov_file}', encoding='utf-8', errors='replace') as handle:
+    for line in handle:
+        if not line.startswith('FN:'):
+            continue
+        parts = line.rstrip('\n').split(',', 1)
+        if len(parts) == 2 and parts[1] == fn_name:
+            sys.exit(0)
+sys.exit(1)
+" "$fn_name" 2>/dev/null
         ;;
       coverage-json)
         python3 -c "
