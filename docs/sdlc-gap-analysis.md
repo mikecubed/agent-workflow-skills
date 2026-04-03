@@ -349,25 +349,92 @@ graph TD
 
 ---
 
-## Proposed Roadmap — Version Milestones
+## Competitor-Inspired Features (Not Covered Above)
+
+The SDLC phase analysis above covers *what* developers build. These items from the [competitor comparison](./competitor-comparison.md) are about *how the agent runtime itself works* — session lifecycle, discoverability, and platform reach. All nine were identified as gaps worth taking; none made it into the SDLC sections.
+
+### From Superpowers
+
+| Feature | What it does | Our gap | Priority |
+|---|---|---|---|
+| **Session-start hook** | Loads all skill context automatically at session start; skills are always primed | We require explicit invocation or pattern-match. Skills not loaded = skills not used. | 🔴 High |
+| **Verification-before-completion** | Anti-hallucination gate: agent self-checks output validity before returning it | No equivalent. AI-generated results can be confidently wrong with no blocking check. | 🔴 High |
+| **Systematic debugging** (4-phase) | Structured hypothesis → reproduce → isolate → fix workflow | Only partially addressed in `incident-rca`. Not a named, invocable skill. | 🟠 High |
+
+### From GSD
+
+| Feature | What it does | Our gap | Priority |
+|---|---|---|---|
+| **Map-codebase command** | Parallel multi-agent codebase discovery: architecture tour, dependency graph, hotspots, entry points | `planning-orchestration` has a per-task scout pass but no standalone shareable codebase brief | 🟠 High |
+| **Pause/resume session state** | Persists work-in-progress across conversations; agent picks up exactly where it left off | No session state. Complex work spanning conversations is restarted from scratch. | 🟠 High |
+| **npx / one-line installer** | `npx get-shit-done-cc@latest` — zero friction setup across any machine | Install requires git clone + copy steps. High friction kills adoption. | 🟠 High |
+| **Runtime hooks** (4 types) | `context-monitor`, `workflow-guard`, `statusline`, `prompt-guard` fire automatically | 8 codex hooks exist but no session-level orchestration hooks | 🟡 Medium |
+
+### Cross-Cutting: Platform Reach
+
+| Feature | What it does | Our gap | Priority |
+|---|---|---|---|
+| **Cursor support** | Skills surfaced in Cursor (`.cursor/rules`) | Only Copilot CLI + Claude Code. 60%+ of AI-coding devs use Cursor. | 🟠 High |
+| **Windsurf support** | Skills surfaced in Windsurf (`windsurf.md`) | Not supported | 🟡 Medium |
+| **Gemini CLI support** | Skills surfaced in Google's Gemini CLI | Not supported. Market expanding fast. | 🟡 Medium |
+| **Versioned plugin packaging** | Semver-locked installs, changelogs surfaced at install | Packaging ships code but version isn't surfaced cleanly to users | 🟡 Medium |
+
+---
+
+## Competitor Features — Implementation Map
+
+Where each of these would actually live:
+
+```mermaid
+graph TD
+    subgraph HOOKS["Session Hooks — all runtimes"]
+        H1["session-start hook\nauto-inject skill context\n.github/hooks + .claude/hooks"]
+        H2["verification-before-completion hook\nself-check gate before agent returns"]
+    end
+
+    subgraph SKILLS["New Workflow Skills"]
+        S1["systematic-debugging\nhypothesis · reproduce · isolate · fix\n4-phase structured workflow"]
+        S2["map-codebase\nparallel discovery agents\ndurable architecture brief"]
+    end
+
+    subgraph RUNTIME["Runtime / DX"]
+        R1["session state store\nSESSION.md or .copilot/session/\npick up where left off"]
+        R2["npx installer\nnpx agent-orchestration@latest\nzero-friction setup"]
+    end
+
+    subgraph PLATFORM["Platform Reach"]
+        P1["Cursor adapter\n.cursor/rules/agent-orchestration.mdc"]
+        P2["Windsurf adapter\nwindsurf.md injection"]
+        P3["Gemini CLI adapter\nsystem prompt injection"]
+    end
+
+    style HOOKS fill:#3d0f0f,color:#fff
+    style SKILLS fill:#3d2000,color:#fff
+    style RUNTIME fill:#1a3a5c,color:#fff
+    style PLATFORM fill:#1a2a1a,color:#fff
+```
+
+---
+
+## Updated Roadmap — Version Milestones
 
 ```mermaid
 graph LR
     V06["v0.6.0\ntoday\n5 WO skills\n65 Codex rules\n3 SDD agents"]
 
-    V07["v0.7.0\nQuick wins\n+ incident-rca skill\n+ docs-check sub-skill\n+ resilience-check sub-skill\n+ brainstorming guidance in ideation"]
+    V07["v0.7.0\nRuntime Experience\n+ session-start hook\n+ verification-before-completion hook\n+ systematic-debugging skill\n+ incident-rca skill\n+ docs-check · resilience-check"]
 
-    V08["v0.8.0\nContract layer\n+ contract-generator\n+ OpenAPI from spec\n+ E2E test generation\n+ architecture-review skill"]
+    V08["v0.8.0\nDiscovery + Contracts\n+ map-codebase command\n+ contract-generator\n+ OpenAPI from spec\n+ E2E test generation\n+ architecture-review skill"]
 
-    V09["v0.9.0\nSecurity hardening\n+ iac-check sub-skill\n+ a11y-check sub-skill\n+ perf-check sub-skill\n+ SBOM/supply-chain"]
+    V09["v0.9.0\nPlatform + Security\n+ Cursor adapter\n+ npx installer\n+ session state store\n+ iac-check · a11y-check · perf-check\n+ SBOM / supply-chain"]
 
-    V10["v1.0.0\nFull SDLC\n+ cicd-scaffold\n+ onboard-generator\n+ release-orchestration skill\n+ observability instrumentation\n+ dev-toolkit plugin GA"]
+    V10["v1.0.0\nFull SDLC\n+ Windsurf · Gemini CLI\n+ cicd-scaffold\n+ release-orchestration\n+ observability instrumentation\n+ dev-toolkit plugin GA"]
 
     V06 --> V07 --> V08 --> V09 --> V10
 
     style V06 fill:#1a5c2a,color:#fff
-    style V07 fill:#3d2000,color:#fff
-    style V08 fill:#3d0f0f,color:#fff
+    style V07 fill:#3d0f0f,color:#fff
+    style V08 fill:#3d2000,color:#fff
     style V09 fill:#1a3a5c,color:#fff
     style V10 fill:#4a0f4a,color:#fff
 ```
@@ -418,3 +485,11 @@ flowchart TD
 | Onboarding / DX | ❌ None | 🟡 Medium | `onboard-generator` plugin |
 | Refactoring / Debt | 🟡 Diagnosis only | 🟡 Medium | Automated refactoring |
 | Performance | ❌ None | 🔴 Critical | `perf-check`, load test generation |
+| **Session-start hook** | ❌ None | 🔴 High | New hook in `workflow-orchestration` |
+| **Verification-before-completion** | ❌ None | 🔴 High | New codex hook, fires on every response |
+| **Systematic debugging** | ❌ None | 🟠 High | `systematic-debugging` skill |
+| **Map-codebase command** | 🟡 Per-task scout only | 🟠 High | Standalone `map-codebase` command |
+| **Session state (pause/resume)** | ❌ None | 🟠 High | SESSION.md store + skill awareness |
+| **npx / one-line install** | ❌ None | 🟠 High | `npx agent-orchestration@latest` |
+| **Cursor support** | ❌ None | 🟠 High | `.cursor/rules` adapter |
+| **Windsurf / Gemini support** | ❌ None | 🟡 Medium | Platform adapters |
