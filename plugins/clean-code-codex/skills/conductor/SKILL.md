@@ -6,9 +6,11 @@ description: >
   JavaScript. Detects language, routes to targeted check sub-skills, enforces the
   TDD gate on write operations, and runs a Boy Scout check at session end.
   Do NOT invoke for documentation-only edits, configuration files (JSON/YAML/TOML),
-  or non-code content.
+  or non-code content. (Exception: IaC files such as Terraform HCL, CloudFormation
+  YAML/JSON, and Kubernetes manifests should be passed to the conductor with the
+  `security` or `review` operation to trigger `iac-check`.)
 version: "1.0.0"
-last-reviewed: "2026-03-04"
+last-reviewed: "2026-04-03"
 languages: [typescript, python, go, rust, javascript]
 changelog: "../../CHANGELOG.md"
 tools: Read, Grep, Glob, Bash
@@ -96,7 +98,7 @@ Sequential fallback: if the platform does not support parallel Tasks, dispatch i
 |---|---|---|
 | Typical — write, TypeScript (no `--fix`) | conductor + tdd-check + type-check + naming-check + 3 TS refs | ~10,274 |
 | Minimal — security audit | conductor + sec-check | ~4,723 |
-| Worst-case — CI / full check (no `--fix`) | conductor + all 10 checks + 1 lang ref (largest) | ~22,898 |
+| Worst-case — CI / full check (no `--fix`) | conductor + all 12 checks + 1 lang ref (largest) | ~22,898 |
 | `--fix` session: add auto-fix-eligibility.md | +1 file on demand | +~1,310 |
 
 > Note: SC-007 (≤1,000) and SC-008 (≤2,000) targets reflect the design goal of a
