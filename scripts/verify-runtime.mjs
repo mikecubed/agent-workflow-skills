@@ -8,22 +8,24 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
-
-function readJson(relativePath) {
-  return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), 'utf8'));
-}
-
-function listSkillNames() {
-  return fs.readdirSync(path.join(ROOT, 'skills'), { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .filter((skillName) => fs.existsSync(path.join(ROOT, 'skills', skillName, 'SKILL.md')))
-    .sort();
-}
-
-const pluginManifest = readJson('plugin.json');
-const pluginName = pluginManifest.name;
-const skillNames = listSkillNames();
+const PLUGIN_TARGETS = new Map([
+  [
+    'workflow-orchestration',
+    {
+      root: path.join(ROOT, 'plugins', 'workflow-orchestration'),
+      copilotSkillDir: 'skills',
+      claudeSkillDir: 'skills',
+    },
+  ],
+  [
+    'sdd-workflow',
+    {
+      root: path.join(ROOT, 'plugins', 'sdd-workflow'),
+      copilotSkillDir: 'copilot-skills',
+      claudeSkillDir: 'skills',
+    },
+  ],
+]);
 
 function executableNames(command) {
   if (process.platform !== 'win32' || /\.[^./\\]+$/.test(command)) {
@@ -58,7 +60,7 @@ function hasCommand(command) {
 
 function run(command, args, options = {}) {
   return execFileSync(command, args, {
-    cwd: ROOT,
+    cwd: options.cwd ?? ROOT,
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
     ...options,
@@ -75,23 +77,42 @@ function outputIncludesToken(output, expectedToken) {
 
 function outputIncludesQualifiedSkill(output, qualifiedSkillName) {
   return (
+    output.includes(qualifiedSkillName) ||
+    output.includes(`/${qualifiedSkillName}`) ||
     outputIncludesToken(output, qualifiedSkillName) ||
     outputIncludesToken(output, `/${qualifiedSkillName}`)
   );
 }
 
-function verifyCopilotRuntime() {
+function readJson(root, relativePath) {
+  return JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'));
+}
+
+function listSkillNames(root, relativeSkillDir) {
+  const skillDir = path.join(root, relativeSkillDir);
+
+  return fs.readdirSync(skillDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((skillName) => fs.existsSync(path.join(skillDir, skillName, 'SKILL.md')))
+    .sort();
+}
+
+function verifyCopilotRuntime(pluginRoot, relativeSkillDir) {
   if (!hasCommand('copilot')) {
     console.log('Skipping Copilot runtime verification: `copilot` is not installed.');
     return;
   }
 
+  const pluginManifest = readJson(pluginRoot, 'plugin.json');
+  const pluginName = pluginManifest.name;
+  const skillNames = listSkillNames(pluginRoot, relativeSkillDir);
   const configDir = fs.mkdtempSync(path.join(os.tmpdir(), 'copilot-runtime-'));
 
   try {
-    console.log('Verifying Copilot plugin install/list/uninstall in an isolated config dir...');
+    console.log(`Verifying Copilot plugin install/list/uninstall for ${pluginName} in an isolated config dir...`);
 
-    run('copilot', ['plugin', 'install', '--config-dir', configDir, ROOT]);
+    run('copilot', ['plugin', 'install', '--config-dir', configDir, pluginRoot]);
 
     const installed = run('copilot', ['plugin', 'list', '--config-dir', configDir]);
     assert.ok(
@@ -99,15 +120,19 @@ function verifyCopilotRuntime() {
       `Expected Copilot plugin list to include ${pluginName}.\n${installed}`,
     );
 
-    const loadedSkills = run('copilot', [
-      '-p',
-      'List the plugin-qualified skill names loaded from this plugin, one per line and nothing else.',
-      '--plugin-dir',
-      ROOT,
-      '--allow-all-tools',
-      '--output-format',
-      'text',
-    ]);
+    const loadedSkills = run(
+      'copilot',
+      [
+        '-p',
+        'List the plugin-qualified skill names loaded from this plugin, one per line and nothing else.',
+        '--config-dir',
+        configDir,
+        '--allow-all-tools',
+        '--output-format',
+        'text',
+      ],
+      { cwd: pluginRoot },
+    );
 
     for (const skillName of skillNames) {
       const qualifiedSkillName = `${pluginName}:${skillName}`;
@@ -123,24 +148,32 @@ function verifyCopilotRuntime() {
   }
 }
 
-function verifyClaudePlugin() {
+function verifyClaudePlugin(pluginRoot, relativeSkillDir) {
   if (!hasCommand('claude')) {
     console.log('Skipping Claude plugin validation: `claude` is not installed.');
     return;
   }
 
-  console.log('Validating Claude plugin manifest and structure...');
-  run('claude', ['plugin', 'validate', ROOT], { stdio: 'inherit' });
+  const pluginManifest = readJson(pluginRoot, '.claude-plugin/plugin.json');
+  const pluginName = pluginManifest.name;
+  const skillNames = listSkillNames(pluginRoot, relativeSkillDir);
 
-  console.log('Verifying Claude plugin loading in session-only mode...');
-  const loadedSkills = run('claude', [
-    '-p',
-    '--plugin-dir',
-    ROOT,
-    '--output-format',
-    'text',
-    'List the plugin-qualified skill names loaded from this plugin, one per line and nothing else.',
-  ]);
+  console.log(`Validating Claude plugin manifest and structure for ${pluginName}...`);
+  run('claude', ['plugin', 'validate', pluginRoot], { stdio: 'inherit' });
+
+  console.log(`Verifying Claude plugin loading in session-only mode for ${pluginName}...`);
+  const loadedSkills = run(
+    'claude',
+    [
+      '-p',
+      '--plugin-dir',
+      pluginRoot,
+      '--output-format',
+      'text',
+      'List the plugin-qualified skill names loaded from this plugin, one per line and nothing else.',
+    ],
+    { cwd: pluginRoot },
+  );
 
   for (const skillName of skillNames) {
     const qualifiedSkillName = `${pluginName}:${skillName}`;
@@ -151,7 +184,17 @@ function verifyClaudePlugin() {
   }
 }
 
-verifyCopilotRuntime();
-verifyClaudePlugin();
+const requestedPlugins = process.argv.slice(2);
+const targetNames = requestedPlugins.length === 0
+  ? [...PLUGIN_TARGETS.keys()]
+  : requestedPlugins;
+
+for (const targetName of targetNames) {
+  const target = PLUGIN_TARGETS.get(targetName);
+
+  assert.ok(target, `Unknown plugin target: ${targetName}`);
+  verifyCopilotRuntime(target.root, target.copilotSkillDir);
+  verifyClaudePlugin(target.root, target.claudeSkillDir);
+}
 
 console.log('Runtime verification completed.');
