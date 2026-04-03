@@ -1,6 +1,6 @@
 # Install Guide
 
-Install only the plugin you need, or install both when you want planning plus spec-driven workflows.
+Install only the plugin you need, or install multiple plugins together when you want planning, spec-driven workflows, and clean-code enforcement in the same repo.
 
 ## Install `workflow-orchestration`
 
@@ -23,7 +23,7 @@ copilot plugin install ./plugins/clean-code-codex
 claude --plugin-dir ./plugins/clean-code-codex
 ```
 
-## Install both
+## Install all three
 
 ```bash
 copilot plugin install ./plugins/workflow-orchestration

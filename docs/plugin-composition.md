@@ -26,14 +26,14 @@ flowchart LR
     PLAN --> EXEC
 ```
 
-## When to install both
+## When to install multiple plugins
 
-Install both plugins when you want:
+Install multiple plugins together when you want:
 
 - planning that can optionally delegate to SDD;
 - explicit `sdd.specify`, `sdd.plan`, and `sdd.tasks` commands;
 - clean-code enforcement and targeted review checks from Codex;
-- one repo-local marketplace source for both plugins.
+- one repo-local marketplace source for all three plugins.
 
 ## When to install only one
 
