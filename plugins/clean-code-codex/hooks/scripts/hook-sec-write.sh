@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # hook-sec-write.sh — SEC-1 enforcement on Write|Edit tool calls.
-# Fired as PreToolUse on Claude Code (can block) and PostToolUse on GH Copilot CLI (warn only).
+# Fired as PreToolUse on Claude Code (can block) and GH Copilot CLI (warn only).
 #
 # Exit codes (Claude Code):
 #   0 — allow (no findings, or fail-open on error)

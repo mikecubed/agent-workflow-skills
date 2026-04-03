@@ -11,7 +11,7 @@ just after) a problematic action occurs.
 
 | Rule | Script | Event | Claude Code | GH Copilot CLI |
 |------|--------|-------|-------------|----------------|
-| SEC-1 (secrets in writes) | `hooks/scripts/hook-sec-write.sh` | PreToolUse (Write\|Edit) | **Block** before write | Warn after write |
+| SEC-1 (secrets in writes) | `hooks/scripts/hook-sec-write.sh` | PreToolUse (Write\|Edit) | **Block** before write | Warn before write |
 | SEC-7 (bash injection) | `hooks/scripts/hook-sec-bash.sh` | PreToolUse (Bash) | **Block** before execution | **Block** before execution |
 | SIZE-1 / DEAD-1 (quality) | `hooks/scripts/hook-quality.sh` | PostToolUse (Write\|Edit) | Warn after write | Warn after write |
 | DEP-1 (vulnerabilities) | `hooks/scripts/hook-dep.sh` | PostToolUse (Write) | Warn after write | Warn after write |
@@ -112,7 +112,7 @@ plugin hooks.
 
 | Aspect | Claude Code | GH Copilot CLI |
 |--------|-------------|----------------|
-| SEC-1 (write) | Pre-write **block** (deny) | Post-write **warn** |
+| SEC-1 (write) | Pre-write **block** (deny) | Pre-write **warn** |
 | SEC-7 (bash) | Pre-execution **block** | Pre-execution **block** |
 | SIZE-1 | Post-write warn | Post-write warn |
 | DEAD-1 | Post-write warn | Post-write warn |
@@ -195,7 +195,7 @@ Add to `.claude/settings.json`:
 
 - Confidence is heuristic — detection requires recognizable directory names
 - Monorepo packages each get their own layer map entry
-- TTL cache means layer map changes take up to 1 hour to reflect
+- TTL cache means layer map changes take up to 5 minutes to reflect
 
 ---
 
@@ -227,7 +227,7 @@ After a file is written or edited, extracts newly added function names (via `git
 
 If no coverage artifact is found:
 ```
-ℹ️  Coverage delta check skipped: no coverage artifact found. Run tests with coverage enabled to activate this check.
+ℹ️  TEST-DELTA (INFO): No coverage artifact found for this project. Run tests with coverage enabled to activate this check.
 ```
 
 ### How to disable
@@ -264,7 +264,7 @@ Detects empty catch blocks, swallowed exceptions, and other observability anti-p
 | TypeScript/JavaScript | Comment-only catch | `catch (err) { // ignore }` |
 | Python | `except: pass` | `except Exception: pass` |
 | Go | Empty nil check | `if err != nil { }` |
-| Rust | `.unwrap()` call | `result.unwrap()` |
+| Rust | Ignored/swallowed error handling | `let _ = result;`, `if let Err(err) = work() {}`, `Err(err) => {}` |
 
 ### Output format
 
@@ -286,5 +286,5 @@ Add to `.claude/settings.json`:
 
 ### Known limitations
 
-- Rust `.unwrap()` detection does not distinguish production vs test code for inline tests
+- Rust checks focus on ignored/swallowed `Result` handling and do not reason about whether an empty `Err` path is intentionally documented
 - Go empty nil checks: only matches simple `if err != nil {}` patterns

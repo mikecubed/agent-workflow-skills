@@ -98,10 +98,10 @@ in_func == 1 {
         }
       }
     }
-    # Count non-blank, non-comment-only lines
+    # Count non-blank, non-comment-only lines only after the opening brace
     stripped = $0
     gsub(/^[[:space:]]+/, "", stripped)
-    if (stripped != "" && stripped !~ /^(\/\/|#|\/\*)/) {
+    if (brace_depth > 0 && stripped != "" && stripped !~ /^(\/\/|#|\/\*)/) {
       body_lines++
     }
   } else {
@@ -173,13 +173,17 @@ function looks_like_code(line,    stripped) {
   if (is_comment && looks_like_code(line)) {
     consecutive++
     if (consecutive == 1) block_start = NR
-    if (consecutive >= 3) {
-      if (consecutive == 3) {
-        print block_start "|" NR
-      }
-    }
   } else {
+    if (consecutive >= 3) {
+      print block_start "|" (NR - 1)
+    }
     consecutive = 0
+  }
+}
+
+END {
+  if (consecutive >= 3) {
+    print block_start "|" NR
   }
 }
 ' 2>/dev/null || echo "")"
