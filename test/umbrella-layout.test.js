@@ -9,7 +9,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 const WORKFLOW_ROOT = path.join(ROOT, 'plugins', 'workflow-orchestration');
-const SDD_ROOT = path.join(ROOT, 'plugins', 'sdd-workflow');
 
 function readJson(root, relativePath) {
   return JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'));
@@ -35,9 +34,15 @@ function readPackedFiles() {
 describe('agent-orchestration package', () => {
   it('defines the umbrella package metadata and aggregate validation scripts', () => {
     const packageManifest = readJson(ROOT, 'package.json');
+    const workflowManifest = readJson(WORKFLOW_ROOT, 'plugin.json');
+    const copilotMarketplace = readJson(ROOT, '.github/plugin/marketplace.json');
+    const claudeMarketplace = readJson(ROOT, '.claude-plugin/marketplace.json');
 
     assert.equal(packageManifest.name, 'agent-orchestration');
-    assert.equal(packageManifest.version, '0.5.0');
+    assert.equal(copilotMarketplace.metadata.version, packageManifest.version);
+    assert.equal(claudeMarketplace.metadata.version, packageManifest.version);
+    assert.equal(copilotMarketplace.plugins[0].version, workflowManifest.version);
+    assert.equal(claudeMarketplace.plugins[0].version, workflowManifest.version);
     assert.equal(packageManifest.scripts.test, 'node --test test/**/*.test.js && npm --prefix plugins/workflow-orchestration test');
     assert.equal(packageManifest.scripts['validate:runtime'], 'node scripts/verify-runtime.mjs');
   });
@@ -117,4 +122,3 @@ describe('umbrella package contents', () => {
     assert.ok(files.includes('plugins/sdd-workflow/commands/sdd.specify.md'));
   });
 });
-

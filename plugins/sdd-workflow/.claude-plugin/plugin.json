@@ -12,5 +12,6 @@
     "planning",
     "specification",
     "tasks"
-  ]
+  ],
+  "skills": "./skills/"
 }

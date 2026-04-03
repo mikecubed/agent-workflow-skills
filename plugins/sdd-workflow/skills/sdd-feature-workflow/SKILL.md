@@ -1,4 +1,5 @@
 ---
+name: sdd-feature-workflow
 description: "Auto-activate the sdd specification workflow when a developer requests a new feature."
 ---
 
