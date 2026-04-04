@@ -23,18 +23,6 @@ if isinstance(ti, str):
 print(ti.get('command', ti.get('cmd', '')))
 " 2>/dev/null)" || exit 0
 
-# Only act on validation commands
-case "$TOOL_COMMAND" in
-  # Matches: npm test, npm run validate, npm run validate:plugin,
-  # npm run validate:runtime, etc. The hook is advisory/fail-open so
-  # a slight over-match (e.g. npm run validate-schema) is acceptable.
-  *"npm test"*|*"npm run validate"*)
-    ;;
-  *)
-    exit 0
-    ;;
-esac
-
 # Determine repo root and state file (same logic as hook-verification.sh)
 REPO_ROOT="$(git -C "${HOOK_WORKING_DIR:-.}" rev-parse --show-toplevel 2>/dev/null)" || exit 0
 
@@ -67,6 +55,155 @@ _REPO_HASH="$(compute_repo_hash "$REPO_ROOT")" || {
   exit 0
 }
 STATE_FILE="${TMPDIR:-/tmp}/codex-verify-${_REPO_HASH}.state"
+
+is_validation_command() {
+  local tool_command="$1"
+  local repo_root="$2"
+
+  python3 - "$tool_command" "$repo_root" <<'PY'
+import json
+import pathlib
+import re
+import sys
+
+command = sys.argv[1]
+repo_root = pathlib.Path(sys.argv[2])
+
+
+def normalize(value):
+    return " ".join(str(value).strip().split())
+
+
+def shell_matches(executed, candidate):
+    executed = normalize(executed)
+    candidate = normalize(candidate)
+    if not executed or not candidate:
+        return False
+    return (
+        executed == candidate
+        or executed.endswith(" && " + candidate)
+        or executed.endswith("; " + candidate)
+        or ("\n" + candidate) in ("\n" + executed)
+        or candidate in executed
+    )
+
+
+normalized_command = normalize(command)
+if not normalized_command:
+    sys.exit(1)
+
+# Preserve the existing built-in behavior.
+if "npm test" in normalized_command or "npm run validate" in normalized_command:
+    sys.exit(0)
+
+candidates = set()
+
+# Derive validation commands from package.json scripts across common package managers.
+package_json = repo_root / "package.json"
+if package_json.is_file():
+    try:
+        package_data = json.loads(package_json.read_text(encoding="utf-8"))
+        scripts = package_data.get("scripts", {})
+        if isinstance(scripts, dict):
+            script_names = [
+                name for name in scripts
+                if name == "test" or str(name).startswith("validate")
+            ]
+            for name in script_names:
+                candidates.add(f"npm run {name}")
+                candidates.add(f"pnpm run {name}")
+                candidates.add(f"yarn run {name}")
+                candidates.add(f"bun run {name}")
+                if name == "test":
+                    candidates.add("npm test")
+                    candidates.add("pnpm test")
+                    candidates.add("yarn test")
+                    candidates.add("bun test")
+                elif name.startswith("validate"):
+                    candidates.add(f"yarn {name}")
+    except Exception:
+        pass
+
+# Heuristically extract configured validation commands from .copilot/verify.yaml
+verify_yaml = repo_root / ".copilot" / "verify.yaml"
+if verify_yaml.is_file():
+    try:
+        lines = verify_yaml.read_text(encoding="utf-8").splitlines()
+        section_stack = []
+        section_indents = []
+
+        def strip_comment(text):
+            escaped = False
+            quote = None
+            for index, char in enumerate(text):
+                if escaped:
+                    escaped = False
+                    continue
+                if char == "\\":
+                    escaped = True
+                    continue
+                if quote:
+                    if char == quote:
+                        quote = None
+                    continue
+                if char in ("'", '"'):
+                    quote = char
+                    continue
+                if char == "#":
+                    return text[:index]
+            return text
+
+        for raw_line in lines:
+            line = strip_comment(raw_line).rstrip()
+            if not line.strip():
+                continue
+
+            indent = len(line) - len(line.lstrip(" "))
+            while section_indents and indent <= section_indents[-1]:
+                section_indents.pop()
+                section_stack.pop()
+
+            stripped = line.strip()
+            key_match = re.match(r"([A-Za-z0-9_.-]+)\s*:\s*(.*)$", stripped)
+            if key_match:
+                key, value = key_match.groups()
+                lower_key = key.lower()
+                if value.strip():
+                    cleaned = value.strip().strip("'\"")
+                    if lower_key in {"command", "cmd", "run"}:
+                        candidates.add(cleaned)
+                    elif lower_key in {"validation", "validation_command"}:
+                        candidates.add(cleaned)
+                else:
+                    section_stack.append(lower_key)
+                    section_indents.append(indent)
+                continue
+
+            list_match = re.match(r"-\s+(.*)$", stripped)
+            if list_match:
+                item = list_match.group(1).strip().strip("'\"")
+                if section_stack and section_stack[-1] in {
+                    "validation_commands",
+                    "commands",
+                    "validate",
+                    "validation",
+                }:
+                    candidates.add(item)
+    except Exception:
+        pass
+
+for candidate in candidates:
+    if shell_matches(normalized_command, candidate):
+        sys.exit(0)
+
+sys.exit(1)
+PY
+}
+
+# Only act on validation commands
+if ! is_validation_command "$TOOL_COMMAND" "$REPO_ROOT"; then
+  exit 0
+fi
 
 # Check whether the validation command succeeded before recording.
 # The hook framework (hook-lib.sh) does not expose exit codes for
