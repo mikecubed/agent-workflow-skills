@@ -76,8 +76,9 @@ These rules apply to any skill or hook that reads `.agent/SESSION.md`:
    also absent or unreadable: proceed normally. Do not mention absent session files
    to the developer.
 2. If the file exists but fails YAML frontmatter parsing (missing delimiter, invalid
-   YAML, missing required fields): attempt the HANDOFF.json fallback. Only if
-   HANDOFF.json is also absent or malformed: proceed as if SESSION.md were absent.
+   YAML, missing required fields): report the parse failure to the developer, then
+   attempt the HANDOFF.json fallback. Only if HANDOFF.json is also absent or malformed:
+   proceed as if SESSION.md were absent.
 3. If the file is valid but a `##` section body is empty or missing: treat it as
    empty — do not fail.
 4. **Never re-attempt a hypothesis listed in `## Failed Hypotheses`.** Before forming
