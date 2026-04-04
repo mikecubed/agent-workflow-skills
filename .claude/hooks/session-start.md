@@ -28,6 +28,9 @@ If `## Blockers` is non-empty, list the blockers and ask:
 
 Wait for the developer's response before proceeding with work.
 
+If `.agent/HANDOFF.json` is also present, it is the machine-readable companion — no special
+action needed, it will be written alongside SESSION.md updates.
+
 ### If `.agent/SESSION.md` exists but is malformed
 
 A file is malformed if the YAML frontmatter fails to parse, or any of the five required
@@ -40,7 +43,27 @@ Report the parse failure to the developer:
 
 Then continue normally as if the file is absent.
 
+## HANDOFF.json Fallback
+
+When SESSION.md is absent or malformed, check for `.agent/HANDOFF.json`:
+
+- **If absent**: proceed normally.
+- **If present and valid JSON with required fields** (`schema-version`, `current-task`,
+  `current-phase`, `next-action`, `workspace`, `last-updated`): use it as the session state
+  source. Announce the session state in the same format as SESSION.md:
+  ```
+  Resuming from session checkpoint — [current-task] / [current-phase]
+  Next action: [next-action]
+  Workspace: [workspace]
+  ```
+  If `blockers` is non-empty, list the blockers and ask whether they have been resolved.
+- **If present but malformed JSON**: report the parse failure to the developer:
+  > "`.agent/HANDOFF.json` exists but could not be parsed (invalid JSON).
+  > Proceeding as if no session checkpoint exists."
+
+  Then continue normally as if the file is absent.
+
 ## Schema reference
 
 See `plugins/workflow-orchestration/docs/session-md-schema.md` for the canonical SESSION.md
-format, field definitions, and writer/reader rules.
+and HANDOFF.json formats, field definitions, and writer/reader rules.

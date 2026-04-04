@@ -3,3 +3,4 @@ node_modules/
 coverage/
 .sdd/
 .agent/SESSION.md
+.agent/HANDOFF.json
