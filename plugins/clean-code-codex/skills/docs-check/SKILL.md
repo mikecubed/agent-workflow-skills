@@ -56,8 +56,9 @@ type ExportedType struct { }        // no preceding // ExportedType ... comment
 **Detection**:
 1. Grep for `export function`, `export class`, `export const.*=.*function`,
    `export const.*=>` with no preceding comment block
-2. Grep for `^def [A-Z]` or `^class [A-Z]` in Python with no docstring on
-   the next line
+2. Grep for `^def [^_]` or `^class [^_]` in Python (matches any top-level
+   public function or class — names starting with `_` are private) with no
+   `"""` or `'''` docstring on the next line; also honour `__all__` when present
 3. Grep for `^func [A-Z]` in Go with no preceding `//` comment line
 4. For each match: verify the symbol is not in a test file and is not
    private/unexported
