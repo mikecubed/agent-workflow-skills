@@ -11,7 +11,7 @@ runtime: claude-code
 
 ### If `.agent/SESSION.md` does not exist
 
-Proceed normally. Do not mention SESSION.md.
+Check for `.agent/HANDOFF.json` as a fallback (see HANDOFF.json Fallback below).
 
 ### If `.agent/SESSION.md` exists and is valid
 
@@ -36,9 +36,9 @@ missing.
 
 Report the parse failure to the developer:
 > "`.agent/SESSION.md` exists but could not be parsed (missing or invalid YAML frontmatter).
-> Proceeding as if no session checkpoint exists."
+> Checking `.agent/HANDOFF.json` as a fallback."
 
-Then continue normally as if the file is absent.
+Then check for `.agent/HANDOFF.json` as a fallback (see HANDOFF.json Fallback below).
 
 ## Schema reference
 

@@ -36,9 +36,12 @@ than routed through a translation/i18n function.
 <h1>Dashboard</h1>
 <label>Email address</label>
 
-// TypeScript/JavaScript — user-facing error messages
-throw new Error("Invalid email address");
+// TypeScript/JavaScript — user-facing API response messages
 return res.status(404).json({ message: "User not found" });
+
+// TypeScript/JavaScript — toast / flash / notification APIs
+toast("Changes saved successfully");
+showNotification("Your session has expired");
 
 // TypeScript/JavaScript — page titles and labels
 const title = "Dashboard";
@@ -55,6 +58,8 @@ title = "Dashboard"
 
 **Exemptions**:
 - Internal log messages (not shown to users): `logger.info("Processing request")`
+- Exception/error constructor messages that are caught internally and not surfaced
+  directly to users: `throw new Error("Invalid state")`, `raise RuntimeError("...")`
 - Developer-only error messages in non-production code paths
 - Test strings in test files
 - Strings that are keys/identifiers, not display text (CSS class names, route paths,
@@ -64,14 +69,16 @@ title = "Dashboard"
 
 **Detection**:
 1. Grep for string literals in JSX children: `>Some text</` patterns in `.tsx`/`.jsx` files
-2. Grep for `throw new Error("` with human-readable messages (contains spaces, mixed case)
-3. Grep for return statements in API handlers containing string messages
+2. Grep for strings passed to toast/flash/notification APIs (`toast(`, `showNotification(`,
+   `flash(`, `messages.error(`, `messages.success(`) with inline string literals
+3. Grep for return statements in API handlers containing user-facing string messages
+   (e.g., `res.json({ message: "..." })`)
 4. Grep for Python `flash(`, `messages.error(`, `messages.success(`, `raise ValidationError(`
    with inline string literals
 5. Grep for assignments to `title`, `label`, `placeholder`, `heading`, `description`
    variables with hardcoded strings in component or view files
 6. For each match: verify the string is user-facing (contains spaces, natural language)
-   and not a key, identifier, or log message
+   and not a key, identifier, log message, or internal exception message
 
 **agent_action**:
 1. Cite: `I18N-1 (BLOCK): Hardcoded user-visible string at {file}:{line} — "{string}" must be routed through i18n.`
@@ -81,8 +88,8 @@ title = "Dashboard"
    // TypeScript/JavaScript (react-i18next)
    <Button>{t('common.submit')}</Button>
 
-   // TypeScript/JavaScript (generic)
-   throw new Error(i18n.t('errors.invalidEmail'));
+   // TypeScript/JavaScript — toast/notification APIs
+   toast(t('notifications.changesSaved'));
    ```
    ```python
    # Python (Django)
@@ -113,8 +120,6 @@ as decimal separator is incorrect in many European locales.
 ```typescript
 // TypeScript/JavaScript — dates
 new Date().toString();                          // locale-unaware
-date.toLocaleDateString();                      // no explicit locale argument
-date.toLocaleString();                          // no explicit locale argument
 `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`; // manual US format
 
 // TypeScript/JavaScript — numbers and currency
@@ -137,6 +142,8 @@ str(number)                                     # for display in user-facing con
 - Internal logging/debugging (not user-facing)
 - ISO-8601 date strings used as data interchange format (not display):
   `date.toISOString()`, `date.isoformat()`
+- `toLocaleDateString()`, `toLocaleString()`, `toLocaleTimeString()` with no explicit
+  locale argument are locale-aware (they use the runtime locale) and are not violations
 - Explicit locale-aware calls:
   - `Intl.DateTimeFormat(locale, options).format(date)`
   - `date.toLocaleDateString(userLocale, options)` (with explicit locale)
@@ -146,13 +153,14 @@ str(number)                                     # for display in user-facing con
 - Machine-to-machine APIs where the consumer is code, not a human
 
 **Detection**:
-1. Grep for `toLocaleDateString()` and `toLocaleString()` without arguments
-2. Grep for `.toFixed(` in display/render contexts (component files, template files)
-3. Grep for `new Date().toString()` and `Date().toString()`
-4. Grep for manual currency string concatenation: `"$" +`, `` `$${`` patterns
-5. Grep for Python `strftime(` with US-specific format strings (`%m/%d/%Y`)
-6. Grep for Python `f"$` currency formatting patterns
-7. For each match: verify the context is user-facing (component, view, template, API response)
+1. Grep for `.toFixed(` in display/render contexts (component files, template files)
+2. Grep for `new Date().toString()` and `Date().toString()`
+3. Grep for manual currency string concatenation: `"$" +`, `` `$${`` patterns
+4. Grep for Python `strftime(` with US-specific format strings (`%m/%d/%Y`)
+5. Grep for Python `f"$` currency formatting patterns
+6. For each match: verify the context is user-facing (component, view, template, API response)
+7. Do NOT flag `toLocaleDateString()`, `toLocaleString()`, or `toLocaleTimeString()`
+   without arguments — these are locale-aware by design (they use the runtime locale)
 
 **agent_action**:
 1. Cite: `I18N-2 (WARN): Locale-unaware formatting at {file}:{line} — "{expression}" produces locale-dependent output without explicit locale.`
@@ -212,9 +220,15 @@ return <span>{t('dashboard.welcomeBanner')}</span>;  // key missing from locale
 2. Locate the default locale file: search for `en.json`, `en/translation.json`,
    `messages/en.json`, `locales/en.json`, `public/locales/en/translation.json`,
    or the path configured in i18n config files (`i18next.config.*`, `next-i18next.config.*`)
-3. For each static string key: check if the key exists in the default locale file
-   (support dot-notation nesting: `user.profile.name` → `{ "user": { "profile": { "name": ... } } }`)
-4. If the locale file cannot be found: emit a WARN noting that locale file detection
+3. Check for the project's i18n configuration file (`i18next.config.js`, `i18next.config.ts`,
+   `i18n.ts`, `i18n.js`, `next-i18next.config.js`). If the config sets `keySeparator: false`,
+   treat all keys as flat literal strings and skip nested traversal entirely.
+4. For each static string key: first check if the exact literal key string exists as a
+   top-level property in the locale file (e.g., `"user.profile.name": "..."`)
+5. If no literal match is found (and `keySeparator` is not `false`): attempt dot-notation
+   nested traversal (`user.profile.name` → `{ "user": { "profile": { "name": ... } } }`)
+6. Only warn if neither the literal key nor the nested path resolves to a value
+7. If the locale file cannot be found: emit a WARN noting that locale file detection
    failed, rather than a false positive
 
 **agent_action**:
