@@ -49,11 +49,14 @@ At the start of every session, check for `.agent/SESSION.md` in the project root
 When SESSION.md is absent or malformed, check for `.agent/HANDOFF.json`:
 
 - **If absent**: proceed normally without mentioning it.
-- **If present and valid JSON** with required fields (`schema-version`, `current-task`,
-  `current-phase`, `next-action`, `workspace`, `last-updated`): use it as the session
+- **If present and valid JSON** with all required fields — 6 scalar fields (`schema-version`,
+  `current-task`, `current-phase`, `next-action`, `workspace`, `last-updated`) present and
+  of type string, and 5 array fields (`files-touched`, `open-questions`, `blockers`,
+  `failed-hypotheses`, `decisions`) present and of type array: use it as the session
   state source — announce the session state in the same way as a valid SESSION.md.
   If `blockers` is non-empty, list the blockers and ask whether they have been resolved.
-- **If present but malformed JSON**: report the parse failure, ignore the file, and
+- **If present but malformed** (JSON parse failure, missing/wrong-type scalar fields, or
+  missing/non-array array fields): report the parse failure, ignore the file, and
   proceed as if it were absent.
 
 Schema reference: `plugins/workflow-orchestration/docs/session-md-schema.md`

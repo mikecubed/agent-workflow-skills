@@ -158,8 +158,12 @@ These rules apply to any skill, hook, or automated tool that writes `.agent/HAND
 These rules apply to any skill, hook, or automated tool that reads `.agent/HANDOFF.json`:
 
 1. If the file does not exist, proceed normally. Do not mention it to the developer.
-2. If the file exists but JSON fails to parse: report the parse failure to the developer,
-   ignore the file entirely, and proceed as if it were absent.
+2. If the file exists but is malformed — JSON fails to parse, any of the 6 required scalar
+   fields (`schema-version`, `current-task`, `current-phase`, `next-action`, `workspace`,
+   `last-updated`) is missing or not a string, or any of the 5 required array fields
+   (`files-touched`, `open-questions`, `blockers`, `failed-hypotheses`, `decisions`) is
+   missing or not an array: report the parse failure to the developer, ignore the file
+   entirely, and proceed as if it were absent.
 3. Read HANDOFF.json as a **fallback** when SESSION.md is absent or malformed.
 4. **Never re-attempt a hypothesis listed in `failed-hypotheses`.** Before forming new
    hypotheses in a resumed session, scan this array and treat all listed hypotheses as
