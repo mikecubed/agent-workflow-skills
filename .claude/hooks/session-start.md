@@ -11,7 +11,7 @@ runtime: claude-code
 
 ### If `.agent/SESSION.md` does not exist
 
-Proceed normally. Do not mention SESSION.md.
+Check for `.agent/HANDOFF.json` as a fallback (see HANDOFF.json Fallback below).
 
 ### If `.agent/SESSION.md` exists and is valid
 
@@ -28,6 +28,9 @@ If `## Blockers` is non-empty, list the blockers and ask:
 
 Wait for the developer's response before proceeding with work.
 
+If `.agent/HANDOFF.json` is also present, it is the machine-readable companion — no special
+action needed, it will be written alongside SESSION.md updates.
+
 ### If `.agent/SESSION.md` exists but is malformed
 
 A file is malformed if the YAML frontmatter fails to parse, or any of the five required
@@ -36,11 +39,34 @@ missing.
 
 Report the parse failure to the developer:
 > "`.agent/SESSION.md` exists but could not be parsed (missing or invalid YAML frontmatter).
-> Proceeding as if no session checkpoint exists."
+> Checking `.agent/HANDOFF.json` as a fallback."
 
-Then continue normally as if the file is absent.
+Then check for `.agent/HANDOFF.json` as a fallback (see HANDOFF.json Fallback below).
+
+## HANDOFF.json Fallback
+
+When SESSION.md is absent or malformed, check for `.agent/HANDOFF.json`:
+
+- **If absent**: proceed normally.
+- **If present and valid JSON with required fields** — all 6 scalar fields (`schema-version`,
+  `current-task`, `current-phase`, `next-action`, `workspace`, `last-updated`) present and
+  of type string, and all 5 array fields (`files-touched`, `open-questions`, `blockers`,
+  `failed-hypotheses`, `decisions`) present and of type array: use it as the session state
+  source. Announce the session state in the same format as SESSION.md:
+  ```
+  Resuming from session checkpoint — [current-task] / [current-phase]
+  Next action: [next-action]
+  Workspace: [workspace]
+  ```
+  If `blockers` is non-empty, list the blockers and ask whether they have been resolved.
+- **If present but malformed** (JSON parse failure, missing/wrong-type scalar fields, or
+  missing/non-array array fields): report the parse failure to the developer:
+  > "`.agent/HANDOFF.json` exists but could not be parsed (invalid JSON or missing required fields).
+  > Proceeding as if no session checkpoint exists."
+
+  Then proceed normally as if the file is absent.
 
 ## Schema reference
 
 See `plugins/workflow-orchestration/docs/session-md-schema.md` for the canonical SESSION.md
-format, field definitions, and writer/reader rules.
+and HANDOFF.json formats, field definitions, and writer/reader rules.

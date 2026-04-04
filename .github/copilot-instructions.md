@@ -31,15 +31,32 @@
 - When extending a skill, keep the separation of responsibilities intact: implementation parallelism, review-resolution, and final readiness are modeled as three separate skills rather than one combined workflow.
 - Prefer plugin-qualified invocation names in docs and examples, such as `/workflow-orchestration:parallel-implementation-loop`, because the README treats plugin namespacing as the normal usage pattern.
 
-## Session continuity — SESSION.md
+## Session continuity — SESSION.md + HANDOFF.json
 
 At the start of every session, check for `.agent/SESSION.md` in the project root.
 
-- **If absent**: proceed normally without mentioning it.
+- **If absent**: check for `.agent/HANDOFF.json` (see HANDOFF.json fallback below).
 - **If present and valid**: within the first response turn, announce the session state —
   current task, current phase, next action, workspace. List active blockers. If blockers
   are non-empty, ask the developer whether they have been resolved before proceeding.
+  If `.agent/HANDOFF.json` is also present, it is the machine-readable companion — no
+  special action needed, it will be written alongside SESSION.md updates.
 - **If present but malformed** (YAML parse error or missing required fields): report the
-  parse failure, ignore the file, and proceed as if it were absent.
+  parse failure, ignore the file, and check for `.agent/HANDOFF.json` as a fallback.
+
+### HANDOFF.json fallback
+
+When SESSION.md is absent or malformed, check for `.agent/HANDOFF.json`:
+
+- **If absent**: proceed normally without mentioning it.
+- **If present and valid JSON** with all required fields — 6 scalar fields (`schema-version`,
+  `current-task`, `current-phase`, `next-action`, `workspace`, `last-updated`) present and
+  of type string, and 5 array fields (`files-touched`, `open-questions`, `blockers`,
+  `failed-hypotheses`, `decisions`) present and of type array: use it as the session
+  state source — announce the session state in the same way as a valid SESSION.md.
+  If `blockers` is non-empty, list the blockers and ask whether they have been resolved.
+- **If present but malformed** (JSON parse failure, missing/wrong-type scalar fields, or
+  missing/non-array array fields): report the parse failure, ignore the file, and
+  proceed as if it were absent.
 
 Schema reference: `plugins/workflow-orchestration/docs/session-md-schema.md`
