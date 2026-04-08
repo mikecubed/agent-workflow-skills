@@ -99,12 +99,14 @@ Task boundaries: <what is in scope and what is not>
 Validation commands: <command>, <command>
 Dependencies: <known dependencies or shared interfaces, if multi-track>
 Comparison baseline: <branch, commit, or PR reference, if review or readiness>
-Prior-learnings consulted: <yes — count and short summary | none-found | skipped>
+Prior-learnings consulted:
+- <path or reference> — <one-line summary>
+or <none-found | skipped>
 Open questions: <questions requiring developer input, or none>
 Skip reason: <if discovery was skipped, why — e.g., "single file, fully scoped bug fix">
 ```
 
-**Prior-learnings lookup**: When the workflow supports prior-learning reuse (e.g., `planning-orchestration`, `diff-review-orchestration`), record the lookup result in the `Prior-learnings consulted` field. Use `yes — <count> matching: <brief summary>` when matches are found, `none-found` when the lookup ran but returned no matches, and `skipped` when the lookup was not performed (e.g., no knowledge sink is configured).
+**Prior-learnings lookup**: When the workflow supports prior-learning reuse (e.g., `planning-orchestration`, `diff-review-orchestration`), record the lookup result in the `Prior-learnings consulted` field. When matches are found, list each artifact as a one-line bullet with its path or reference and a short summary. Use `none-found` when the lookup ran but returned no matches, and `skipped` when the lookup was not performed (e.g., no knowledge sink is configured).
 
 **Lifecycle**: Created before track launch or triage. Consumed by the coordinator for track splitting and by implementers and reviewers as factual context. Retired at workflow completion.
 

@@ -40,16 +40,16 @@ Files: plugins/workflow-orchestration/skills/planning-orchestration/SKILL.md
 Dependencies: T004 or T005 done
 Validation: npm --prefix plugins/workflow-orchestration test
 Work surface: /home/mikecubed/projects/wt-kc13-planning
-State: blocked
+State: merged
 Validation outcome: pass
 Unresolved issues:
-- Shared discovery-brief and outcome-measure template contract not yet aligned in plugins/workflow-orchestration/docs/workflow-artifact-templates.md
-Rescue history:
 - none
-Next action: land the shared template-alignment fix in the docs worktree, then merge this reviewed branch
-Revision rounds: 0
-Summary: Added optional prior-learning lookup guidance to planning-orchestration, but review found a shared template contract gap outside the track boundary.
-Follow-ups: merge after the shared template fix lands
+Rescue history:
+- planning-review contract gap | split shared template alignment into a small docs-side rescue commit | keep planning branch scoped while unblocking merge | resolved by merging docs-metadata before planning | 1
+Next action: run integrated validation gate
+Revision rounds: 2
+Summary: Added optional prior-learning lookup guidance to planning-orchestration, aligned the wording to the shared prior-learnings contract, and merged the reviewed track into the integration branch after the shared template fix landed.
+Follow-ups: none
 ```
 
 ```text
@@ -78,15 +78,15 @@ Files: plugins/workflow-orchestration/README.md, plugins/workflow-orchestration/
 Dependencies: T006 and T007 done
 Validation: npm --prefix plugins/workflow-orchestration test; npm run validate:plugin
 Work surface: /home/mikecubed/projects/wt-kc13-docs
-State: pending
-Validation outcome: not-run
+State: merged
+Validation outcome: pass
 Unresolved issues:
 - none
 Rescue history:
 - none
-Next action: wait for planning-reuse and diff-review-reuse to merge
+Next action: run integrated validation gate
 Revision rounds: 0
-Summary: Pending upstream skill text changes.
+Summary: Aligned the shared prior-learnings template contract, updated README knowledge-loop guidance, synced workflow and umbrella metadata to 1.3.0, updated the changelog, and merged the reviewed track into the integration branch.
 Follow-ups: none
 ```
 
@@ -97,6 +97,8 @@ Status: in progress
 Merged tracks:
 - foundation
 - diff-review-reuse
+- docs-metadata
+- planning-reuse
 
 Retained or abandoned tracks:
 - none
@@ -105,8 +107,9 @@ Validations run:
 - npm --prefix plugins/workflow-orchestration test
 - npm test
 - npm --prefix plugins/workflow-orchestration test
+- npm --prefix plugins/workflow-orchestration test
+- npm run validate:plugin
 
 Unresolved follow-ups:
-- align the shared discovery-brief and outcome-measure contract for planning prior-learning lookup
-- merge the reviewed planning-reuse branch after that fix
-- docs-metadata pending
+- run final plugin, runtime, umbrella, and combined validation gates on the integrated branch
+- run final-pr-readiness-gate on the stabilized diff
