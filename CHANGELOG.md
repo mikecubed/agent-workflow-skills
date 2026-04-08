@@ -13,7 +13,7 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 - **`knowledge-compound` skill**: captures reusable knowledge from completed workflows
   — problem, signals, resolution, guardrails, and applicability — and writes it to a
   durable, repository-appropriate sink. Integrates with the shared knowledge artifact
-  template in `docs/workflow-artifact-templates.md`.
+  template in `plugins/workflow-orchestration/docs/workflow-artifact-templates.md`.
 - **Prior-learning reuse in `diff-review-orchestration`**: the diff review workflow now
   looks up knowledge artifacts whose applicability overlaps with the reviewed diff and
   surfaces matching learnings as advisory context before downstream checks run.

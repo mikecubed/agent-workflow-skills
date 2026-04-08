@@ -133,7 +133,7 @@ The scout MUST produce a short factual brief covering:
 - task boundaries;
 - known dependencies;
 - whether `sdd-workflow` appears available;
-- Prior-learnings consulted (if any — see lookup below).
+- Prior-learnings consulted (always record matches, `none-found`, or `skipped` — see lookup below).
 
 Use the discovery brief template from `docs/workflow-artifact-templates.md`.
 
@@ -146,6 +146,8 @@ During discovery, the scout checks for previously captured knowledge artifacts t
 **When matches are found**: include them in the discovery brief under a "Prior-learnings consulted" heading. List each match with a one-line summary and a path or reference. The planner and reviewer receive these as optional factual context — they inform the plan but do not constrain it.
 
 **When no matches are found**: record `Prior-learnings consulted: none-found` in the brief and continue normally. The absence of prior knowledge must never block discovery or planning.
+
+**When lookup is skipped**: if no discoverable knowledge sink exists for the repository, or no discovery mechanism is available in the current environment, record `Prior-learnings consulted: skipped` and briefly note the reason. Use `skipped` only when the lookup could not reasonably be performed, not when a search ran successfully but returned no matches.
 
 **Skip condition**: Skip discovery only when the request is already narrow and fully scoped. If skipped, record the skip reason in the brief.
 
