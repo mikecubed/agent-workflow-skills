@@ -145,7 +145,7 @@ During discovery, the scout checks for previously captured knowledge artifacts t
 
 **When matches are found**: include them in the discovery brief under a "Prior-learnings consulted" heading. List each match with a one-line summary and a path or reference. The planner and reviewer receive these as optional factual context — they inform the plan but do not constrain it.
 
-**When no matches are found**: record `Prior-learnings consulted: none found` in the brief and continue normally. The absence of prior knowledge must never block discovery or planning.
+**When no matches are found**: record `Prior-learnings consulted: none-found` in the brief and continue normally. The absence of prior knowledge must never block discovery or planning.
 
 **Skip condition**: Skip discovery only when the request is already narrow and fully scoped. If skipped, record the skip reason in the brief.
 
@@ -294,6 +294,6 @@ Unresolved questions:
 - Whether to keep the current plugin name during the first migration phase
 Workflow outcome measures:
 - discovery-reuse: yes
-- prior-learnings: yes
+- prior-learnings: 1
 - rescue-attempts: 0
 ```
