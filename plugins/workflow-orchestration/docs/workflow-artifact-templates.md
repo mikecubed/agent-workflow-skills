@@ -99,9 +99,12 @@ Task boundaries: <what is in scope and what is not>
 Validation commands: <command>, <command>
 Dependencies: <known dependencies or shared interfaces, if multi-track>
 Comparison baseline: <branch, commit, or PR reference, if review or readiness>
+Prior-learnings consulted: <yes — count and short summary | none-found | skipped>
 Open questions: <questions requiring developer input, or none>
 Skip reason: <if discovery was skipped, why — e.g., "single file, fully scoped bug fix">
 ```
+
+**Prior-learnings lookup**: When the workflow supports prior-learning reuse (e.g., `planning-orchestration`, `diff-review-orchestration`), record the lookup result in the `Prior-learnings consulted` field. Use `yes — <count> matching: <brief summary>` when matches are found, `none-found` when the lookup ran but returned no matches, and `skipped` when the lookup was not performed (e.g., no knowledge sink is configured).
 
 **Lifecycle**: Created before track launch or triage. Consumed by the coordinator for track splitting and by implementers and reviewers as factual context. Retired at workflow completion.
 
@@ -113,6 +116,7 @@ Use at the end of any workflow skill to record aggregate effectiveness signals. 
 
 ```text
 discovery-reuse: yes | no | skipped
+prior-learnings: <integer count of matching knowledge artifacts> | none-found | skipped
 rescue-attempts: <integer — total rescue attempts across all tracks, or 0>
 abandonment-events: <integer — tracks or items abandoned without resolution, or 0>
 re-review-loops:
@@ -125,6 +129,7 @@ final-gate-result: ready | ready-with-follow-ups | not-ready | stopped
 | Field | Type | Description |
 |-------|------|-------------|
 | `discovery-reuse` | `yes \| no \| skipped` | Whether the discovery brief was reused by downstream tracks or reviewers. `skipped` if discovery was not performed. |
+| `prior-learnings` | integer \| `none-found` \| `skipped` | Count of knowledge artifacts whose applicability matched the workflow scope. `none-found` when the lookup ran but returned no matches. `skipped` when no knowledge sink was discoverable or the workflow does not support prior-learning lookup. |
 | `rescue-attempts` | integer | Total number of rescue attempts across all tracks during the workflow. |
 | `abandonment-events` | integer | Number of tracks or review items abandoned without resolution. |
 | `re-review-loops` | map of track → count | Per-track count of extra implementer-reviewer revision cycles beyond the initial review. |
