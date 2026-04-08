@@ -133,7 +133,7 @@ The scout MUST produce a short factual brief covering:
 - task boundaries;
 - known dependencies;
 - whether `sdd-workflow` appears available;
-- prior-learning matches (if any — see lookup below).
+- Prior-learnings consulted (if any — see lookup below).
 
 Use the discovery brief template from `docs/workflow-artifact-templates.md`.
 
@@ -143,9 +143,9 @@ During discovery, the scout checks for previously captured knowledge artifacts t
 
 **How to search**: scan the repository's knowledge directories, docs, or memory stores for artifacts whose problem description, applicability tags, or technology context overlap with the current task's domain. The search method is repository-dependent; use whatever discovery mechanism is available (file listing, grep, memory retrieval, index query). Do not assume a fixed directory or naming convention.
 
-**When matches are found**: include them in the discovery brief under a "Prior-learning matches" heading. List each match with a one-line summary and a path or reference. The planner and reviewer receive these as optional factual context — they inform the plan but do not constrain it.
+**When matches are found**: include them in the discovery brief under a "Prior-learnings consulted" heading. List each match with a one-line summary and a path or reference. The planner and reviewer receive these as optional factual context — they inform the plan but do not constrain it.
 
-**When no matches are found**: record `prior-learning matches: none found` in the brief and continue normally. The absence of prior knowledge must never block discovery or planning.
+**When no matches are found**: record `Prior-learnings consulted: none found` in the brief and continue normally. The absence of prior knowledge must never block discovery or planning.
 
 **Skip condition**: Skip discovery only when the request is already narrow and fully scoped. If skipped, record the skip reason in the brief.
 
@@ -288,12 +288,12 @@ Validation commands: npm test, npm run validate:runtime
 Task boundaries: In scope = plugin layout, planning skill, marketplace metadata; out of scope = persistent orchestration service
 Dependencies: marketplace naming decision complete
 Recommended next action: invoke /workflow-orchestration:parallel-implementation-loop for implementation
-Prior-learning matches:
+Prior-learnings consulted:
 - docs/knowledge/ci-auth-seed-ordering.md — async seed ordering breaks auth in parallel CI
 Unresolved questions:
 - Whether to keep the current plugin name during the first migration phase
 Workflow outcome measures:
 - discovery-reuse: yes
-- prior-learning-consulted: yes
+- prior-learnings: yes
 - rescue-attempts: 0
 ```
