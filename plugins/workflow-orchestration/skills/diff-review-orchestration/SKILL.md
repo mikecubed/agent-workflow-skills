@@ -78,7 +78,7 @@ If one or more prior learnings match:
 - In **interactive mode**, surface the matching knowledge artifacts as advisory context before proceeding to downstream checks. Present each artifact's Problem and Resolution fields as a short summary. The developer may acknowledge, dismiss, or ask for details, but the learnings do not alter which checks run or how findings are triaged.
 - In **report-only mode**, collect the matching artifacts for inclusion in the durable report (see § Produce mode-specific output). Do not pause.
 
-If no prior learnings match, record the lookup result and continue. The lookup is advisory — it never blocks downstream steps or changes readiness-gate semantics.
+If no prior learnings match, record `prior-learnings: none-found` in the outcome measures and `Prior-learnings consulted: none-found` in the discovery brief, then continue. The lookup is advisory — it never blocks downstream steps or changes readiness-gate semantics.
 
 ### 4. Check for existing review comments
 

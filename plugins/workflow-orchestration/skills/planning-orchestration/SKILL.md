@@ -139,7 +139,7 @@ Use the discovery brief template from `docs/workflow-artifact-templates.md`.
 
 #### Prior-learning lookup
 
-During discovery, the scout checks for previously captured knowledge artifacts that relate to the current task — for example, past debugging lessons, architectural decisions, or resolution patterns stored via `knowledge-compound` or an equivalent repository knowledge sink.
+During discovery, the scout checks for previously captured knowledge artifacts that relate to the current task — for example, past debugging lessons or resolution patterns stored via `knowledge-compound` (or an equivalent repository knowledge sink), as well as architectural decisions or ADRs stored in `architecture-review` or another architecture-decision sink.
 
 **How to search**: scan the repository's knowledge directories, docs, or memory stores for artifacts whose problem description, applicability tags, or technology context overlap with the current task's domain. The search method is repository-dependent; use whatever discovery mechanism is available (file listing, grep, memory retrieval, index query). Do not assume a fixed directory or naming convention.
 
