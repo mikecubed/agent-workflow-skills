@@ -70,7 +70,7 @@ The default end-to-end loop for bounded delivery work follows six phases:
 6. **`/workflow-orchestration:pr-publish-orchestration`** — Publish the
    ready branch. Commits, pushes, and creates or updates the pull request.
    This skill bridges readiness to publication; it does not own release
-   management. For tagging, changelogs, and release artefacts, hand off to
+   management. For tagging, changelogs, and release artifacts, hand off to
    `/workflow-orchestration:release-orchestration`.
 
 **Knowledge capture** is conditional rather than sequential:

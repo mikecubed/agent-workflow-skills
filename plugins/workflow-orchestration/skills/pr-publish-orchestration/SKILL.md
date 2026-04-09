@@ -196,7 +196,7 @@ Developer: /workflow-orchestration:pr-publish-orchestration push and update the 
 Coordinator:
   Branch: fix/null-check → main
   Uncommitted changes: 2 files staged
-  Readiness evidence: all CI checks passing, no unresolved comments
+  Readiness evidence: final-pr-readiness-gate verdict "ready with follow-ups" on the current head commit; supporting context: all CI checks passing, no unresolved comments
   Existing PR: #98
 
   → Committing staged changes...

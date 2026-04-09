@@ -94,7 +94,9 @@ Use for `pr-publish-orchestration`.
 
 ```text
 Publication request: <source branch> against <target branch>
-Readiness source: <final-pr-readiness-gate verdict / diff-review report / CI state>
+Readiness source: <final-pr-readiness-gate verdict for the exact tree being published>
+Supporting readiness context:
+- <diff-review report / CI state / other supporting evidence, or none>
 Current state: validating | committing | pushing | publishing | done | stopped
 Commits published:
 - <short SHA> <subject>, or none
