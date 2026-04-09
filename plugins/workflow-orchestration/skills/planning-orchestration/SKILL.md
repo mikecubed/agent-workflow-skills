@@ -132,9 +132,22 @@ The scout MUST produce a short factual brief covering:
 - validation commands;
 - task boundaries;
 - known dependencies;
-- whether `sdd-workflow` appears available.
+- whether `sdd-workflow` appears available;
+- Prior-learnings consulted (always record matches, `none-found`, or `skipped` — see lookup below).
 
 Use the discovery brief template from `docs/workflow-artifact-templates.md`.
+
+#### Prior-learning lookup
+
+During discovery, the scout checks for previously captured knowledge artifacts that relate to the current task — for example, past debugging lessons or resolution patterns stored via `knowledge-compound` (or an equivalent repository knowledge sink), as well as architectural decisions or ADRs stored in `architecture-review` or another architecture-decision sink.
+
+**How to search**: scan the repository's knowledge directories, docs, or memory stores for artifacts whose problem description, applicability tags, or technology context overlap with the current task's domain. The search method is repository-dependent; use whatever discovery mechanism is available (file listing, grep, memory retrieval, index query). Do not assume a fixed directory or naming convention.
+
+**When matches are found**: include them in the discovery brief under a "Prior-learnings consulted" heading. List each match with a one-line summary and a path or reference. The planner and reviewer receive these as optional factual context — they inform the plan but do not constrain it.
+
+**When no matches are found**: record `Prior-learnings consulted: none-found` in the brief and continue normally. The absence of prior knowledge must never block discovery or planning.
+
+**When lookup is skipped**: if no discoverable knowledge sink exists for the repository, or no discovery mechanism is available in the current environment, record `Prior-learnings consulted: skipped` and briefly note the reason. Use `skipped` only when the lookup could not reasonably be performed, not when a search ran successfully but returned no matches.
 
 **Skip condition**: Skip discovery only when the request is already narrow and fully scoped. If skipped, record the skip reason in the brief.
 
@@ -277,9 +290,12 @@ Validation commands: npm test, npm run validate:runtime
 Task boundaries: In scope = plugin layout, planning skill, marketplace metadata; out of scope = persistent orchestration service
 Dependencies: marketplace naming decision complete
 Recommended next action: invoke /workflow-orchestration:parallel-implementation-loop for implementation
+Prior-learnings consulted:
+- docs/knowledge/ci-auth-seed-ordering.md — async seed ordering breaks auth in parallel CI
 Unresolved questions:
 - Whether to keep the current plugin name during the first migration phase
 Workflow outcome measures:
 - discovery-reuse: yes
+- prior-learnings: 1
 - rescue-attempts: 0
 ```

@@ -99,9 +99,14 @@ Task boundaries: <what is in scope and what is not>
 Validation commands: <command>, <command>
 Dependencies: <known dependencies or shared interfaces, if multi-track>
 Comparison baseline: <branch, commit, or PR reference, if review or readiness>
+Prior-learnings consulted:
+- <path or reference> — <one-line summary>
+or <none-found | skipped>
 Open questions: <questions requiring developer input, or none>
 Skip reason: <if discovery was skipped, why — e.g., "single file, fully scoped bug fix">
 ```
+
+**Prior-learnings lookup**: When the workflow supports prior-learning reuse (e.g., `planning-orchestration`, `diff-review-orchestration`), record the lookup result in the `Prior-learnings consulted` field. When matches are found, list each artifact as a one-line bullet with its path or reference and a short summary. Use `none-found` when the lookup ran but returned no matches, and `skipped` when the lookup was not performed (e.g., no knowledge sink is configured).
 
 **Lifecycle**: Created before track launch or triage. Consumed by the coordinator for track splitting and by implementers and reviewers as factual context. Retired at workflow completion.
 
@@ -113,6 +118,7 @@ Use at the end of any workflow skill to record aggregate effectiveness signals. 
 
 ```text
 discovery-reuse: yes | no | skipped
+prior-learnings: <integer count of matching knowledge artifacts> | none-found | skipped
 rescue-attempts: <integer — total rescue attempts across all tracks, or 0>
 abandonment-events: <integer — tracks or items abandoned without resolution, or 0>
 re-review-loops:
@@ -125,6 +131,7 @@ final-gate-result: ready | ready-with-follow-ups | not-ready | stopped
 | Field | Type | Description |
 |-------|------|-------------|
 | `discovery-reuse` | `yes \| no \| skipped` | Whether the discovery brief was reused by downstream tracks or reviewers. `skipped` if discovery was not performed. |
+| `prior-learnings` | integer \| `none-found` \| `skipped` | Count of knowledge artifacts whose applicability matched the workflow scope. `none-found` when the lookup ran but returned no matches. `skipped` when no knowledge sink was discoverable or the workflow does not support prior-learning lookup. |
 | `rescue-attempts` | integer | Total number of rescue attempts across all tracks during the workflow. |
 | `abandonment-events` | integer | Number of tracks or review items abandoned without resolution. |
 | `re-review-loops` | map of track → count | Per-track count of extra implementer-reviewer revision cycles beyond the initial review. |
@@ -135,6 +142,24 @@ final-gate-result: ready | ready-with-follow-ups | not-ready | stopped
 - Populate the fields that apply to the active workflow at completion as part of the batch summary or final report.
 - If the workflow stops early — due to user interruption, escalation, or a stop condition — record whatever measures are available and append an interruption note explaining which fields are incomplete and why.
 - One outcome-measures block per workflow invocation. Do not aggregate across separate workflow runs.
+
+## Knowledge artifact
+
+Use for `knowledge-compound` and any workflow that captures a reusable lesson from a completed task.
+
+```text
+Problem: <concise description of the problem that was solved>
+Signals: <observable symptoms, error messages, metric anomalies, or behavioral clues that indicated this problem>
+Resolution: <what was done to resolve the problem — the approach, not just the outcome>
+Guardrails: <conditions under which the resolution is safe to apply, and known edge cases or risks>
+Applicability: <when this knowledge applies — technology, context, failure shape, or constraints>
+Source references: <links or paths to the originating session, PR, issue, RCA, or commit>
+Sink reference: <where this artifact is durably stored — file path, issue URL, wiki page, or other repository-appropriate location>
+```
+
+**Sink requirement**: The sink must be durable and repository-appropriate — a committed file, an issue, a wiki page, or another persistent location that survives session end. Chat-only storage does not satisfy this requirement. The specific sink location is a project-level decision; this template does not mandate a global directory taxonomy.
+
+**Lifecycle**: Created at the end of a workflow that produced a reusable lesson. Consumed by future sessions, contributors, or agents encountering the same problem shape. Not retired unless the knowledge is superseded.
 
 ## When to use these templates
 

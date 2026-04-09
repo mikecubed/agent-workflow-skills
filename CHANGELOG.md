@@ -6,6 +6,31 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-04-08
+
+### Added (workflow-orchestration 1.3.0)
+
+- **`knowledge-compound` skill**: captures reusable knowledge from completed workflows
+  — problem, signals, resolution, guardrails, and applicability — and writes it to a
+  durable, repository-appropriate sink. Integrates with the shared knowledge artifact
+  template in `plugins/workflow-orchestration/docs/workflow-artifact-templates.md`.
+- **Prior-learning reuse in `diff-review-orchestration`**: the diff review workflow now
+  looks up knowledge artifacts whose applicability overlaps with the reviewed diff and
+  surfaces matching learnings as advisory context before downstream checks run.
+- **Prior-learning reuse in `planning-orchestration`**: planning discovery can consult
+  prior knowledge artifacts to inform scope decisions and surface known risks.
+- **Shared template alignment**: added `Prior-learnings consulted` field to the discovery
+  brief template and `prior-learnings` outcome measure to the workflow outcome measures
+  contract so all prior-learning-aware skills record lookup results consistently.
+
+### Changed (workflow-orchestration 1.3.0)
+
+- **Version sync**: workflow-orchestration and umbrella marketplace metadata bumped from
+  `1.2.0` to `1.3.0` across the root package, workflow plugin manifests, and marketplace
+  metadata.
+- **Description update**: workflow-orchestration description now includes "knowledge
+  capture" across all synced manifests.
+
 ## [1.2.0] - 2026-04-08
 
 ### Added (workflow-orchestration 1.2.0)
