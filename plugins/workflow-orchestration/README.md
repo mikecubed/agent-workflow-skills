@@ -1,6 +1,6 @@
 # workflow-orchestration
 
-Shared plugin for planning, implementation, review-resolution, PR-readiness orchestration, and knowledge capture across **GitHub Copilot CLI** and **Claude Code**.
+Shared plugin for planning, delivery, review, publication, release orchestration, and knowledge capture across **GitHub Copilot CLI** and **Claude Code**.
 
 ## Skills
 
@@ -23,6 +23,7 @@ This plugin provides:
 - `git-worktree-orchestration`
 - `knowledge-compound`
 - `delivery-orchestration`
+- `pr-publish-orchestration`
 
 Install locally from the umbrella repo:
 
@@ -40,7 +41,7 @@ Expected namespaced usage:
 
 ## Recommended Delivery Loop
 
-The default end-to-end loop for bounded delivery work follows four phases:
+The default end-to-end loop for bounded delivery work follows six phases:
 
 1. **`/workflow-orchestration:planning-orchestration`** — Produce an accepted
    plan with scoped tasks and acceptance criteria. Optionally compose with
@@ -57,10 +58,25 @@ The default end-to-end loop for bounded delivery work follows four phases:
    `delivery-orchestration` recommends it whenever the downstream skill
    completes work that produced a non-empty diff.
 
-4. **`/workflow-orchestration:knowledge-compound`** — Capture any durable
-   reusable lessons from the delivery. This handoff is conditional —
-   `delivery-orchestration` recommends it only when the delivery produced
-   non-obvious insights worth preserving beyond the current session.
+4. **`/workflow-orchestration:pr-review-resolution-loop`** — Address the
+   findings from the diff review. Triages each comment, applies scoped fixes,
+   and closes review threads one by one until no unresolved items remain.
+
+5. **`/workflow-orchestration:final-pr-readiness-gate`** — Run the merge
+   gate. Re-checks the branch holistically — CI status, test coverage,
+   documentation, and any remaining open threads — and produces a go / no-go
+   verdict.
+
+6. **`/workflow-orchestration:pr-publish-orchestration`** — Publish the
+   ready branch. Commits, pushes, and creates or updates the pull request.
+   This skill bridges readiness to publication; it does not own release
+   management. For tagging, changelogs, and release artifacts, hand off to
+   `/workflow-orchestration:release-orchestration`.
+
+**Knowledge capture** is conditional rather than sequential:
+`/workflow-orchestration:knowledge-compound` may be invoked at any point
+when a delivery produces non-obvious insights worth preserving beyond the
+current session.
 
 Requests that lack scope, explore trade-offs, or ask about versioning never
 enter delivery. `delivery-orchestration` deflects them to the appropriate
@@ -70,7 +86,7 @@ upstream skill (`planning-orchestration`, `brainstorm-ideation`, or
 ## Recommended Review Path
 
 The review chain moves code from implementation-complete through structured
-review to merge-ready. Use the skills in this order:
+review to publication-ready. Use the skills in this order:
 
 1. **`/workflow-orchestration:diff-review-orchestration`** — Run first once
    implementation is complete. This skill performs a structured diff review
@@ -83,16 +99,38 @@ review to merge-ready. Use the skills in this order:
    scoped fixes, and closes review threads one by one until no unresolved
    items remain.
 
-3. **`/workflow-orchestration:final-pr-readiness-gate`** — Run last as the
-   merge gate. It re-checks the branch holistically — CI status, test
+3. **`/workflow-orchestration:final-pr-readiness-gate`** — The merge gate.
+   It re-checks the branch holistically — CI status, test
    coverage, documentation, and any remaining open threads — and produces a
    go / no-go verdict.
+
+**Handoff to publication:** Once the readiness gate passes, invoke
+`/workflow-orchestration:pr-publish-orchestration` to commit, push, and
+create or update the pull request (see
+[Publication and Release](#publication-and-release) below).
 
 **Optional setup:** If you are working across multiple worktrees or need
 isolated review branches, invoke
 `/workflow-orchestration:git-worktree-orchestration` before starting the
 review chain. It provisions and manages dedicated worktrees so parallel
 review and implementation workflows do not interfere with each other.
+
+## Publication and Release
+
+PR publication and release management are separate concerns:
+
+- **`/workflow-orchestration:pr-publish-orchestration`** handles the last
+  mile after readiness: commit, push, and PR creation or update. It requires
+  a passing readiness gate on the exact tree being published and does not
+  perform tagging, changelog generation, or artifact publishing.
+
+- **`/workflow-orchestration:release-orchestration`** owns the release
+  pipeline: conventional-commit semver calculation, CHANGELOG update, git tag
+  creation, and optional GitHub release. Invoke it only after a branch or PR
+  has landed and a stable post-merge branch is ready for a versioned release.
+
+The two skills never overlap — `pr-publish-orchestration` deflects release
+requests to `release-orchestration`, and vice versa.
 
 ## Knowledge Capture and Reuse
 

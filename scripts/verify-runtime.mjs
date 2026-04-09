@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
+const ROOT_PACKAGE_NAME = JSON.parse(
+  fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'),
+).name;
 const PLUGIN_TARGETS = new Map([
   [
     'workflow-orchestration',
@@ -73,6 +76,23 @@ function run(command, args, options = {}) {
     stdio: ['ignore', 'pipe', 'pipe'],
     ...options,
   });
+}
+
+function tryRun(command, args, options = {}) {
+  try {
+    return {
+      ok: true,
+      stdout: run(command, args, options),
+      stderr: '',
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      stdout: error.stdout ?? '',
+      stderr: error.stderr ?? '',
+      error,
+    };
+  }
 }
 
 function outputIncludesToken(output, expectedToken) {
@@ -156,7 +176,25 @@ function verifyCopilotRuntime(pluginRoot, relativeSkillDir) {
       );
     }
 
-    run('copilot', ['plugin', 'uninstall', '--config-dir', configDir, pluginName]);
+    const uninstallResult = tryRun(
+      'copilot',
+      ['plugin', 'uninstall', '--config-dir', configDir, pluginName],
+    );
+
+    if (!uninstallResult.ok) {
+      const knownAliases = [pluginName, `${pluginName}@${ROOT_PACKAGE_NAME}`];
+      const uninstallMissingKnownAlias = knownAliases.some((alias) => (
+        uninstallResult.stderr.includes(`Plugin "${alias}" is not installed`)
+      ));
+
+      if (!uninstallMissingKnownAlias) {
+        throw uninstallResult.error;
+      }
+
+      console.warn(
+        `Copilot uninstall skipped for ${pluginName}: CLI reported the plugin missing in isolated config; removing config dir instead.`,
+      );
+    }
   } finally {
     fs.rmSync(configDir, { recursive: true, force: true });
   }
