@@ -2,6 +2,12 @@
 
 Shared plugin for planning, delivery, review, publication, release orchestration, and knowledge capture across **GitHub Copilot CLI** and **Claude Code**.
 
+## Start here
+
+For the quickest path to the right workflow, see:
+
+- `docs/workflow-usage-guide.md` - when to use each workflow and the larger composed loops
+
 ## Skills
 
 This plugin provides:
@@ -38,6 +44,35 @@ Expected namespaced usage:
 /workflow-orchestration:planning-orchestration
 /workflow-orchestration:parallel-implementation-loop
 ```
+
+## Shared defaults and durable state foundation
+
+Repositories can now define the shared workflow foundation in two separate
+artifacts:
+
+- `.workflow-orchestration/defaults.json` — repo-level workflow defaults such as
+  artifact sinks, review mode, automation guardrails, knowledge defaults, and
+  publish preferences. The contract is documented in
+  `docs/workflow-defaults-contract.md`.
+- `.workflow-orchestration/state.json` — durable workflow lifecycle state for
+  later continuation or conductor-style workflows. The contract is documented in
+  `docs/workflow-state-contract.md`.
+
+The first adopting workflows are:
+
+- `planning-orchestration` — consults shared defaults for planning sinks and
+  discovery context when present;
+- `diff-review-orchestration` — consults shared defaults for review-mode
+  baseline and related guardrails when present;
+- `pr-publish-orchestration` — consults shared defaults for publish preferences
+  and durable publish-summary sinks when present;
+- `knowledge-compound` — can use a repo-default sink while keeping explicit
+  developer override and no mandatory taxonomy.
+
+If the defaults file is absent or partial, those workflows keep their documented
+fallback behavior. Durable workflow state remains separate from transient
+session continuity in `.agent/SESSION.md` and `.agent/HANDOFF.json`; see
+`docs/session-md-schema.md` for that boundary.
 
 ## Recommended Delivery Loop
 
@@ -163,6 +198,9 @@ gate semantics. Knowledge artifacts use the shared template defined in
 - `skills/*/SKILL.md` — shared skill definitions
 - `docs/models-config-template.md` — model override examples
 - `docs/workflow-artifact-templates.md` — durable artifact templates
+- `docs/workflow-defaults-contract.md` — shared defaults contract
+- `docs/workflow-state-contract.md` — durable workflow-state contract
+- `docs/workflow-usage-guide.md` — product-level workflow guide
 - `test/plugin-layout.test.js` — workflow plugin structural checks
 
 ## Validation

@@ -44,7 +44,7 @@ Before you start, identify:
 - **source type** — the kind of workflow that produced the knowledge (e.g., `systematic-debugging`, `incident-rca`, `parallel-implementation-loop`, or a manual investigation);
 - **source references** — links or paths to the originating session, PR, issue, RCA, commit, or other evidence;
 - **summary** — a short description of what was learned, provided by the developer or extracted from the source;
-- **sink** — where the durable knowledge artifact should be written (e.g., a file path, issue, wiki page). When the repository declares shared workflow defaults (see `plugins/workflow-orchestration/docs/workflow-defaults-contract.md`) with a knowledge-capture sink preference, use that configured path as the default destination. When the developer provides an explicit sink, the developer's choice overrides any configured default. When neither an explicit choice nor a configured default is available, ask before proceeding. Do not assume a default directory — sink location is a project-level decision, and the defaults contract does not impose a mandatory taxonomy.
+- **sink** — where the durable knowledge artifact should be written (e.g., a file path, issue, wiki page). When the repository declares shared workflow defaults (see `docs/workflow-defaults-contract.md`) with a knowledge-capture sink preference, use that configured path as the default destination. When the developer provides an explicit sink, the developer's choice overrides any configured default. When neither an explicit choice nor a configured default is available, ask before proceeding. Do not assume a default directory — sink location is a project-level decision, and the defaults contract does not impose a mandatory taxonomy.
 
 ## Workflow
 

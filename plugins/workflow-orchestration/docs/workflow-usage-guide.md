@@ -1,0 +1,169 @@
+# Workflow usage guide
+
+Use this guide when you want the plugin to feel like a coherent product instead of a flat skill list. It explains the main composed loops, then gives a quick "when to use it" reference for each workflow.
+
+Prefer plugin-qualified names such as `/workflow-orchestration:delivery-orchestration`.
+
+## Start here
+
+| If you are trying to... | Start with | Then usually go to |
+| --- | --- | --- |
+| Explore a rough feature idea | `brainstorm-ideation` | `planning-orchestration` or `sdd-workflow` |
+| Turn a clarified idea into a scoped plan | `planning-orchestration` | `delivery-orchestration` |
+| Execute a reviewed plan or next-ready task | `delivery-orchestration` | `diff-review-orchestration` |
+| Review a branch or PR diff | `diff-review-orchestration` | `pr-review-resolution-loop` |
+| Work through review feedback | `pr-review-resolution-loop` | `final-pr-readiness-gate` |
+| Decide if a branch is actually ready | `final-pr-readiness-gate` | `pr-publish-orchestration` |
+| Publish a ready branch as a PR | `pr-publish-orchestration` | human review or `release-orchestration` after merge |
+| Capture a reusable lesson | `knowledge-compound` | future planning and review workflows consume it advisory-only |
+| Debug a failing behavior or regression | `systematic-debugging` | `knowledge-compound` if the result is reusable |
+| Run a post-incident analysis | `incident-rca` | follow-up planning or `knowledge-compound` |
+
+## Shared defaults and durable state
+
+The plugin now documents one shared foundation for higher-level automation:
+
+- `.workflow-orchestration/defaults.json` — repo-level workflow defaults. See
+  `docs/workflow-defaults-contract.md`.
+- `.workflow-orchestration/state.json` — durable workflow lifecycle state. See
+  `docs/workflow-state-contract.md`.
+
+The first workflows that consume the shared defaults are:
+
+- `planning-orchestration` for planning sinks and discovery context;
+- `diff-review-orchestration` for review-mode baseline and related guardrails;
+- `pr-publish-orchestration` for publish preferences and durable publish-summary
+  sinks;
+- `knowledge-compound` for repo-default knowledge sinks.
+
+When defaults are missing or only partially configured, those workflows keep
+their existing fallback behavior. Durable workflow state is intentionally
+separate from transient session continuity in `.agent/SESSION.md` and
+`.agent/HANDOFF.json`.
+
+## The main composed loops
+
+### 1. Clarified idea to PR-ready branch
+
+Use this when the work is feature-shaped and you want the normal delivery path.
+
+```text
+brainstorm-ideation (optional)
+  -> planning-orchestration / sdd-workflow
+  -> delivery-orchestration
+  -> diff-review-orchestration
+  -> pr-review-resolution-loop
+  -> final-pr-readiness-gate
+  -> pr-publish-orchestration
+```
+
+Notes:
+
+- Start at `brainstorm-ideation` only if the idea is still fuzzy.
+- `delivery-orchestration` chooses direct implementation, parallel tracks, swarm, or debugging.
+- `pr-publish-orchestration` stops at commit / push / PR publication. It does not do release work.
+
+### 2. Bug or regression to reusable lesson
+
+Use this when the main problem is fault isolation rather than new feature delivery.
+
+```text
+systematic-debugging
+  -> diff-review-orchestration (if code changed)
+  -> final-pr-readiness-gate
+  -> knowledge-compound
+```
+
+Notes:
+
+- If the fix attracts review feedback, insert `pr-review-resolution-loop` before the final gate.
+- `knowledge-compound` is the right place for non-obvious debugging lessons that should survive the session.
+
+### 3. Incident to follow-up change
+
+Use this when the immediate need is understanding what happened, not just patching code.
+
+```text
+incident-rca
+  -> planning-orchestration
+  -> delivery-orchestration
+  -> review / gate / publish
+  -> knowledge-compound
+```
+
+Notes:
+
+- `incident-rca` explains the event.
+- Planning and delivery own the corrective or preventative changes.
+
+### 4. Large or uncertain execution
+
+Use this when the work is too unclear or too coupled for fixed parallel tracks.
+
+```text
+planning-orchestration
+  -> delivery-orchestration
+  -> swarm-orchestration
+  -> diff-review-orchestration
+  -> readiness / publish
+```
+
+Notes:
+
+- Reach for `swarm-orchestration` only when decomposition itself is part of the problem.
+- If task boundaries are already clear, `parallel-implementation-loop` is usually the better fit.
+
+## Workflow reference
+
+### Core loop workflows
+
+| Workflow | Use it when | Do not use it when | Typical next step |
+| --- | --- | --- | --- |
+| `brainstorm-ideation` | The idea is still fuzzy and you need constraints, trade-offs, and risks surfaced before spec work. | Requirements are already clear or the task is a narrow bug fix. | `planning-orchestration` or `sdd-workflow` |
+| `planning-orchestration` | You need a durable plan, sequencing, validation, and execution handoff. | The change is already fully scoped and tiny. | `delivery-orchestration` |
+| `delivery-orchestration` | You have accepted scope and want the best execution path chosen for you. | The request is still exploratory, review-shaped, or release-shaped. | direct implementation, `parallel-implementation-loop`, `swarm-orchestration`, or `systematic-debugging` |
+| `parallel-implementation-loop` | There are multiple independent ready tasks and you want disciplined parallel tracks. | Boundaries are unclear or tasks interact heavily. | `diff-review-orchestration` |
+| `swarm-orchestration` | The work is large or uncertain enough that decomposition must happen at runtime. | The task list is already clean and fixed. | `diff-review-orchestration` |
+| `diff-review-orchestration` | You want a first-class diff review on a branch, PR, or commit range. | You are still implementing or you only need to resolve existing comments. | `pr-review-resolution-loop` or `final-pr-readiness-gate` |
+| `pr-review-resolution-loop` | There are review comments or findings that need triage, fixes, replies, and closure. | You need a first-pass review rather than comment resolution. | `final-pr-readiness-gate` |
+| `final-pr-readiness-gate` | The branch is stable and you want an explicit ready / not-ready judgment. | The diff is still changing significantly. | `pr-publish-orchestration` |
+| `pr-publish-orchestration` | The exact tree is ready and you need commit / push / PR creation or update. | Readiness is missing, stale, or the request is really about releasing. | human review or `release-orchestration` after merge |
+| `release-orchestration` | Post-merge branch is ready for versioning, changelog, tagging, and optional release creation. | You only need to publish a PR. | release complete |
+| `knowledge-compound` | A completed workflow produced a reusable lesson worth preserving durably. | The work is still in progress or the task is a normal README/docs update. | future planning or review uses the artifact advisory-only |
+
+### Specialist and support workflows
+
+| Workflow | Use it when | Do not use it when | Typical next step |
+| --- | --- | --- | --- |
+| `map-codebase` | You need a clean factual orientation to the repository before planning or delivery. | You already know the exact files and boundaries. | `planning-orchestration`, `architecture-review`, or delivery |
+| `architecture-review` | You need design pressure-testing, ADR-like reasoning, or architecture trade-off review. | The work is just a small implementation slice. | planning, delivery, or explicit ADR follow-up |
+| `systematic-debugging` | The task is fault isolation, a failing test, or a regression investigation. | The work is primarily feature delivery. | `knowledge-compound`, review, or a follow-up delivery workflow |
+| `incident-rca` | You need post-incident causal analysis and a durable incident report. | You only need to fix a local bug quickly. | planning for follow-up changes or `knowledge-compound` |
+| `git-worktree-orchestration` | You need worktree creation, validation, or cleanup for parallel tracks. | You are not actually running isolated parallel work. | `parallel-implementation-loop` |
+| `e2e-test-generation` | A scoped feature needs end-to-end test coverage added deliberately. | You are still exploring the feature shape. | delivery, review, or readiness |
+| `contract-generator` | You need a contract/schema/testable interface artifact generated from agreed scope. | The task is exploratory or the contract is already stable. | planning, implementation, or review |
+
+## How to choose between the execution workflows
+
+| If the work looks like... | Use |
+| --- | --- |
+| one tight task, one file or one small module | `delivery-orchestration` -> direct implementation |
+| several independent ready tasks | `delivery-orchestration` -> `parallel-implementation-loop` |
+| a large change with unclear boundaries | `delivery-orchestration` -> `swarm-orchestration` |
+| a failing behavior, regression, or reproducibility problem | `delivery-orchestration` -> `systematic-debugging` |
+
+## What this plugin supports today vs what still needs a higher-level conductor
+
+The plugin now supports the major phases of the engineering loop. What it does **not** yet provide is one opt-in workflow that automatically carries a clarified idea through every later phase without manual switching.
+
+So today:
+
+- the **phases** are present;
+- the **specialist workflows** are strong;
+- the **product gap** is mostly lifecycle glue.
+
+That is why the safest default is still:
+
+1. choose the right workflow for the current phase;
+2. use the "Typical next step" column to move forward deliberately;
+3. treat `knowledge-compound` as conditional, not mandatory.
