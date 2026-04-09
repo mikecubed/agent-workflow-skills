@@ -9,7 +9,7 @@ enforce context hygiene in systematic debugging.
 > failed hypotheses, and decisions made during that session. They are **not** the right place
 > for cross-session workflow lifecycle data such as completed phases, automation mode, or
 > durable artifact references. For that purpose, see the
-> [Workflow State Contract](workflow-state-contract.md), which defines `.workflow/state.yaml`
+> [Workflow State Contract](workflow-state-contract.md), which defines `.workflow-orchestration/state.json`
 > as the durable workflow-state artifact.
 
 ## File location
@@ -219,12 +219,12 @@ separate machine-readable artifact such as
 
 The session continuity artifacts defined in this document (`.agent/SESSION.md` and
 `.agent/HANDOFF.json`) serve a different purpose from the durable workflow-state artifact
-(`.workflow/state.yaml`) defined in the
+(`.workflow-orchestration/state.json`) defined in the
 [Workflow State Contract](workflow-state-contract.md).
 
 | Concern | Session continuity | Workflow state |
 |---------|-------------------|----------------|
-| **Artifacts** | `.agent/SESSION.md`, `.agent/HANDOFF.json` | `.workflow/state.yaml` |
+| **Artifacts** | `.agent/SESSION.md`, `.agent/HANDOFF.json` | `.workflow-orchestration/state.json` |
 | **Scope** | Single agent session | Cross-session workflow lifecycle |
 | **Lifespan** | Ephemeral — replaced or abandoned when the session ends | Durable — survives across sessions and contributors |
 | **Purpose** | Resume interrupted work; avoid repeating failed hypotheses | Track multi-phase workflow progress, artifact references, automation mode |
@@ -239,8 +239,8 @@ The session continuity artifacts defined in this document (`.agent/SESSION.md` a
    hypotheses or session-scoped blockers. Information flows from durable to transient,
    not the reverse.
 3. A session that updates workflow progress (e.g., completing a phase) should update
-   `.workflow/state.yaml` through the owning workflow skill, not by modifying session
+   `.workflow-orchestration/state.json` through the owning workflow skill, not by modifying session
    continuity fields.
 4. The two artifact families have independent discovery rules. Session continuity uses
    the `.agent/SESSION.md` → `.agent/HANDOFF.json` fallback chain. Workflow state uses
-   `.workflow/state.yaml` with no fallback chain.
+   `.workflow-orchestration/state.json` with no fallback chain.
