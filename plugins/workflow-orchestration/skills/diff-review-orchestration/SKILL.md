@@ -35,7 +35,7 @@ This skill supports three modes:
 Before you start, identify:
 
 - **Diff target** — the branch, PR number, or commit range to review (e.g., `HEAD~3..HEAD`, `PR #42`, `feat/widget`).
-- **Mode flag** — `interactive` (default), `report-only`, or `headless`. If unspecified, default to interactive. When shared workflow defaults declare a preferred review mode (see `docs/workflow-defaults-contract.md`), use that as the default instead. An explicit mode flag always overrides the configured default.
+- **Mode flag** — `interactive` (default), `report-only`, or `headless`. If unspecified, default to interactive. When shared workflow defaults declare a preferred review mode (see `plugins/workflow-orchestration/docs/workflow-defaults-contract.md`), use that as the default instead. An explicit mode flag always overrides the configured default.
 - **`--base` override** — the comparison baseline branch or commit. Defaults to the repository's default branch (usually `main`) if not provided.
 - **Codex availability** — whether `clean-code-codex:conductor` is loaded and available in the current session. Check for the plugin at startup; if unavailable, the coordinator degrades gracefully (see § Codex unavailable fallback).
 - **Shared workflow defaults** — whether the repository declares shared workflow defaults. If present, consume relevant keys — preferred review mode, knowledge-sink location for prior-learning lookups, and artifact sink preferences for the durable review report. If defaults are absent or a specific key is missing, fall back to the per-invocation behavior described in each step below.

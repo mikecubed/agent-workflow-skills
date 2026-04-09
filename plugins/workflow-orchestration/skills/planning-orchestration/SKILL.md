@@ -33,7 +33,7 @@ Before you start, identify:
 - where durable planning artifacts should live;
 - whether `sdd-workflow` is available in the current runtime;
 - whether the repository permits `.sdd/` planning workspaces or expects another temporary planning sink;
-- whether the repository declares shared workflow defaults (see `docs/workflow-defaults-contract.md`) — particularly artifact sink preferences and automation policy. If defaults are present, use them as the baseline for planning decisions described below; if absent, continue with the existing per-invocation approach.
+- whether the repository declares shared workflow defaults (see `plugins/workflow-orchestration/docs/workflow-defaults-contract.md`) — particularly artifact sink preferences and automation policy. If defaults are present, use them as the baseline for planning decisions described below; if absent, continue with the existing per-invocation approach.
 
 ## Default Roles
 
@@ -240,7 +240,7 @@ Before stopping, publish one durable planning artifact or summary that records:
 6. recommended next action;
 7. workflow outcome measures.
 
-The artifact MUST use a repository-appropriate durable sink — for example, a committed document, PR description, issue comment, or task tracker entry. When shared workflow defaults declare an artifact sink preference for planning artifacts, use that configured sink as the default destination. When no default is configured, fall back to asking the developer or inferring from repository conventions. See `docs/workflow-defaults-contract.md` for key definitions and fallback behavior.
+The artifact MUST use a repository-appropriate durable sink — for example, a committed document, PR description, issue comment, or task tracker entry. When shared workflow defaults declare an artifact sink preference for planning artifacts, use that configured sink as the default destination. When no default is configured, fall back to asking the developer or inferring from repository conventions. See `plugins/workflow-orchestration/docs/workflow-defaults-contract.md` for key definitions and fallback behavior.
 
 When appropriate, recommend the next workflow explicitly:
 
