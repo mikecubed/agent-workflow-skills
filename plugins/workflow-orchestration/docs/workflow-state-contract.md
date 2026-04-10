@@ -16,8 +16,7 @@ step can answer these questions without scraping chat history:
 
 ## Canonical file identity
 
-For milestone `1.9.0`, the durable workflow-state artifact lives at one
-canonical root-relative path:
+The durable workflow-state artifact lives at one canonical root-relative path:
 
 ```text
 .workflow-orchestration/state.json
@@ -188,7 +187,7 @@ Treat the state as stale when any of the following is true:
 - `updated-at` predates a newer durable artifact that should have superseded it;
 - `owner` no longer matches the workflow attempting to continue
   (**lifecycle-owner mismatch**);
-- the schema version is unsupported.
+- the schema version is unsupported;
 - readiness or publish evidence no longer describes the exact current tree
   (**invalidated readiness or publish evidence**).
 
