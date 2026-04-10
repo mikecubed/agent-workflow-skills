@@ -191,9 +191,9 @@ Use for final post-merge closeout in `idea-to-done-orchestration`.
 Request: <clarified work request or accepted task bundle>
 Lifecycle owner: idea-to-done-orchestration
 State file: .workflow-orchestration/state.json
-Shipped outcome: <merged | merged with follow-ups | partial closeout | blocked closeout>
-Merge status: <published but not merged | merge-monitoring | merge-waiting-human | merged>
-Release disposition: <not-required | release-entry | completed | blocked | skipped>
+Shipped outcome (prose): <merged | merged with follow-ups | partial closeout | blocked closeout>
+Merge status (prose): <published but not merged | under merge monitoring | waiting on human merge | merged>
+Release disposition (prose): <not required | release entry created | completed | blocked | skipped>
 Knowledge steps:
 - capture: <artifact or none>
 - refresh: <artifact or recommendation or none>
