@@ -181,6 +181,38 @@ describe('workflow-orchestration skills layout', () => {
     assert.match(text, /Explicit opt-in/);
     assert.match(text, /final-gate-result:\s+stopped/);
   });
+
+  it('documents shared-defaults adoption in the planning, diff-review, publish, and knowledge workflows', () => {
+    const planning = readText(ROOT, path.join('skills', 'planning-orchestration', 'SKILL.md'));
+    const diffReview = readText(ROOT, path.join('skills', 'diff-review-orchestration', 'SKILL.md'));
+    const publish = readText(ROOT, path.join('skills', 'pr-publish-orchestration', 'SKILL.md'));
+    const knowledge = readText(ROOT, path.join('skills', 'knowledge-compound', 'SKILL.md'));
+
+    assert.match(planning, /docs\/workflow-defaults-contract\.md/);
+    assert.match(planning, /artifact sink/i);
+    assert.match(diffReview, /docs\/workflow-defaults-contract\.md/);
+    assert.match(diffReview, /preferred review mode|review mode/i);
+    assert.match(publish, /docs\/workflow-defaults-contract\.md/);
+    assert.match(publish, /publish summary/i);
+    assert.match(knowledge, /docs\/workflow-defaults-contract\.md/);
+    assert.match(knowledge, /configured default/i);
+  });
+
+  it('publishes the workflow defaults and durable state contracts with the session boundary update', () => {
+    const defaults = readText(ROOT, path.join('docs', 'workflow-defaults-contract.md'));
+    const state = readText(ROOT, path.join('docs', 'workflow-state-contract.md'));
+    const sessionSchema = readText(ROOT, path.join('docs', 'session-md-schema.md'));
+
+    assert.match(defaults, /\.workflow-orchestration\/defaults\.json/);
+    assert.match(defaults, /Override precedence/);
+    assert.match(defaults, /artifact sink normalization/i);
+    assert.match(state, /\.workflow-orchestration\/state\.json/);
+    assert.match(state, /automation-mode/);
+    assert.match(state, /Separation from transient session continuity/);
+    assert.match(sessionSchema, /workflow-state-contract\.md/);
+    assert.match(sessionSchema, /\.workflow-orchestration\/state\.json/);
+    assert.doesNotMatch(sessionSchema, /\.workflow\/state\.yaml/);
+  });
 });
 
 describe('workflow-orchestration package contents', () => {
@@ -192,6 +224,9 @@ describe('workflow-orchestration package contents', () => {
     assert.ok(files.includes('README.md'));
     assert.ok(files.includes('docs/models-config-template.md'));
     assert.ok(files.includes('docs/workflow-artifact-templates.md'));
+    assert.ok(files.includes('docs/workflow-defaults-contract.md'));
+    assert.ok(files.includes('docs/workflow-state-contract.md'));
+    assert.ok(files.includes('docs/workflow-usage-guide.md'));
 
     for (const skill of [
       'planning-orchestration',

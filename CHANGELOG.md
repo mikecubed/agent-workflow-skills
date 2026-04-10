@@ -6,6 +6,40 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-04-09
+
+### Added (workflow-orchestration 1.6.0)
+
+- **Shared workflow defaults contract**: adds
+  `plugins/workflow-orchestration/docs/workflow-defaults-contract.md`, defining
+  the repo-level defaults file, key groups, fallback behavior, override
+  precedence, artifact sink normalization, and automation guardrails for later
+  lifecycle automation.
+- **Durable workflow-state contract**: adds
+  `plugins/workflow-orchestration/docs/workflow-state-contract.md`, defining the
+  canonical `.workflow-orchestration/state.json` artifact, required fields,
+  ownership boundaries, stale-state handling, and explicit separation from
+  transient session continuity.
+- **Workflow usage guide**: adds
+  `plugins/workflow-orchestration/docs/workflow-usage-guide.md` as a product
+  guide for the composed loops plus the new defaults/state foundation.
+
+### Changed (workflow-orchestration 1.6.0)
+
+- **Defaults adoption in core workflows**: `planning-orchestration`,
+  `diff-review-orchestration`, `pr-publish-orchestration`, and
+  `knowledge-compound` now document how they consult shared defaults when
+  present and fall back cleanly when the defaults file is absent or partial.
+- **Session continuity boundary**: `docs/session-md-schema.md` now explicitly
+  distinguishes transient `.agent/SESSION.md` / `.agent/HANDOFF.json` continuity
+  from durable workflow lifecycle state in `.workflow-orchestration/state.json`.
+- **Product docs and structural coverage**: the workflow README and plugin test
+  suite now cover the defaults/state foundation docs, the initial adopting
+  workflows, and the new usage-guide surface.
+- **Version sync**: workflow-orchestration and umbrella marketplace metadata
+  bumped from `1.5.0` to `1.6.0` across the root package, lockfile, workflow
+  package/manifests, and marketplace metadata.
+
 ## [1.5.0] - 2026-04-09
 
 ### Added (workflow-orchestration 1.5.0)
