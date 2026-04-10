@@ -1,6 +1,6 @@
 # workflow-orchestration
 
-Shared plugin for planning, delivery, review, publication, release orchestration, and knowledge capture across **GitHub Copilot CLI** and **Claude Code**.
+Shared plugin for planning, delivery, review, publication, release orchestration, knowledge capture, and knowledge refresh across **GitHub Copilot CLI** and **Claude Code**.
 
 ## Start here
 
@@ -29,6 +29,7 @@ This plugin provides:
 - `diff-review-orchestration`
 - `git-worktree-orchestration`
 - `knowledge-compound`
+- `knowledge-refresh`
 - `delivery-orchestration`
 - `pr-publish-orchestration`
 
@@ -93,6 +94,9 @@ artifacts:
 - `.workflow-orchestration/state.json` — durable workflow lifecycle state for
   later continuation or conductor-style workflows. The contract is documented in
   `docs/workflow-state-contract.md`.
+- `.workflow-orchestration/artifacts/` — canonical local sink for generated
+  workflow reports and summaries when a workflow writes an on-disk artifact.
+  Create them here by default, but do not commit them unless explicitly asked.
 
 The first adopting workflows are:
 
@@ -106,10 +110,14 @@ The first adopting workflows are:
 - `pr-publish-orchestration` — consults shared defaults for publish preferences
   and durable publish-summary sinks when present;
 - `knowledge-compound` — can use a repo-default sink while keeping explicit
-  developer override and no mandatory taxonomy.
+  developer override and no mandatory taxonomy;
+- `knowledge-refresh` — consults shared defaults for knowledge-sink discovery,
+  automation progression, and refresh-summary artifact sinks when present.
 
 If the defaults file is absent or partial, those workflows keep their documented
-fallback behavior. Durable workflow state remains separate from transient
+fallback behavior. Workflows that need local durable artifacts should inspect
+`.workflow-orchestration/artifacts/` directly or follow references from
+`.workflow-orchestration/state.json`. Durable workflow state remains separate from transient
 session continuity in `.agent/SESSION.md` and `.agent/HANDOFF.json`; those
 session files stay advisory and never replace `.workflow-orchestration/state.json`.
 See `docs/session-md-schema.md` for that boundary.
@@ -213,7 +221,7 @@ PR publication and release management are separate concerns:
 The two skills never overlap — `pr-publish-orchestration` deflects release
 requests to `release-orchestration`, and vice versa.
 
-## Knowledge Capture and Reuse
+## Knowledge Capture, Refresh, and Reuse
 
 After a workflow produces a reusable lesson — a debugging insight, a
 non-ADR implementation decision, a non-obvious configuration fix — invoke
@@ -222,20 +230,36 @@ structured knowledge artifact and write it to a durable, repository-appropriate
 sink. For formal architecture decision records, use
 `/workflow-orchestration:architecture-review` instead.
 
-Captured knowledge feeds back into future workflows:
+When existing knowledge artifacts become stale, duplicated, or obsolete, invoke
+`/workflow-orchestration:knowledge-refresh` to evaluate and maintain them. The
+refresh workflow classifies candidates as trusted, stale, duplicate, obsolete,
+superseded, or needs-capture and applies the appropriate maintenance action. It
+supports `manual`, `guided`, and `auto` progression modes, records durable
+workflow-state updates at each owned phase boundary, and routes missing-capture
+gaps back to `knowledge-compound` or architecture-shaped candidates to
+`architecture-review`.
+
+Captured and refreshed knowledge feeds back into future workflows:
 
 - **`/workflow-orchestration:diff-review-orchestration`** looks up prior
   knowledge artifacts whose applicability overlaps with the reviewed diff.
-  Matching learnings are surfaced as advisory context before downstream
-  checks run.
+  When refresh metadata exists, it prefers active canonical artifacts and
+  suppresses retired or stale duplicates. Matching learnings are surfaced as
+  advisory context before downstream checks run.
 
 - **`/workflow-orchestration:planning-orchestration`** can consult prior
   knowledge artifacts during discovery to inform scope decisions and
-  surface known risks or resolutions relevant to the planned work.
+  surface known risks or resolutions relevant to the planned work. When
+  refresh metadata exists, it prefers canonical artifacts and annotates
+  entries with their refresh status.
 
 The lookup is always advisory — it never blocks downstream steps or alters
-gate semantics. Knowledge artifacts use the shared template defined in
-`docs/workflow-artifact-templates.md`.
+gate semantics. When refresh metadata is absent or partial, both consumers
+fall back cleanly to the existing advisory prior-learning behavior.
+
+Knowledge artifacts use the shared template defined in
+`docs/workflow-artifact-templates.md`. Refresh summaries use the `Refresh summary`
+template in the same document.
 
 ## Plugin layout
 

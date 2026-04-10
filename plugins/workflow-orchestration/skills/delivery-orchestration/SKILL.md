@@ -156,7 +156,7 @@ Input: "Deliver T012: add the retry helper to src/utils/retry.ts with unit tests
 Classification: task reference (single task, single file)
 Route: direct
 Rationale: One task, one file, clear scope — no orchestration overhead needed.
-Forwarded: task ID T012, file src/utils/retry.ts, validation: npm test -- test/utils/retry.test.ts, direct report sink: docs/direct-execution-retry-helper.md, default review mode: report-only (from shared defaults or local heuristic)
+Forwarded: task ID T012, file src/utils/retry.ts, validation: npm test -- test/utils/retry.test.ts, direct report sink: .workflow-orchestration/artifacts/direct-execution-retry-helper.md, default review mode: report-only (from shared defaults or local heuristic)
 ```
 
 **Example 2 — Parallel implementation**
@@ -514,7 +514,7 @@ Coordinator post-delivery recommendation:
   1. Review handoff → /workflow-orchestration:diff-review-orchestration
      Diff surface: feat/feature-abc against main
      Validation outcome: pass
-     Direct-execution report / track report: docs/track-report-feature-abc.md
+     Direct-execution report / track report: .workflow-orchestration/artifacts/track-report-feature-abc.md
      Mode suggestion: interactive (multiple files across two modules)
 
   2. Knowledge capture handoff → /workflow-orchestration:knowledge-compound

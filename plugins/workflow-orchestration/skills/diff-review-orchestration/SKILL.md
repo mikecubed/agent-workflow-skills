@@ -90,6 +90,7 @@ Matching rules:
 - Scan repository-local knowledge sinks (e.g., a `docs/knowledge/` directory, issue labels, or another project-configured location). When shared workflow defaults declare a knowledge-sink location, use that as the primary lookup path. If no knowledge sink is discoverable from defaults or project conventions, skip this step and record `prior-learnings: skipped` in the outcome measures and `Prior-learnings consulted: skipped` in the discovery brief.
 - Match by file path overlap (any changed file or its parent directory appears in a knowledge artifact's source references or applicability) or by technology/topic overlap (the artifact's applicability mentions a framework, library, or pattern present in the diff).
 - Keep the lookup read-only — do not create, modify, or retire knowledge artifacts during a diff review.
+- **Refresh-aware filtering**: when knowledge-refresh metadata exists (e.g., supersession pointers, retirement markers, or canonical designations recorded by `/workflow-orchestration:knowledge-refresh`), prefer active canonical artifacts and suppress retired, stale, or superseded duplicates. When a matching artifact is marked retired or superseded, do not surface it as advisory context — note the suppression and surface the canonical replacement if one exists. When refresh metadata is absent or partial, fall back cleanly to the existing advisory lookup: present all matching artifacts without filtering by refresh status.
 
 If one or more prior learnings match:
 

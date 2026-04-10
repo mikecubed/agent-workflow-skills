@@ -42,8 +42,8 @@ The state file is machine-readable JSON:
     "target": "main"
   },
   "artifacts": {
-    "track-report": "docs/track-report-workflow-defaults-1-6-contracts.md",
-    "batch-summary": "docs/batch-summary-workflow-defaults-state-foundation-1-6.md"
+    "track-report": ".workflow-orchestration/artifacts/track-report-workflow-defaults-1-6-contracts.md",
+    "batch-summary": ".workflow-orchestration/artifacts/batch-summary-workflow-defaults-state-foundation-1-6.md"
   },
   "owner": {
     "kind": "workflow",
@@ -79,6 +79,9 @@ Readers use one canonical path: `.workflow-orchestration/state.json`.
   durable artifacts.
 - Readers may use the referenced durable artifacts as supporting evidence, but
   the state file alone is not a substitute for review, readiness, or validation.
+- When a referenced artifact is a local generated report or summary, readers
+  should inspect `.workflow-orchestration/artifacts/` directly rather than rely
+  on broad repo search heuristics.
 
 ## Continuation intake and trust checks
 
@@ -110,11 +113,23 @@ state file. In this phase that generally means:
 - a multi-step coordinator such as `parallel-implementation-loop` when it is the
   active lifecycle owner;
 - a top-level conductor such as `idea-to-done-orchestration` when it is
-  explicitly resuming ownership.
+  explicitly resuming ownership;
+- `knowledge-refresh` when it is the active refresh lifecycle owner — refresh
+  writes state at its own phase boundaries (see
+  `skills/knowledge-refresh/SKILL.md` for the refresh state-boundary matrix).
 
 Specialist skills must not silently overwrite shared workflow state just because
 they were invoked locally. A workflow may update the state only when it is the
 recognized owner of the current run.
+
+### Refresh-specific state boundaries
+
+When `knowledge-refresh` owns the lifecycle, it writes state at these
+boundaries: `refresh-assessing`, `refresh-candidates-confirmed`,
+`refresh-planned`, `refresh-updating`, `refresh-validating`,
+`refresh-blocked`, `refresh-state-stale`, `refresh-complete`, and
+`refresh-partial`. Each write follows the same required-field contract as
+any other workflow owner. See the refresh skill for the full boundary matrix.
 
 ### Readers
 
@@ -124,8 +139,8 @@ state does not grant authority to skip the workflow's own gates.
 ## Artifact reference rules
 
 `artifacts` stores durable pointers, not chat summaries. References should point
-to committed files, PRs, issue comments, or other repository-appropriate durable
-sinks.
+to root dot-directory artifacts, PRs, issue comments, or other
+repository-appropriate durable sinks.
 
 At minimum, later workflows must be able to identify:
 

@@ -103,6 +103,7 @@ describe('workflow-orchestration skills layout', () => {
     'diff-review-orchestration',
     'git-worktree-orchestration',
     'knowledge-compound',
+    'knowledge-refresh',
     'delivery-orchestration',
     'pr-publish-orchestration',
   ];
@@ -157,7 +158,7 @@ describe('workflow-orchestration skills layout', () => {
     assert.match(text, /\*\*No planning\*\*/);
     assert.match(text, /\*\*No release\*\*/);
     assert.match(templates, /## Direct execution outcome report/);
-    assert.match(templates, /docs\/direct-execution-<topic>\.md/);
+    assert.match(templates, /\.workflow-orchestration\/artifacts\/direct-execution-<topic>\.md/);
     assert.match(readme, /Review any\s+non-empty delivered diff/i);
     assert.match(readme, /direct-execution report/i);
     assert.match(guide, /direct-execution report/i);
@@ -190,9 +191,9 @@ describe('workflow-orchestration skills layout', () => {
     assert.match(text, /workspace mismatch/i);
     assert.match(text, /lifecycle-owner mismatch/i);
     assert.match(text, /invalidated by later tree changes/i);
-    assert.match(text, /docs\/conductor-summary-<topic>\.md/);
+    assert.match(text, /\.workflow-orchestration\/artifacts\/conductor-summary-<topic>\.md/);
     assert.match(templates, /## Conductor lifecycle summary/);
-    assert.match(templates, /docs\/conductor-summary-<topic>\.md/);
+    assert.match(templates, /\.workflow-orchestration\/artifacts\/conductor-summary-<topic>\.md/);
     assert.match(readme, /\/workflow-orchestration:idea-to-done-orchestration/);
     assert.match(readme, /resume after review comments/i);
     assert.match(readme, /resume after failed readiness/i);
@@ -214,11 +215,11 @@ describe('workflow-orchestration skills layout', () => {
     assert.match(text, /exact tree that will be published/i);
     assert.match(text, /\/workflow-orchestration:pr-review-resolution-loop/);
     assert.match(text, /\/workflow-orchestration:release-orchestration/);
-    assert.match(text, /docs\/publish-summary-<topic>\.md/);
+    assert.match(text, /\.workflow-orchestration\/artifacts\/publish-summary-<topic>\.md/);
     assert.match(text, /Publish summary/);
     assert.doesNotMatch(text, /developer override/i);
     assert.match(templates, /## Publish summary/);
-    assert.match(templates, /docs\/publish-summary-<topic>\.md/);
+    assert.match(templates, /\.workflow-orchestration\/artifacts\/publish-summary-<topic>\.md/);
   });
 
   it('keeps diff-review-orchestration headless and autofix explicitly bounded', () => {
@@ -252,6 +253,75 @@ describe('workflow-orchestration skills layout', () => {
     assert.match(publish, /publish summary/i);
     assert.match(knowledge, /docs\/workflow-defaults-contract\.md/);
     assert.match(knowledge, /configured default/i);
+  });
+
+  it('keeps knowledge-refresh coordinator-shaped with candidate classification, progression modes, stop conditions, and state boundaries', () => {
+    const text = readText(ROOT, path.join('skills', 'knowledge-refresh', 'SKILL.md'));
+    const readme = readText(ROOT, 'README.md');
+    const guide = readText(ROOT, path.join('docs', 'workflow-usage-guide.md'));
+    const templates = readText(ROOT, path.join('docs', 'workflow-artifact-templates.md'));
+    const state = readText(ROOT, path.join('docs', 'workflow-state-contract.md'));
+
+    assert.match(text, /\bmanual\b/);
+    assert.match(text, /\bguided\b/);
+    assert.match(text, /\bauto\b/);
+    assert.match(text, /\.workflow-orchestration\/state\.json/);
+    assert.match(text, /\.workflow-orchestration\/defaults\.json/);
+    assert.match(text, /\btrusted\b/);
+    assert.match(text, /\bstale\b/);
+    assert.match(text, /\bduplicate\b/);
+    assert.match(text, /\bobsolete\b/);
+    assert.match(text, /\bsuperseded\b/);
+    assert.match(text, /\bneeds-capture\b/);
+    assert.match(text, /\/workflow-orchestration:knowledge-compound/);
+    assert.match(text, /\/workflow-orchestration:architecture-review/);
+    assert.match(text, /refresh-assessing/);
+    assert.match(text, /refresh-candidates-confirmed/);
+    assert.match(text, /refresh-planned/);
+    assert.match(text, /refresh-updating/);
+    assert.match(text, /refresh-validating/);
+    assert.match(text, /refresh-blocked/);
+    assert.match(text, /refresh-complete/);
+    assert.match(text, /\.workflow-orchestration\/artifacts\/refresh-summary-<topic>\.md/);
+    assert.match(text, /docs\/workflow-artifact-templates\.md/);
+    assert.match(text, /docs\/workflow-state-contract\.md/);
+    assert.match(text, /docs\/workflow-defaults-contract\.md/);
+    assert.match(templates, /## Refresh summary/);
+    assert.match(templates, /\.workflow-orchestration\/artifacts\/refresh-summary-<topic>\.md/);
+    assert.match(state, /knowledge-refresh/);
+    assert.match(readme, /\/workflow-orchestration:knowledge-refresh/);
+    assert.match(readme, /knowledge-refresh/);
+    assert.match(guide, /knowledge-refresh/);
+  });
+
+  it('makes the capture-vs-refresh boundary explicit in knowledge-compound', () => {
+    const text = readText(ROOT, path.join('skills', 'knowledge-compound', 'SKILL.md'));
+
+    assert.match(text, /capture.*workflow/i);
+    assert.match(text, /\/workflow-orchestration:knowledge-refresh/);
+    assert.match(text, /capture-vs-refresh boundary|capture.*refresh.*boundary/i);
+  });
+
+  it('makes prior-learning lookup refresh-aware in planning and diff-review', () => {
+    const planning = readText(ROOT, path.join('skills', 'planning-orchestration', 'SKILL.md'));
+    const diffReview = readText(ROOT, path.join('skills', 'diff-review-orchestration', 'SKILL.md'));
+
+    assert.match(planning, /refresh-aware/i);
+    assert.match(planning, /canonical/i);
+    assert.match(planning, /suppress.*retired|retired.*suppress/i);
+    assert.match(planning, /fall\s*back.*clean/i);
+    assert.match(diffReview, /refresh-aware/i);
+    assert.match(diffReview, /canonical/i);
+    assert.match(diffReview, /suppress.*retired|retired.*suppress/i);
+    assert.match(diffReview, /fall\s*back.*clean/i);
+  });
+
+  it('adds optional refresh routing to the idea-to-done conductor', () => {
+    const text = readText(ROOT, path.join('skills', 'idea-to-done-orchestration', 'SKILL.md'));
+
+    assert.match(text, /\/workflow-orchestration:knowledge-refresh/);
+    assert.match(text, /refresh.*advisory|advisory.*refresh/i);
+    assert.match(text, /never mandatory|never.*block.*lifecycle/i);
   });
 
   it('publishes the workflow defaults and durable state contracts with the session boundary update', () => {
@@ -308,6 +378,7 @@ describe('workflow-orchestration package contents', () => {
       'diff-review-orchestration',
       'git-worktree-orchestration',
       'knowledge-compound',
+      'knowledge-refresh',
       'delivery-orchestration',
       'pr-publish-orchestration',
     ]) {
