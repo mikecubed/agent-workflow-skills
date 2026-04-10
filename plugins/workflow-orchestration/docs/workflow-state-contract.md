@@ -110,11 +110,23 @@ state file. In this phase that generally means:
 - a multi-step coordinator such as `parallel-implementation-loop` when it is the
   active lifecycle owner;
 - a top-level conductor such as `idea-to-done-orchestration` when it is
-  explicitly resuming ownership.
+  explicitly resuming ownership;
+- `knowledge-refresh` when it is the active refresh lifecycle owner — refresh
+  writes state at its own phase boundaries (see
+  `skills/knowledge-refresh/SKILL.md` for the refresh state-boundary matrix).
 
 Specialist skills must not silently overwrite shared workflow state just because
 they were invoked locally. A workflow may update the state only when it is the
 recognized owner of the current run.
+
+### Refresh-specific state boundaries
+
+When `knowledge-refresh` owns the lifecycle, it writes state at these
+boundaries: `refresh-assessing`, `refresh-candidates-confirmed`,
+`refresh-planned`, `refresh-updating`, `refresh-validating`,
+`refresh-blocked`, `refresh-state-stale`, `refresh-complete`, and
+`refresh-partial`. Each write follows the same required-field contract as
+any other workflow owner. See the refresh skill for the full boundary matrix.
 
 ### Readers
 

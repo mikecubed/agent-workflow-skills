@@ -17,6 +17,7 @@ Suggested names:
 - `docs/review-resolution-<topic>.md`
 - `docs/readiness-report-<topic>.md`
 - `docs/publish-summary-<topic>.md`
+- `docs/refresh-summary-<topic>.md`
 
 If this repository uses another durable sink for a workflow output — for example, a PR description, issue comment, or task tracker entry — reuse the same field structure from the matching template below.
 
@@ -243,6 +244,38 @@ Sink reference: <where this artifact is durably stored — file path, issue URL,
 **Sink requirement**: The sink must be durable and repository-appropriate — a committed file, an issue, a wiki page, or another persistent location that survives session end. Chat-only storage does not satisfy this requirement. The specific sink location is a project-level decision; this template does not mandate a global directory taxonomy.
 
 **Lifecycle**: Created at the end of a workflow that produced a reusable lesson. Consumed by future sessions, contributors, or agents encountering the same problem shape. Not retired unless the knowledge is superseded.
+
+## Refresh summary
+
+Use for `knowledge-refresh`.
+
+```text
+Refresh scope: <directory, sink, or explicit candidate list>
+Candidate count: <integer>
+Progression mode: manual | guided | auto
+Triggering context: <conductor summary, planning brief, developer request, or review finding>
+State file: .workflow-orchestration/state.json
+Candidates:
+- <artifact path> | <classification: trusted | stale | duplicate | obsolete | superseded | needs-capture> | <maintenance action> | <outcome>
+Canonical artifacts:
+- <path> — <one-line summary of what it covers>
+Retired artifacts:
+- <path> — <reason: duplicate of X | obsolete | superseded by Y>
+Routed to knowledge-compound:
+- <gap description> — <evidence or context provided>, or none
+Routed to architecture-review:
+- <candidate description> — <reason>, or none
+Unresolved questions:
+- <question or ambiguity>, or none
+Artifact sink: <docs/refresh-summary-<topic>.md or another durable sink>
+Next action: <what should happen next>
+Summary: <short summary of the refresh outcome>
+```
+
+**Lifecycle**: Created at the end of a refresh pass. Consumed by future planning
+and review lookups to understand which knowledge artifacts are current and
+canonical. The summary is a point-in-time record — a later refresh pass may
+produce a new summary that supersedes this one.
 
 ## When to use these templates
 

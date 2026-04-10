@@ -145,7 +145,9 @@ During discovery, the scout checks for previously captured knowledge artifacts t
 
 **How to search**: scan the repository's knowledge directories, docs, or memory stores for artifacts whose problem description, applicability tags, or technology context overlap with the current task's domain. The search method is repository-dependent; use whatever discovery mechanism is available (file listing, grep, memory retrieval, index query). Do not assume a fixed directory or naming convention.
 
-**When matches are found**: include them in the discovery brief under a "Prior-learnings consulted" heading. List each match with a one-line summary and a path or reference. The planner and reviewer receive these as optional factual context — they inform the plan but do not constrain it.
+**Refresh-aware lookup**: when knowledge-refresh metadata exists (e.g., supersession pointers, retirement markers, or canonical designations recorded by `/workflow-orchestration:knowledge-refresh`), prefer active canonical artifacts and suppress retired, stale, or superseded duplicates. When a prior learning is marked retired or superseded, do not present it as equally reusable guidance — note the refresh status and surface the canonical replacement if one exists. When refresh metadata is absent or partial, fall back cleanly to the existing advisory lookup behavior: present all matching artifacts without filtering by refresh status.
+
+**When matches are found**: include them in the discovery brief under a "Prior-learnings consulted" heading. List each match with a one-line summary and a path or reference. When refresh metadata is present, annotate each entry with its refresh status (e.g., `canonical`, `retired`, `stale`). The planner and reviewer receive these as optional factual context — they inform the plan but do not constrain it.
 
 **When no matches are found**: record `Prior-learnings consulted: none-found` in the brief and continue normally. The absence of prior knowledge must never block discovery or planning.
 

@@ -17,6 +17,7 @@ Prefer plugin-qualified names such as `/workflow-orchestration:delivery-orchestr
 | Decide if a branch is actually ready | `final-pr-readiness-gate` | `pr-publish-orchestration` |
 | Publish a ready branch as a PR | `pr-publish-orchestration` | human review or `release-orchestration` after merge |
 | Capture a reusable lesson | `knowledge-compound` | future planning and review workflows consume it advisory-only |
+| Refresh stale, duplicate, or obsolete knowledge | `knowledge-refresh` | planning and review lookups prefer refreshed canonical artifacts |
 | Debug a failing behavior or regression | `systematic-debugging` | `knowledge-compound` if the result is reusable |
 | Run a post-incident analysis | `incident-rca` | follow-up planning or `knowledge-compound` |
 
@@ -37,7 +38,9 @@ The first workflows that consume the shared defaults are:
 - `diff-review-orchestration` for review-mode baseline and related guardrails;
 - `pr-publish-orchestration` for publish preferences and durable publish-summary
   sinks;
-- `knowledge-compound` for repo-default knowledge sinks.
+- `knowledge-compound` for repo-default knowledge sinks;
+- `knowledge-refresh` for knowledge-sink discovery, automation progression, and
+  refresh-summary sinks.
 
 When defaults are missing or only partially configured, those workflows keep
 their existing fallback behavior. Durable workflow state is intentionally
@@ -61,6 +64,7 @@ idea-to-done-orchestration
   -> final-pr-readiness-gate
   -> pr-publish-orchestration
   -> knowledge-compound (optional)
+  -> knowledge-refresh (optional, advisory)
 ```
 
 Notes:
@@ -73,6 +77,8 @@ Notes:
   workflow.
 - It stops when requirements stay unclear, a human decision is required,
   readiness is not achieved, or release/merge policy requires a separate step.
+- It may recommend `knowledge-refresh` when stale, duplicate, or conflicting
+  knowledge is observed, but refresh is never mandatory.
 - Manual entry into the specialist workflows remains valid.
 
 Continuation examples:
@@ -176,6 +182,7 @@ Notes:
 | `pr-publish-orchestration` | The exact tree is ready and you need commit / push / PR creation or update. | Readiness is missing, stale, or the request is really about releasing. | human review or `release-orchestration` after merge |
 | `release-orchestration` | Post-merge branch is ready for versioning, changelog, tagging, and optional release creation. | You only need to publish a PR. | release complete |
 | `knowledge-compound` | A completed workflow produced a reusable lesson worth preserving durably. | The work is still in progress or the task is a normal README/docs update. | future planning or review uses the artifact advisory-only |
+| `knowledge-refresh` | Existing knowledge artifacts need maintenance — deduplication, staleness review, retirement, or gap identification. | The work is fresh capture from a just-completed workflow (use `knowledge-compound`). | planning and review lookups prefer refreshed canonical artifacts |
 
 ### Specialist and support workflows
 
@@ -212,6 +219,9 @@ That means:
 2. use the specialist workflows directly when you want precise phase-by-phase
    control;
 3. treat `knowledge-compound` as conditional, not mandatory;
-4. treat `.workflow-orchestration/state.json` as the durable authority for
+4. treat `knowledge-refresh` as optional and advisory — the conductor may
+   recommend it after significant completion events, but it never blocks
+   lifecycle closure;
+5. treat `.workflow-orchestration/state.json` as the durable authority for
    continuation, while `.agent/SESSION.md` and `.agent/HANDOFF.json` remain
    advisory session continuity only.

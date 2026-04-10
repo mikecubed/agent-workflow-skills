@@ -11,7 +11,15 @@ This skill is a **capture** workflow: it turns an already-resolved problem into 
 
 Persistent team, squad, or fleet-style long-lived orchestration is out of scope for this skill. Use a separate orchestration layer if persistent coordination is needed.
 
-**Out of scope**: automatic refresh of previously captured knowledge, mining of past sessions for latent lessons, and enforcement of a mandatory global directory taxonomy for knowledge artifacts. Those concerns belong to separate skills or project-level conventions.
+**Capture vs. refresh boundary**: this skill owns the initial capture of a
+reusable lesson into a durable artifact. It does not evaluate, deduplicate,
+retire, or refresh previously captured knowledge — those maintenance concerns
+belong to `/workflow-orchestration:knowledge-refresh`. When capture discovers
+that a substantially similar artifact already exists in the knowledge sink, it
+should note the overlap and recommend a refresh pass rather than silently
+creating a duplicate.
+
+**Out of scope**: automatic refresh of previously captured knowledge, mining of past sessions for latent lessons, and enforcement of a mandatory global directory taxonomy for knowledge artifacts. Those concerns belong to `/workflow-orchestration:knowledge-refresh` or project-level conventions.
 
 ## When to Use It
 
