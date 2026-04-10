@@ -221,7 +221,27 @@ workflows must not silently overwrite conductor-owned state.
 | Readiness fails or remains partial | `blocked` | `readiness-blocked` | readiness report | stop with required remediation |
 | Publication completes | `active` or `complete` | `published` | publish summary or PR reference | optionally recommend knowledge capture |
 | Publication is deferred by policy | `blocked` | `publish-waiting-human` | readiness artifact | wait for explicit human action |
-| Knowledge capture completes or is skipped | `complete` | `knowledge-captured` or `knowledge-skipped` | knowledge artifact if created | close the lifecycle with a final conductor summary |
+| Knowledge capture completes or is skipped | `complete` | `knowledge-captured` or `knowledge-skipped` | knowledge artifact if created | optionally recommend refresh or close the lifecycle with a final conductor summary |
+
+#### Optional refresh routing
+
+After knowledge capture completes — or when the conductor observes stale,
+duplicate, or conflicting knowledge artifacts during the lifecycle — the
+conductor may recommend `/workflow-orchestration:knowledge-refresh` as an
+advisory next step. Refresh is never mandatory and never blocks lifecycle
+completion. The conductor records the recommendation in the durable conductor
+summary and in `.workflow-orchestration/state.json` but does not auto-enter
+refresh unless the developer explicitly requests it.
+
+When recommending refresh:
+
+- note the triggering signal (e.g., duplicate prior learnings surfaced during
+  planning, stale knowledge discovered during review, or a significant
+  completion event);
+- suggest `manual` or `guided` mode unless the developer has already expressed
+  a progression preference;
+- do not transfer lifecycle ownership to refresh — the conductor summary
+  closes the current lifecycle, and refresh starts a new one if invoked.
 
 Every write must include the required workflow-state fields from
 `docs/workflow-state-contract.md`: schema-version, workflow, updated-at, status,
@@ -240,6 +260,8 @@ brainstorm-ideation (only if needed)
   -> final-pr-readiness-gate
   -> pr-publish-orchestration
   -> knowledge-compound (optional)
+  -> knowledge-refresh (optional, advisory — recommended when stale or
+     duplicate knowledge is observed)
 ```
 
 Coordinator rules:
@@ -257,6 +279,9 @@ Coordinator rules:
    `/workflow-orchestration:release-orchestration` instead.
 5. Treat `/workflow-orchestration:knowledge-compound` as conditional and
    advisory, never mandatory.
+6. Treat `/workflow-orchestration:knowledge-refresh` as advisory and optional.
+   Recommend it when stale, duplicate, or conflicting knowledge is observed
+   but never require it for lifecycle completion.
 
 ### 7. Produce a durable conductor summary
 
