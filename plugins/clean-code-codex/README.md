@@ -2,7 +2,7 @@
 
 A composable, multi-language, TDD-first clean code enforcement system for AI agents.
 
-**Version**: 1.2.0 | **Languages**: TypeScript · Python · Go · Rust · JavaScript
+**Version**: 1.3.0 | **Languages**: TypeScript · Python · Go · Rust · JavaScript
 
 ---
 
@@ -96,6 +96,22 @@ All other sub-skills are loaded on demand.
 
 ---
 
+## Bundle surface
+
+This vendored bundle ships four top-level surfaces:
+
+| Surface | Path | Purpose |
+|---------|------|---------|
+| Conductor command | `commands/codex.md` | Slash-command entry point for `/codex` |
+| Agent | `agents/clean-code-codex.agent.md` | Auto-invoked agent wrapper that always routes through the conductor |
+| Conductor skill | `skills/conductor/SKILL.md` | The only always-loaded skill; detects operation type and dispatches sub-skills |
+| Hook guide | `docs/hooks.md` | Setup and behavior reference for the automatic enforcement hooks |
+
+The conductor is the only entry point. It dispatches **17 check sub-skills** on
+demand, based on operation type and scope.
+
+---
+
 ## Quick Start
 
 **Via slash command** (Claude Code):
@@ -142,34 +158,43 @@ review, refactor, or test code — no explicit invocation required.
 
 ---
 
-## Check Reference
+## Skill and check reference
 
-| Check | Rules | Situations | Language refs |
-|-------|-------|-----------|---------------|
-| `conductor` | — | Always loaded | No |
-| `tdd-check` | TDD-1 – TDD-9 | write, refactor, test | Yes |
-| `arch-check` | ARCH-1 – ARCH-6 | review, refactor | No |
-| `type-check` | TYPE-1 – TYPE-6 | review, write | Yes |
-| `naming-check` | NAME-1 – NAME-7 | review, refactor | Yes |
-| `size-check` | SIZE-1 – SIZE-6 | review, refactor | No |
-| `dead-check` | DEAD-1 – DEAD-5 | review, refactor | No |
-| `test-check` | TEST-1 – TEST-8 | review, test | No |
-| `sec-check` | SEC-1 – SEC-7 | new service/module, security, review, incident | No |
-| `dep-check` | DEP-1 – DEP-5 | review | No |
-| `obs-check` | OBS-1 – OBS-5 | review | No |
+This table is exhaustive for the bundle's shipped skill surface.
+
+| Skill / check | Rules | Use it when | Auto-dispatched for | Language refs |
+|---------------|-------|-------------|---------------------|---------------|
+| `conductor` | — | Always — it is the sole entry point and dispatch coordinator | every `/codex` run and agent activation | No |
+| `tdd-check` | TDD-1 – TDD-9 | You are writing code, refactoring under test, or fixing tests and need the non-bypassable TDD gate | write, refactor, test, new service, CI/full check | Yes |
+| `arch-check` | ARCH-1 – ARCH-6 | You want architecture boundary and design-shape feedback | review, refactor, new service, CI/full check | No |
+| `type-check` | TYPE-1 – TYPE-6 | You need type-safety review for supported languages | write, review, CI/full check | Yes |
+| `naming-check` | NAME-1 – NAME-7 | You want naming clarity and consistency review | write, review, refactor, boy scout, CI/full check | Yes |
+| `size-check` | SIZE-1 – SIZE-6 | You want function/class size pressure and decomposition guidance | review, refactor, boy scout, CI/full check | No |
+| `dead-check` | DEAD-1 – DEAD-5 | You want unused/commented-out/dead code surfaced | review, refactor, boy scout, CI/full check | No |
+| `test-check` | TEST-1 – TEST-8 | You need test quality, coverage shape, or regression-test guidance | review, test, CI/full check | No |
+| `sec-check` | SEC-1 – SEC-7 | You want security review, secret scanning, or incident-facing hardening feedback | review, security, incident, new service, CI/full check | No |
+| `dep-check` | DEP-1 – DEP-5 | You are reviewing dependency risk, manifest updates, or CVE exposure | dependency, CI/full check | No |
+| `obs-check` | OBS-1 – OBS-5 | You want observability/logging/alerting feedback or are handling a production issue | review, incident, observability, CI/full check | No |
+| `iac-check` | IAC-1 – IAC-5 | You are reviewing Terraform, CloudFormation, Kubernetes, or other IaC security/config risks | review and security when IaC files are detected, CI/full check | No |
+| `perf-check` | PERF-1 – PERF-5 | You want performance-risk review on hot paths, loops, allocations, or inefficient queries | review, CI/full check | No |
+| `resilience-check` | RES-1 – RES-5 | You want retry/timeout/failure-mode/resilience feedback | review, CI/full check | No |
+| `a11y-check` | A11Y-1 – A11Y-5 | You want accessibility review for UI surfaces and interaction patterns | review, CI/full check | No |
+| `docs-check` | DOCS-1 – DOCS-5 | You want missing or misleading prose/API/usage documentation surfaced | review, CI/full check | No |
+| `i18n-check` | I18N-1 – I18N-5 | You want localization/internationalization issues surfaced | review, CI/full check | No |
+| `ctx-check` | CTX-1 – CTX-5 | You want context-boundary and new-service scaffolding checks, especially around ownership and surrounding constraints | write, review, new service, CI/full check | No |
 
 **Situations → checks dispatched**:
 
 | Situation | Checks loaded |
 |-----------|--------------|
-| Writing new code | tdd-check, type-check, naming-check |
-| PR / code review | arch-check, type-check, naming-check, size-check, dead-check, test-check, obs-check, sec-check |
+| Writing new code | tdd-check, type-check, naming-check, ctx-check |
+| PR / code review | arch-check, type-check, naming-check, size-check, dead-check, test-check, obs-check, sec-check, iac-check, perf-check, resilience-check, a11y-check, docs-check, i18n-check, ctx-check |
 | Refactoring | tdd-check (gate), arch-check, naming-check, size-check, dead-check |
 | Running tests | tdd-check, test-check |
-| Security audit | sec-check |
+| Security audit | sec-check, iac-check |
 | Dependency update | dep-check |
 | Production incident | obs-check, sec-check |
-| New service/module | tdd-check, arch-check, sec-check |
+| New service/module | tdd-check, arch-check, sec-check, ctx-check |
 | Adding observability | obs-check |
 | CI / full check | All checks |
 | Boy Scout session end | size-check, dead-check, naming-check |
