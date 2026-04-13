@@ -52,7 +52,7 @@ Resolve the active model for each role using this priority chain:
 1. **Project config**
    - Copilot CLI: `.copilot/models.yaml`
    - Claude Code: `.claude/models.yaml`
-   
+
    Read the `planner`, `reviewer`, and `scout` keys directly. If a key is absent,
    fall back to the baked-in default for that role without prompting.
 2. **Session cache** — if models were already confirmed earlier in this session,

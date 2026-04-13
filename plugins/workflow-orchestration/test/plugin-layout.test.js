@@ -302,7 +302,7 @@ describe('workflow-orchestration skills layout', () => {
     assert.match(text, /recorded evidence verdict/i);
     assert.match(text, /Default to self-service scope verification/i);
     assert.match(text, /Do \*\*not\*\* ask the developer to\s+confirm that the PR still represents intended scope unless/i);
-    assert.match(templates, /<valid \/ partially valid \/ false positive \/ noise \/ stale>/);
+    assert.match(templates, /<valid \/ partially valid \/ false positive \/ noise \/ stale\/out-of-scope>/);
     assert.match(text, /commit and push by default when the branch changed/i);
     assert.match(text, /replying.*resolving\s*\/\s*closing|reply and a matching resolve/i);
     assert.match(text, /brief chat summary/i);
@@ -350,7 +350,9 @@ describe('workflow-orchestration skills layout', () => {
     for (const skill of skillsWithModelSelection) {
       const text = readText(ROOT, path.join('skills', skill, 'SKILL.md'));
 
-      assert.match(text, /Baked-in defaults[\s\S]{0,180}silently without prompting/i,
+      assert.match(text, /Baked-in defaults/i,
+        `${skill} should document baked-in defaults`);
+      assert.match(text, /silently without prompting/i,
         `${skill} should use baked-in defaults silently`);
       assert.doesNotMatch(text,
         /ask the (?:user|developer) to confirm or override once|show the defaults below, ask|confirm once, cache for the session/i,

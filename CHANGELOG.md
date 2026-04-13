@@ -10,6 +10,16 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ### Changed (workflow-orchestration 2.1.1)
 
+- **PR review resolution hardening**: `pr-review-resolution-loop` now treats
+  every comment as a hypothesis until verified, records an evidence verdict
+  separately from the action, requires reply-plus-resolve thread handling, and
+  defaults to commit/push plus a brief developer-facing summary when the branch
+  changed.
+- **Readiness and model-default behavior**:
+  `final-pr-readiness-gate` now verifies PR-scope continuity from the evidence
+  already on the PR before escalating to the developer, and the affected skills
+  now use baked-in model defaults silently when project config and session cache
+  are absent.
 - **Parallel implementation loop hardening**:
   `parallel-implementation-loop`, the workflow README, and the workflow usage
   guide now require integration feature branches, isolated external worktrees

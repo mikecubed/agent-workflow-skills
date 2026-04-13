@@ -107,7 +107,7 @@ separate layers:
   - partially valid
   - false positive
   - noise
-  - stale or out of scope
+  - stale/out-of-scope
 - **Action**:
   - fix
   - decline
@@ -209,7 +209,7 @@ For each item:
    - partially valid;
    - false positive;
    - noise;
-   - stale or out of scope;
+   - stale/out-of-scope;
 4. classify the underlying concern, if any, as:
 
 - a correctness issue;
@@ -226,7 +226,7 @@ Use these defaults unless the current code proves otherwise:
 - **valid** -> usually fix;
 - **partially valid** -> fix only the verified core issue, not the reviewer's
   full proposed scope;
-- **false positive**, **noise**, or **stale/out of scope** -> usually decline
+- **false positive**, **noise**, or **stale/out-of-scope** -> usually decline
   with a concrete explanation;
 - **unclear evidence or ownership** -> clarify first.
 

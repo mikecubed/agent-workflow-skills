@@ -100,7 +100,7 @@ Review surface: <branch or PR> against <target>
 Reviewer source: <GitHub review / Azure DevOps PR review / comments / local review>
 Current state: triage | fixing | validating | done
 Decisions:
-- <comment-id> | <valid / partially valid / false positive / noise / stale> | <correctness / security / test / contract / architecture / stale> | <fixed / declined / clarify first> | <short rationale>
+- <comment-id> | <valid / partially valid / false positive / noise / stale/out-of-scope> | <correctness / security / test / contract / architecture / stale-or-out-of-scope> | <fixed / declined / clarify first> | <short rationale>
 Validation:
 - <command>
 Result:
