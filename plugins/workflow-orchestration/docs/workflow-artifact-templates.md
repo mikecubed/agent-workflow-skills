@@ -44,9 +44,11 @@ Tasks: <task-id-1>, <task-id-2>
 Files: <path>, <path>
 Dependencies: <dependency status>
 Validation: <command>
-Work surface: <branch or worktree path>
+Track branch: <branch-name>
+Worktree path: <external path outside project root>
 State: pending | active | review | revision | merged | rescue | serialized | escalated | blocked | abandoned
 Validation outcome: pass | fail | partial | not-run
+Commit status: <committed <sha> | not yet committed | intentionally uncommitted — reason>
 Unresolved issues:
 - <open issue, or none>
 Rescue history:
@@ -98,7 +100,7 @@ Review surface: <branch or PR> against <target>
 Reviewer source: <GitHub review / Azure DevOps PR review / comments / local review>
 Current state: triage | fixing | validating | done
 Decisions:
-- <comment-id> | <correctness / security / test / contract / architecture / stale> | <fixed / declined / clarify first> | <short rationale>
+- <comment-id> | <valid / partially valid / false positive / noise / stale/out-of-scope> | <correctness / security / test / contract / architecture / stale-or-out-of-scope> | <fixed / declined / clarify first> | <short rationale>
 Validation:
 - <command>
 Result:
@@ -107,6 +109,8 @@ Remaining concerns:
 - <open blocker or intentional follow-up, or none>
 Unresolved questions:
 - <question requiring developer input, or none>
+Thread status: <all addressed and resolved / intentionally open blockers remain / mixed>
+Publish status: <committed and pushed / local-only by request / not applicable>
 Next action: <what should happen next for this review cycle>
 ```
 

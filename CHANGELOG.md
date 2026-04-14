@@ -6,6 +6,35 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-04-13
+
+### Changed (workflow-orchestration 2.1.1)
+
+- **PR review resolution hardening**: `pr-review-resolution-loop` now treats
+  every comment as a hypothesis until verified, records an evidence verdict
+  separately from the action, requires reply-plus-resolve thread handling, and
+  defaults to commit/push plus a brief developer-facing summary when the branch
+  changed.
+- **Readiness and model-default behavior**:
+  `final-pr-readiness-gate` now verifies PR-scope continuity from the evidence
+  already on the PR before escalating to the developer, and the affected skills
+  now use baked-in model defaults silently when project config and session cache
+  are absent.
+- **Parallel implementation loop hardening**:
+  `parallel-implementation-loop`, the workflow README, and the workflow usage
+  guide now require integration feature branches, isolated external worktrees
+  per implementer track, commit-and-push completion through PR publication by
+  default, and concise quality cues including TDD, DRY, SOLID-where-it-fits,
+  and low-complexity control flow plus advisory `clean-code-codex` checks when
+  available.
+- **Structural coverage**: the workflow plugin test suite now validates the new
+  parallel-loop worktree, completion-through-publication, and quality-guidance
+  contract, plus the skeptical review-resolution, evidence-first readiness, and
+  silent model-default behavior introduced across the affected workflows.
+- **Version sync**: workflow-orchestration and umbrella marketplace metadata
+  bumped from `2.1.0` to `2.1.1` across the root package, lockfile, workflow
+  package/manifests, and marketplace metadata.
+
 ## [2.1.0] - 2026-04-10
 
 ### Added (workflow-orchestration 2.1.0)

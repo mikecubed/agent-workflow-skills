@@ -254,6 +254,112 @@ describe('workflow-orchestration skills layout', () => {
     assert.match(templates, /\.workflow-orchestration\/artifacts\/publish-summary-<topic>\.md/);
   });
 
+  it('keeps parallel-implementation-loop worktree-isolated and completion-oriented through publication', () => {
+    const text = readText(ROOT, path.join('skills', 'parallel-implementation-loop', 'SKILL.md'));
+    const readme = readText(ROOT, 'README.md');
+    const guide = readText(ROOT, path.join('docs', 'workflow-usage-guide.md'));
+    const templates = readText(ROOT, path.join('docs', 'workflow-artifact-templates.md'));
+
+    assert.match(text, /integration \*\*feature branch\*\*/i);
+    assert.match(text, /\/workflow-orchestration:git-worktree-orchestration/);
+    assert.match(text, /own git worktree outside the project\s+directory/i);
+    assert.match(text, /Do not run parallel implementers in\s+the main project working tree/i);
+    assert.match(text, /Continue until the batch is actually complete/i);
+    assert.match(text, /TDD stays mandatory on every code-bearing track/i);
+    assert.match(text, /DRY/i);
+    assert.match(text, /SOLID/i);
+    assert.match(text, /low[- ]complexity control flow|low cyclomatic complexity/i);
+    assert.match(text, /clean-code-codex:conductor/);
+    assert.match(text, /committed and pushed/i);
+    assert.match(text, /PR has been created or updated/i);
+    assert.match(text, /\/workflow-orchestration:pr-publish-orchestration/);
+    assert.match(text, /local-only execution/i);
+    assert.match(text, /Track work ran in a dedicated external worktree path outside the project directory/i);
+    assert.match(templates, /Track branch:/);
+    assert.match(templates, /Worktree path: <external path outside project root>/);
+    assert.match(templates, /Commit status:/);
+    assert.match(readme, /isolated track branches and external worktrees/i);
+    assert.match(readme, /TDD and concise design-quality expectations/i);
+    assert.match(readme, /clean-code-codex:conductor/);
+    assert.match(guide, /isolated external worktrees/i);
+    assert.match(guide, /TDD and concise design-quality expectations/i);
+  });
+
+  it('keeps pr-review-resolution-loop skeptical about review comments and records verdicts separately from actions', () => {
+    const text = readText(ROOT, path.join('skills', 'pr-review-resolution-loop', 'SKILL.md'));
+    const readme = readText(ROOT, 'README.md');
+    const guide = readText(ROOT, path.join('docs', 'workflow-usage-guide.md'));
+    const templates = readText(ROOT, path.join('docs', 'workflow-artifact-templates.md'));
+
+    assert.match(text, /hypothesis until verified/i);
+    assert.match(text, /\bevidence verdict\b/i);
+    assert.match(text, /\bpartially valid\b/i);
+    assert.match(text, /false positive/i);
+    assert.match(text, /\bnoise\b/i);
+    assert.match(text, /suggested patch blindly|suggested fix/i);
+    assert.match(text, /automated PR reviewers|agent-produced analysis/i);
+    assert.match(text, /implement only the verified issue/i);
+    assert.match(text, /recorded evidence verdict/i);
+    assert.match(text, /Default to self-service scope verification/i);
+    assert.match(text, /Do \*\*not\*\* ask the developer to\s+confirm that the PR still represents intended scope unless/i);
+    assert.match(templates, /<valid \/ partially valid \/ false positive \/ noise \/ stale\/out-of-scope>/);
+    assert.match(text, /commit and push by default when the branch changed/i);
+    assert.match(text, /replying.*resolving\s*\/\s*closing|reply and a matching resolve/i);
+    assert.match(text, /brief chat summary/i);
+    assert.match(templates, /Thread status:/);
+    assert.match(templates, /Publish status:/);
+    assert.match(readme, /skeptically triages and verifies each comment/i);
+    assert.match(readme, /by default commits and pushes the branch\s+update/i);
+    assert.match(guide, /skeptical triage, verified fixes, replies, thread resolution/i);
+  });
+
+  it('keeps final-pr-readiness-gate evidence-first about scope continuity and only escalates on genuine ambiguity', () => {
+    const text = readText(ROOT, path.join('skills', 'final-pr-readiness-gate', 'SKILL.md'));
+    const readme = readText(ROOT, 'README.md');
+    const guide = readText(ROOT, path.join('docs', 'workflow-usage-guide.md'));
+
+    assert.match(text, /Default to self-service scope verification/i);
+    assert.match(text, /Do \*\*not\*\* ask the developer to\s+confirm that the PR still matches its intended scope unless/i);
+    assert.match(text, /PR\s+title,\s+description,\s+recent\s+commits,\s+and\s+actual\s+diff/i);
+    assert.match(text, /only part of the diff is ambiguous, judge the unambiguous portion/i);
+    assert.match(text, /Ask the developer only if those sources still leave genuine\s+ambiguity or conflict/i);
+    assert.doesNotMatch(text, /This item requires human confirmation/i);
+    assert.match(readme, /without re-prompting the developer unless the evidence is genuinely\s+ambiguous/i);
+    assert.match(guide, /evidence-based check that the current diff still matches the PR intent/i);
+  });
+
+  it('uses baked-in model defaults silently when no project config or session cache exists', () => {
+    const docs = readText(ROOT, path.join('docs', 'models-config-template.md'));
+    const skillsWithModelSelection = [
+      'planning-orchestration',
+      'brainstorm-ideation',
+      'parallel-implementation-loop',
+      'pr-review-resolution-loop',
+      'final-pr-readiness-gate',
+      'map-codebase',
+      'systematic-debugging',
+      'swarm-orchestration',
+      'e2e-test-generation',
+      'incident-rca',
+      'architecture-review',
+    ];
+
+    assert.match(docs, /baked-in defaults silently/i);
+    assert.match(docs, /Create a\s+config file only when you want persistent overrides/i);
+
+    for (const skill of skillsWithModelSelection) {
+      const text = readText(ROOT, path.join('skills', skill, 'SKILL.md'));
+
+      assert.match(text, /Baked-in defaults/i,
+        `${skill} should document baked-in defaults`);
+      assert.match(text, /silently without prompting/i,
+        `${skill} should use baked-in defaults silently`);
+      assert.doesNotMatch(text,
+        /ask the (?:user|developer) to confirm or override once|show the defaults below, ask|confirm once, cache for the session/i,
+        `${skill} should not prompt just to confirm defaults`);
+    }
+  });
+
   it('keeps diff-review-orchestration headless and autofix explicitly bounded', () => {
     const text = readText(ROOT, path.join('skills', 'diff-review-orchestration', 'SKILL.md'));
 

@@ -1,6 +1,6 @@
 ---
 name: parallel-implementation-loop
-description: Run independent implementation tracks in parallel with disciplined review, merge, and validation gates.
+description: Run independent implementation tracks in parallel with disciplined review, merge, validation, and publication gates.
 ---
 
 ## Purpose
@@ -30,10 +30,11 @@ Also activate when:
 
 Before you start, identify:
 
-- the integration branch and final review target;
+- the integration feature branch and final review target;
 - the validation commands for each track;
 - the repository's testing and quality gates;
-- the worktree path for each parallel track (required when launching ≥2 tracks simultaneously);
+- whether `clean-code-codex:conductor` is loaded in the current session for advisory quality checks;
+- the worktree path for each parallel track (required when launching any parallel implementer track);
 - any local rules for opening draft pull requests or track branches;
 - the maximum revision rounds per track before escalation (default: 2).
 
@@ -48,7 +49,7 @@ Use separate roles for:
 
 Keep implementation and review separate whenever possible.
 
-In Claude Code, spawn each role as a separate agent using the Agent tool. Pass the implementer a scoped prompt with exact task, file, and TDD constraints. Pass the reviewer only the diff and the review criteria. Keep implementation and review judgment separate. The coordinator may share a factual brief that includes task boundaries, files, validation commands, and known dependencies. Do not share proposed conclusions, review verdicts, or implementation rationale across roles.
+In Claude Code, spawn each role as a separate agent using the Agent tool. Pass the implementer a scoped prompt with exact task, file, TDD constraints, and concise quality expectations such as reuse before copy, single-purpose abstractions, and low-complexity control flow. Pass the reviewer only the diff and the review criteria. Keep implementation and review judgment separate. The coordinator may share a factual brief that includes task boundaries, files, validation commands, and known dependencies. Do not share proposed conclusions, review verdicts, or implementation rationale across roles.
 
 ### Escalation: Fleet / Agent Team Mode
 
@@ -81,7 +82,7 @@ Resolve the active model for each role using this priority chain:
    These are plain YAML files (no markdown, no fenced blocks). Read the `implementer`, `reviewer`, and `scout` keys directly. If a key is absent, fall back to the baked-in default for that role — do not re-prompt for a key that is missing.
 
 2. **Session cache** — if models were already confirmed earlier in this session, reuse them without asking again.
-3. **Baked-in defaults** — if neither config file nor session cache exists, show the defaults below, ask the user to confirm or override them once, then cache the answer for the rest of the session.
+3. **Baked-in defaults** — if neither config file nor session cache exists, use the defaults below silently without prompting. Create project model config only when the developer wants persistent overrides.
 
 #### Config file format
 
@@ -129,7 +130,19 @@ Each implementation track must:
 
 Do not allow implementation-first drift just because work is parallel.
 
-### 3. Keep concurrency within human review capacity
+### 3. Keep code quality explicit, not implied
+
+Each code-bearing track should bias toward:
+
+1. reuse before duplication (**DRY**);
+2. small, single-purpose units with clear responsibilities (**SOLID** where it fits);
+3. low-complexity control flow and explicit boundaries.
+
+If `clean-code-codex:conductor` is available in the current session, use it as
+an advisory quality pass on reviewable track diffs or on the integrated feature
+branch before publication.
+
+### 4. Keep concurrency within human review capacity
 
 Default to 2-3 concurrent tracks unless the repository already has strong task isolation,
 independent validation paths, and a proven sandbox strategy such as dedicated worktrees.
@@ -140,19 +153,41 @@ More concurrency is only worth it when:
 2. the validation surface for each track is small;
 3. the final integrator can still review and merge each track deliberately.
 
-### 4. Temporary work surfaces are disposable, not permanent state
+### 5. Temporary work surfaces are disposable, not permanent state
 
 If the workflow uses worktrees, branches, or other sandboxes (in Claude Code, use the Agent tool with `isolation: "worktree"` — it auto-cleans if no changes are made):
 
-1. treat the integration branch as the long-lived review surface;
+1. treat the integration **feature branch** as the long-lived review surface that
+   will eventually back the PR;
 2. treat track work surfaces as temporary and batch-owned;
 3. record, for each track:
    - track name;
    - owned task IDs;
    - owned files or modules;
    - validation commands;
+   - track branch name;
+   - external worktree path;
    - current state (`active`, `merged`, `abandoned`, `blocked`);
 4. do not silently discard dirty track state.
+
+Every implementer track must run in its **own git worktree outside the project
+directory**, such as `../{repo}-wt-{track}`. Do not run parallel implementers in
+the main project working tree or inside nested directories beneath the project
+root; that increases the risk of index and branch-state corruption.
+
+### 6. Continue until the batch is actually complete
+
+Do not stop at "tracks launched", "tests passed", or "ready for review". The
+coordinator owns the batch until one of these outcomes is true:
+
+1. all in-scope track work is integrated and validated;
+2. the integration feature branch is committed and pushed;
+3. a PR has been created or updated for that feature branch;
+4. a documented stop condition blocks further progress.
+
+When one track stalls, reduce concurrency, rescue or serialize as needed, and
+continue the remaining in-scope work rather than abandoning the whole batch by
+default.
 
 ## Example Track Definition
 
@@ -164,7 +199,8 @@ Tasks: task-12, task-14
 Files: src/api/validators.js, test/api/validators.test.js
 Dependencies: task-11 done
 Validation: npm test -- test/api/validators.test.js
-Work surface: git worktree ../wt-api-validation
+Track branch: wt/api-validation
+Worktree path: ../my-app-wt-api-validation
 State: active
 ```
 
@@ -178,14 +214,20 @@ Before launching tracks:
 
 1. read the relevant requirements, plan, tasks, and nearby code;
 2. identify the next ready tasks;
-3. confirm the integration branch and final review target;
+3. confirm or create the integration **feature branch** and final review target;
 4. define track boundaries explicitly:
    - track name;
    - owned tasks;
    - owned files;
    - dependencies;
    - validation commands;
-   - merge target.
+   - merge target;
+   - track branch name;
+   - external worktree path.
+
+Default to a dedicated feature branch for the batch. Do not run the workflow on
+`main` or another shared long-lived branch unless the developer explicitly asked
+for that exceptional path.
 
 ### 2. Run discovery (or skip it)
 
@@ -213,7 +255,10 @@ Skip reason: <if discovery was skipped, why>
 
 Before launching any agents, verify:
 
-- every track has a dedicated work surface at a unique path — Copilot CLI: `git worktree add ../wt-{track} {branch}`; Claude Code: Agent tool with `isolation: "worktree"`;
+- invoke `/workflow-orchestration:git-worktree-orchestration` or perform an
+  equivalent validated worktree-provisioning step so every track gets an
+  isolated work surface before implementation starts;
+- every track has a dedicated work surface at a unique path **outside the project directory** — Copilot CLI: `git worktree add ../{repo}-wt-{track} {branch}`; Claude Code: Agent tool with `isolation: "worktree"` and an external worktree path;
 - no two tracks share the same working tree.
 
 **Do not launch any agent until all worktrees exist and paths are confirmed.**
@@ -225,29 +270,36 @@ For each track:
 1. choose the execution mode:
    - standard scoped agents by default;
    - Fleet or agent-team mode only for explicitly approved, high-leverage tracks;
-2. create or confirm the dedicated worktree for this track (from the pre-flight gate above);
+2. create or confirm the dedicated external worktree for this track (from the pre-flight gate above);
 3. create or update a durable track report using the template shape in `docs/workflow-artifact-templates.md`, initializing the known fields:
-   - track name;
-   - owned tasks;
-   - owned files;
-   - dependencies;
-   - validation commands;
-   - work surface;
-   - current state;
-   - next action.
-3. provide the implementer with:
-   - exact task IDs;
-   - exact files or modules;
-   - worktree path to operate in;
-   - TDD expectations;
-   - reuse constraints;
-   - validation commands;
-   - instruction to stay within scope;
-4. require the track to report:
-   - files changed;
-   - tests added or updated;
-   - validation performed;
-   - uncertainties or blockers.
+    - track name;
+    - owned tasks;
+    - owned files;
+    - dependencies;
+    - validation commands;
+    - track branch;
+    - worktree path;
+    - current state;
+    - next action.
+4. provide the implementer with:
+    - exact task IDs;
+    - exact files or modules;
+    - worktree path to operate in;
+    - TDD expectations;
+    - concise quality expectations (DRY, SOLID where it fits, low cyclomatic complexity);
+    - reuse constraints;
+    - validation commands;
+    - instruction to stay within scope;
+5. require the track to report:
+    - files changed;
+    - tests added or updated;
+    - validation performed;
+    - uncertainties or blockers;
+    - commit SHA when the track branch reaches a reviewable checkpoint.
+
+Track implementers should commit their scoped work on their track branch when a
+track reaches a clean, reviewable state. Do not leave completed track work
+uncommitted inside a worktree by default.
 
 ### 5. Coordinator progress and rescue policy
 
@@ -286,6 +338,9 @@ After a track finishes:
 
 Do not spend review budget on style-only nits.
 
+If `clean-code-codex:conductor` is available, run it as an advisory code-quality
+pass on the track diff or the integrated feature branch before publication.
+
 Update the track report after review so it records the current state, validation outcome, unresolved issues, and next action before moving to revision or integration.
 
 ### 7. Revise if needed
@@ -323,19 +378,32 @@ When tracks are ready:
 1. merge them into the integration branch one at a time;
 2. resolve cross-track conflicts explicitly;
 3. run targeted integration validation after risky merges;
-4. stop and reconcile immediately if two tracks drifted on a shared interface.
+4. stop and reconcile immediately if two tracks drifted on a shared interface;
+5. commit the integration feature branch as coherent milestones when merges are
+   complete or when a stable integrated checkpoint is reached;
+6. push the integration feature branch as work is completed rather than leaving
+   the publish step implicit.
 
 After merge, update each track report to reflect the final track state (`merged`, `abandoned`, `blocked`, or retained for later work).
 
-### 9. Final validation and cleanup
+### 9. Final validation, publication, and cleanup
 
 After all track work is integrated:
 
 1. verify the integrated behavior is coherent;
 2. run the repository's real quality gates;
 3. invoke `/workflow-orchestration:final-pr-readiness-gate` on the stable integrated diff;
-4. retire clean temporary work surfaces;
-5. keep any retained work surface only with an explicit reason.
+4. invoke `/workflow-orchestration:pr-publish-orchestration` on the integration
+   feature branch to commit (if needed), push, and create or update the PR by
+   default;
+5. retire clean temporary work surfaces;
+6. keep any retained work surface only with an explicit reason.
+
+Only skip PR publication when:
+
+- the developer explicitly requested local-only execution;
+- repository policy forbids this workflow from opening or updating PRs;
+- a documented stop condition blocks publication even after readiness and rescue.
 
 ### 10. Record the batch outcome
 
@@ -345,11 +413,13 @@ Before stopping, publish one durable batch summary that includes:
 2. retained or abandoned tracks;
 3. validations run;
 4. unresolved follow-ups;
-5. workflow outcome measures using the template from `docs/workflow-artifact-templates.md`:
-   - `discovery-reuse` — whether the discovery brief was reused by downstream tracks;
-   - `rescue-attempts` — total rescue attempts across all tracks;
-   - `abandonment-events` — tracks abandoned without resolution;
-   - `re-review-loops` — per-track count of extra revision cycles beyond the initial review.
+5. integration branch status (committed / pushed);
+6. PR publication status (created / updated / skipped with reason);
+7. workflow outcome measures using the template from `docs/workflow-artifact-templates.md`:
+    - `discovery-reuse` — whether the discovery brief was reused by downstream tracks;
+    - `rescue-attempts` — total rescue attempts across all tracks;
+    - `abandonment-events` — tracks abandoned without resolution;
+    - `re-review-loops` — per-track count of extra revision cycles beyond the initial review.
 
 "Durable" means written to a repository-appropriate sink using the template shape from `docs/workflow-artifact-templates.md` — for example, a PR description, a committed document, an issue comment, or a task tracker entry. In this repository, committed workflow artifacts live under `docs/`; other repositories may use a different durable sink. The batch summary MUST be produced; chat-only memory is not sufficient.
 
@@ -363,6 +433,8 @@ A track is not complete until:
 - track-local validation passes;
 - changed files stayed within scope;
 - review found no unresolved substantive issues;
+- completed track work is committed on the track branch or explicitly recorded as
+  intentionally uncommitted with reason;
 - a durable track report artifact has been updated to reflect the final track state (see `docs/workflow-artifact-templates.md` for the template).
 
 ### SESSION.md write — track merged
@@ -388,6 +460,10 @@ The batch is not complete until:
 - all integrated work is coherent;
 - repository quality gates pass;
 - the final readiness workflow has run on the stable integrated diff;
+- the integration feature branch is committed and pushed unless local-only
+  execution was explicitly requested;
+- a PR was created or updated unless repository policy or a documented stop
+  condition prevents publication;
 - temporary work surfaces are cleaned up or explicitly retained;
 - a durable batch summary artifact has been produced that captures merged tracks, retained or abandoned tracks, validations run, and unresolved follow-ups (see `docs/workflow-artifact-templates.md` for the template).
 
@@ -400,10 +476,14 @@ Any failing item blocks the "batch complete" declaration.
 - [ ] Track branch is merged to the integration target — PASS / FAIL
 - [ ] Track-local validation commands ran and exited 0 — PASS / FAIL
 - [ ] Changed files are within the track's declared scope (no out-of-scope files modified) — PASS / FAIL
+- [ ] Track work ran in a dedicated external worktree path outside the project directory — PASS / FAIL
+- [ ] Completed track work is committed on the track branch (or the exception is recorded) — PASS / FAIL
 
 **Integration gate (whole batch)**
 - [ ] Integration validation commands ran on the combined branch and exited 0 — PASS / FAIL
 - [ ] No previously-passing tests now fail on the integrated branch — PASS / FAIL
+- [ ] Integration feature branch is committed and pushed unless local-only execution was explicitly requested — PASS / FAIL
+- [ ] PR created or updated successfully unless repository policy or a documented stop condition prevented publication — PASS / FAIL
 - [ ] Durable batch summary artifact has been produced — PASS / FAIL
 
 If any item is FAIL: report the failing item(s) by name, state what must be done to
