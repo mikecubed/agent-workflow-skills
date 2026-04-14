@@ -200,7 +200,7 @@ Files: src/api/validators.js, test/api/validators.test.js
 Dependencies: task-11 done
 Validation: npm test -- test/api/validators.test.js
 Track branch: wt/api-validation
-Work surface: git worktree ../my-app-wt-api-validation
+Worktree path: ../my-app-wt-api-validation
 State: active
 ```
 

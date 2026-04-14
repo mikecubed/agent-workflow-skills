@@ -390,9 +390,9 @@ Use a durable summary shape so another reviewer or contributor can quickly see w
 Review surface: PR 128 against main
 Reviewer source: Azure DevOps PR review
 Decisions:
-- comment-14 | correctness | fixed | Added a null-input guard and coverage for the empty payload path
+- comment-14 | valid | correctness | fixed | Added a null-input guard and coverage for the empty payload path
 - comment-19 | partially valid | test | fixed | The coverage concern was real, but the suggested API-level fix was wrong; strengthened the regression test without changing the contract
-- comment-23 | false positive | stale | declined | Current diff already removed the old helper the comment referred to
+- comment-23 | false positive | stale-or-out-of-scope | declined | Current diff already removed the old helper the comment referred to
 Validation:
 - npm test
 - npm run validate:plugin
