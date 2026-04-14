@@ -1,8 +1,12 @@
 # Workflow usage guide
 
-Use this guide when you want the plugin to feel like a coherent product instead of a flat skill list. It explains the main composed loops, then gives a quick "when to use it" reference for each workflow.
+Use this guide when you want the plugin to feel like a coherent product instead of a flat skill list. It explains the main composed loops, then gives a quick "when to use it" reference for each workflow in `workflow-orchestration`.
 
 Prefer plugin-qualified names such as `/workflow-orchestration:delivery-orchestration`.
+
+This guide is exhaustive for the workflows shipped by this plugin. It may also
+mention companion routes such as `sdd-workflow` where they are common handoffs,
+but those are external to `workflow-orchestration` itself.
 
 ## Start here
 
@@ -54,10 +58,10 @@ artifact references recorded in `.workflow-orchestration/state.json`.
 
 ## The main composed loops
 
-### 1. Clarified work to publish-ready result
+### 1. Clarified work to merge-aware closeout
 
 Use this when the work is already clarified and you want one opt-in conductor to
-own the lifecycle sequencing.
+own the lifecycle sequencing through post-publish closeout.
 
 ```text
 idea-to-done-orchestration
