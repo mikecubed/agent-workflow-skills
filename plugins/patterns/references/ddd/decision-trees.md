@@ -128,7 +128,7 @@ You have two Bounded Contexts that need to work together. How?
 │   │       Accept their model as-is; simplifies integration but limits your design
 │   │
 │   └── Is the upstream model DAMAGING to your model?
-│       └── YES → Anticorruption Layer (p. 257)
+│       └── YES → Anti-Corruption Layer (p. 257)
 │           Build a translation layer; protect your model from foreign concepts
 │           Cost: maintenance of the translation layer
 │
@@ -150,7 +150,7 @@ You have two Bounded Contexts that need to work together. How?
 | Equal partners, small overlap | High | Equal | Shared Kernel |
 | One team serves another | High | Asymmetric | Customer/Supplier |
 | Can't influence upstream, model is OK | Low | Downstream weak | Conformist |
-| Can't influence upstream, model is toxic | Low | Downstream weak | Anticorruption Layer |
+| Can't influence upstream, model is toxic | Low | Downstream weak | Anti-Corruption Layer |
 | One-to-many consumers | — | Upstream serves many | Open Host Service |
 | Not worth integrating | — | — | Separate Ways |
 
@@ -212,6 +212,6 @@ For each subdomain in your system, ask:
 | Services | Entities, Value Objects | (Anemic Domain Model when overused) |
 | Specification | Repositories, Value Objects | Hardcoded conditionals |
 | Bounded Context | Context Map, all integration patterns | Big Ball of Mud |
-| Anticorruption Layer | Bounded Context | Conformist |
+| Anti-Corruption Layer | Bounded Context | Conformist |
 | Core Domain | Generic Subdomains, Segregated Core | — |
 | Shared Kernel | Customer/Supplier | Separate Ways |

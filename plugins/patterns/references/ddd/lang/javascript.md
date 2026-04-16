@@ -602,7 +602,7 @@ const eligible = freeShippingSpec
 
 ### Framework equivalents `[interpretation]`
 
-- Sequelize query builder uses closure: `.where().andWhere().order()`
+- Sequelize query composition can exhibit closure by combining `where` conditions with `Op.and` / `Op.or` into larger query objects
 - Array methods exhibit closure: `.filter().map().reduce()`
 - Fluent APIs and builder patterns follow this principle naturally
 

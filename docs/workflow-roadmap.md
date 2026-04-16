@@ -30,13 +30,13 @@ This roadmap therefore optimizes for a different goal:
 flowchart LR
     subgraph Current["Current shipped platform"]
         C1["brainstorm"] --> C2["plan / sdd-specify"]
-        C2 --> C3["delivery-orchestration"]
-        C3 --> C4["direct / parallel / swarm / debug"]
-        C4 --> C5["diff-review-orchestration"]
-        C5 --> C6["pr-review-resolution-loop"]
-        C6 --> C7["final-pr-readiness-gate"]
-        C7 --> C8["pr-publish-orchestration"]
-        C7 -. reusable lesson .-> C9["knowledge-compound"]
+        C2 --> C3["deliver"]
+        C3 --> C4["direct / parallel-impl / swarm / debug"]
+        C4 --> C5["diff-review"]
+        C5 --> C6["pr-resolve"]
+        C6 --> C7["pr-ready"]
+        C7 --> C8["pr-publish"]
+        C7 -. reusable lesson .-> C9["knowledge-save"]
     end
 
     subgraph Target["Target product shape"]

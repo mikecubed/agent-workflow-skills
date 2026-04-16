@@ -259,11 +259,11 @@ flowchart TD
     end
 
     subgraph WO["flow"]
-        WO1["planning-orchestration\nscout → planner → reviewer"]
-        WO2["swarm-orchestration\nNEW — dynamic topology\ncoordinator + SWARM.md"]
-        WO3["parallel-implementation-loop\nfixed 2-3 tracks\nbounded revision"]
-        WO4["pr-review-resolution-loop"]
-        WO5["final-pr-readiness-gate"]
+        WO1["plan\nscout → planner → reviewer"]
+        WO2["swarm\nNEW — dynamic topology\ncoordinator + SWARM.md"]
+        WO3["parallel-impl\nfixed 2-3 tracks\nbounded revision"]
+        WO4["pr-resolve"]
+        WO5["pr-ready"]
     end
 
     subgraph CC["ccc"]
