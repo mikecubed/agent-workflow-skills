@@ -82,7 +82,7 @@ DDD antipatterns. Evans-named antipatterns marked *(Evans term)*. Others `[inter
 |-----|---------|
 | Define explicit model boundaries | **Bounded Context** (p. 238) |
 | Map relationships between contexts | **Context Map** (p. 244) |
-| Protect your model from foreign influence | **Anticorruption Layer** (p. 257) |
+| Protect your model from foreign influence | **Anti-Corruption Layer** (p. 257) |
 
 ---
 

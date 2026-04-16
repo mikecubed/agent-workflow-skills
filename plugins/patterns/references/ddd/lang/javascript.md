@@ -61,8 +61,10 @@ export class Order {
     this.#lineItems.push(LineItem.create(product, qty));
   }
 
-  multiply(factor) {
-    return Money.of(this.#amount * factor, this.#currency);
+  submit() {
+    if (this.#status !== 'DRAFT')
+      throw new Error('Order has already been submitted');
+    this.#status = 'SUBMITTED';
   }
 
   equals(other) {

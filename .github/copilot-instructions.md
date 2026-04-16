@@ -17,7 +17,7 @@
 - `plugins/flow/skills/*/SKILL.md` is the single source of truth for the flow skills. Flow also includes SDD agents in `plugins/flow/agents/`.
 - `plugins/flow/plugin.json` and `plugins/flow/.claude-plugin/plugin.json` are the flow plugin manifests.
 - `plugins/ccc/` contains the Clean Code Codex bundle and its plugin-local tests.
-- `plugins/patterns/` contains the design patterns plugin (currently PEAA) with its skills and reference catalogs.
+- `plugins/patterns/` contains the design patterns plugin with its skills and reference catalogs, including PEAA, GoF, and DDD materials.
 - `.github/plugin/marketplace.json` and `.claude-plugin/marketplace.json` are umbrella marketplace metadata for distributing multiple plugins from one repo.
 - `test/umbrella-layout.test.js` verifies the umbrella package and marketplace layout.
 - `plugins/flow/test/plugin-layout.test.js` verifies the flow plugin manifests, package contents, and required structure inside each flow `SKILL.md`.

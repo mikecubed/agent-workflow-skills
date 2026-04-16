@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository role
 
-This repository is an umbrella marketplace repo for **GitHub Copilot CLI** and **Claude Code** plugins. The `flow` plugin (workflow orchestration with integrated SDD) lives under `plugins/flow/`, `ccc` (clean-code enforcement) lives under `plugins/ccc/`, and `patterns` (PEAA skills) lives under `plugins/patterns/`.
+This repository is an umbrella marketplace repo for **GitHub Copilot CLI** and **Claude Code** plugins. The `flow` plugin (workflow orchestration with integrated SDD) lives under `plugins/flow/`, `ccc` (clean-code enforcement) lives under `plugins/ccc/`, and `patterns` (PEAA, GoF, and DDD catalogs) lives under `plugins/patterns/`.
 
 ## Validation commands
 
