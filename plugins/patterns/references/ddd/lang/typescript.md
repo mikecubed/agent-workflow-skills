@@ -195,8 +195,14 @@ export class Order {
   private _lineItems: LineItem[] = [];
   private _status: OrderStatus = OrderStatus.DRAFT;
 
-  private constructor(id: OrderId) {
+  private constructor(
+    id: OrderId,
+    lineItems: LineItem[] = [],
+    status: OrderStatus = OrderStatus.DRAFT,
+  ) {
     this._id = id;
+    this._lineItems = lineItems;
+    this._status = status;
   }
 
   static create(customerId: CustomerId): Order {

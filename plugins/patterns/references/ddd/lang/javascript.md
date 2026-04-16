@@ -207,13 +207,17 @@ export { OrderRepository } from './domain/orderRepository.js';
 ```javascript
 export class Order {
   #id;
-  #lineItems = [];
-  #status = 'DRAFT';
+  #lineItems;
+  #status;
+
+  constructor(id, lineItems = [], status = 'DRAFT') {
+    this.#id = id;
+    this.#lineItems = lineItems;
+    this.#status = status;
+  }
 
   static create(customerId) {
-    const order = new Order();
-    order.#id = OrderId.generate();
-    return order;
+    return new Order(OrderId.generate());
   }
 
   addItem(productSnapshot, qty) {
