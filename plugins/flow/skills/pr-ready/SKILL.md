@@ -89,8 +89,8 @@ See `docs/models-config-template.md` in this plugin for ready-to-copy templates 
 | Copilot CLI   | Structured check | `gpt-5.4`           |
 | Copilot CLI   | Final reviewer   | `gpt-5.4`           |
 | Copilot CLI   | Scout            | `claude-haiku-4.5`  |
-| Claude Code   | Structured check | `claude-opus-4.6`   |
-| Claude Code   | Final reviewer   | `claude-opus-4.6`   |
+| Claude Code   | Structured check | `claude-opus-4.7`   |
+| Claude Code   | Final reviewer   | `claude-opus-4.7`   |
 | Claude Code   | Scout            | `claude-haiku-4.5`  |
 
 ## Preconditions

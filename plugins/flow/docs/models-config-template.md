@@ -23,11 +23,11 @@ Create `.copilot/models.yaml` with:
 ```yaml
 # flow model overrides — Copilot CLI
 # plan
-planner: claude-opus-4.6
+planner: claude-opus-4.7
 reviewer: gpt-5.4
 
 # parallel-impl and pr-resolve
-implementer: claude-opus-4.6
+implementer: claude-opus-4.7
 
 # pr-ready
 structured-check: gpt-5.4
@@ -46,15 +46,15 @@ Create `.claude/models.yaml` with:
 ```yaml
 # flow model overrides — Claude Code
 # plan
-planner: claude-opus-4.6
-reviewer: claude-opus-4.6
+planner: claude-opus-4.7
+reviewer: claude-opus-4.7
 
 # parallel-impl and pr-resolve
-implementer: claude-opus-4.6
+implementer: claude-opus-4.7
 
 # pr-ready
-structured-check: claude-opus-4.6
-final-reviewer: claude-opus-4.6
+structured-check: claude-opus-4.7
+final-reviewer: claude-opus-4.7
 
 # bounded discovery/triage (all skills)
 scout: claude-haiku-4.5

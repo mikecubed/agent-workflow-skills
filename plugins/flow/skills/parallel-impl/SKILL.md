@@ -105,11 +105,11 @@ See `docs/models-config-template.md` in this plugin for ready-to-copy templates 
 
 | Runtime       | Role        | Default model       |
 |---------------|-------------|---------------------|
-| Copilot CLI   | Implementer | `claude-opus-4.6`   |
+| Copilot CLI   | Implementer | `claude-opus-4.7`   |
 | Copilot CLI   | Reviewer    | `gpt-5.4`           |
 | Copilot CLI   | Scout       | `claude-haiku-4.5`  |
-| Claude Code   | Implementer | `claude-opus-4.6`   |
-| Claude Code   | Reviewer    | `claude-opus-4.6`   |
+| Claude Code   | Implementer | `claude-opus-4.7`   |
+| Claude Code   | Reviewer    | `claude-opus-4.7`   |
 | Claude Code   | Scout       | `claude-haiku-4.5`  |
 
 ## Core Rules

@@ -98,14 +98,14 @@ reviewer: <model-name>
 |-------------|--------------|-------------------|
 | Copilot CLI | Coordinator  | `claude-sonnet-4.6` |
 | Copilot CLI | Scout        | `claude-haiku-4.5`  |
-| Copilot CLI | Domain       | `claude-opus-4.6`   |
-| Copilot CLI | Synthesizer  | `claude-opus-4.6`   |
+| Copilot CLI | Domain       | `claude-opus-4.7`   |
+| Copilot CLI | Synthesizer  | `claude-opus-4.7`   |
 | Copilot CLI | Reviewer     | `gpt-5.4`           |
 | Claude Code | Coordinator  | `claude-sonnet-4.6` |
 | Claude Code | Scout        | `claude-haiku-4.5`  |
-| Claude Code | Domain       | `claude-opus-4.6`   |
-| Claude Code | Synthesizer  | `claude-opus-4.6`   |
-| Claude Code | Reviewer     | `claude-opus-4.6`   |
+| Claude Code | Domain       | `claude-opus-4.7`   |
+| Claude Code | Synthesizer  | `claude-opus-4.7`   |
+| Claude Code | Reviewer     | `claude-opus-4.7`   |
 
 Use the cheapest capable model for scout and coordinator (navigation/routing). Reserve the most capable model for domain agents working on architecture or security tasks, and for the synthesizer integrating their outputs.
 

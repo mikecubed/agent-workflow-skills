@@ -78,11 +78,11 @@ Resolve the active model for each role using this priority chain:
 
 | Runtime       | Role          | Default model      |
 |---------------|---------------|--------------------|
-| Copilot CLI   | Investigator  | `claude-opus-4.6`  |
+| Copilot CLI   | Investigator  | `claude-opus-4.7`  |
 | Copilot CLI   | Reviewer      | `gpt-5.4`          |
 | Copilot CLI   | Scout         | `claude-haiku-4.5` |
-| Claude Code   | Investigator  | `claude-opus-4.6`  |
-| Claude Code   | Reviewer      | `claude-opus-4.6`  |
+| Claude Code   | Investigator  | `claude-opus-4.7`  |
+| Claude Code   | Reviewer      | `claude-opus-4.7`  |
 | Claude Code   | Scout         | `claude-haiku-4.5` |
 
 ## Core Rules
