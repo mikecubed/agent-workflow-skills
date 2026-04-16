@@ -305,7 +305,7 @@ export class TypeOrmOrderRepository implements OrderRepository {
       where: { id: id.value },
       relations: ['lineItems'],
     });
-    return record ? OrderFactory.reconstitute(record) : null;
+    return record ? OrderFactory.reconstitute(OrderMapper.toRecord(record)) : null;
   }
 
   async save(order: Order): Promise<void> {
