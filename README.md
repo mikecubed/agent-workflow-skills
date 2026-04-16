@@ -8,12 +8,12 @@ Umbrella marketplace repo for separate **GitHub Copilot CLI** and **Claude Code*
 
 Unified workflow orchestration and SDD plugin (merges the former workflow-orchestration and sdd-workflow plugins) with:
 
-- `idea-to-done-orchestration`
-- `planning-orchestration`
-- `parallel-impl`
-- `pr-review-resolution-loop`
-- `final-pr-readiness-gate`
-- `sdd.specify`, `sdd.plan`, `sdd.tasks`, `sdd-feature-workflow`
+- `idea-to-done`, `plan`, `deliver`, `parallel-impl`
+- `pr-resolve`, `pr-ready`, `diff-review`, `pr-publish`
+- `release`, `worktree`, `swarm`, `brainstorm`, `debug`
+- `incident-rca`, `map-codebase`, `arch-review`, `e2e-tests`, `contracts`
+- `knowledge-save`, `knowledge-refresh`
+- `sdd-specify`, `sdd-plan`, `sdd-tasks`, `sdd-feature`
 
 Local install:
 
@@ -40,7 +40,7 @@ claude --plugin-dir ./plugins/ccc
 
 ### `plugins/patterns`
 
-PEAA (Patterns of Enterprise Application Architecture) skills plugin.
+Design pattern skills covering PEAA (Fowler), GoF (Gamma et al.), and DDD (Evans). Each book provides advisor, evaluator, refactor, and teach skills with language-specific reference catalogs.
 
 Local install:
 
@@ -82,4 +82,4 @@ npm --prefix plugins/flow test
 npm --prefix plugins/flow run validate:runtime
 ```
 
-Plugin names stay precise even though the marketplace is shared. Prefer plugin-qualified names such as `/flow:planning-orchestration` and `/flow:sdd.plan`.
+Plugin names stay precise even though the marketplace is shared. Prefer plugin-qualified names such as `/flow:plan` and `/flow:sdd-specify`.

@@ -4,9 +4,10 @@ Use this guide when you want the plugin to feel like a coherent product instead 
 
 Prefer plugin-qualified names such as `/flow:deliver`.
 
-This guide is exhaustive for the workflows shipped by this plugin. It may also
-mention companion routes such as the SDD skills (`flow:sdd-specify`, `flow:sdd-plan`, `flow:sdd-tasks`) where they are common handoffs,
-but those are external to `flow` itself.
+This guide is exhaustive for the workflows shipped by this plugin. It also
+covers the SDD skills (`flow:sdd-specify`, `flow:sdd-plan`, `flow:sdd-tasks`)
+which are bundled with `flow` and serve as common handoffs from planning and
+brainstorming workflows.
 
 ## Start here
 

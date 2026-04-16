@@ -301,7 +301,7 @@ elif isinstance(shape, Triangle):
 ## Quick Reference: Symptom → Pattern
 
 | Observable symptom | Primary antipattern | Fix pattern(s) |
-|-------------------|--------------------|-|
+|-------------------|--------------------|--------------------|
 | Class with 20+ unrelated methods | God Object | Facade, Strategy, State |
 | `getInstance()` everywhere, tests leak state | Singleton Abuse | Dependency injection, Factory Method |
 | 4+ level inheritance chain, class explosion | Deep Inheritance | Strategy, Decorator, Bridge |

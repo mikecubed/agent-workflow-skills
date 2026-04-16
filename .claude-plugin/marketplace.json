@@ -65,7 +65,7 @@
     {
       "name": "patterns",
       "source": "./plugins/patterns",
-      "description": "Design pattern advisor, evaluator, refactoring planner, and interactive teacher grounded in canonical software architecture books. Currently includes Fowler's PEAA with a 51-pattern catalog.",
+      "description": "Design pattern advisor, evaluator, refactoring planner, and interactive teacher grounded in canonical software architecture books. Includes Fowler's PEAA, Gang of Four, and Evans' DDD pattern catalogs.",
       "version": "3.0.0",
       "author": {
         "name": "mikecubed"

@@ -195,10 +195,12 @@ export class Order {
   private _lineItems: LineItem[] = [];
   private _status: OrderStatus = OrderStatus.DRAFT;
 
+  private constructor(id: OrderId) {
+    this._id = id;
+  }
+
   static create(customerId: CustomerId): Order {
-    const order = new Order();
-    order._id = OrderId.generate();
-    return order;
+    return new Order(OrderId.generate());
   }
 
   addItem(product: ProductSnapshot, qty: number): void {

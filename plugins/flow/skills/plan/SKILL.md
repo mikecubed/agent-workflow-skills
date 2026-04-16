@@ -33,7 +33,7 @@ Before you start, identify:
 - whether the task is feature-shaped enough to warrant SDD;
 - the repository's validation commands;
 - where durable planning artifacts should live;
-- whether the SDD skills (`flow:sdd-specify`, `flow:sdd-plan`, `flow:sdd-tasks`) is available in the current runtime;
+- whether the SDD skills (`flow:sdd-specify`, `flow:sdd-plan`, `flow:sdd-tasks`) are available in the current runtime;
 - whether the repository permits `.sdd/` planning workspaces or expects another temporary planning sink;
 - whether the repository declares shared workflow defaults (see `docs/workflow-defaults-contract.md`) — particularly artifact sink preferences and automation policy. If defaults are present, use them as the baseline for planning decisions described below; if absent, continue with the existing per-invocation approach.
 
@@ -106,7 +106,7 @@ Create one discovery brief per planning session when possible. The brief should 
 
 ### 3. Prefer SDD when it materially helps
 
-If the SDD skills (`flow:sdd-specify`, `flow:sdd-plan`, `flow:sdd-tasks`) is available and the task is feature-shaped, the planner may orchestrate:
+If the SDD skills (`flow:sdd-specify`, `flow:sdd-plan`, `flow:sdd-tasks`) are available and the task is feature-shaped, the planner may orchestrate:
 
 - `/flow:sdd-specify`
 - `/flow:sdd-plan`
@@ -167,7 +167,7 @@ During discovery, the scout checks for previously captured knowledge artifacts t
 
 Based on the brief, the planner chooses one of these modes:
 
-1. **SDD-backed planning** — when the work is feature-shaped and the SDD skills (`flow:sdd-specify`, `flow:sdd-plan`, `flow:sdd-tasks`) is available.
+1. **SDD-backed planning** — when the work is feature-shaped and the SDD skills (`flow:sdd-specify`, `flow:sdd-plan`, `flow:sdd-tasks`) are available.
 2. **Fallback planning** — when SDD is unavailable, incomplete, or unnecessary.
 3. **No-separate-planning** — when the work should go directly to implementation or review resolution.
 

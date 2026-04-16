@@ -1,6 +1,6 @@
 # Contributing
 
-This repository is an umbrella marketplace for separate **GitHub Copilot CLI** and **Claude Code** plugins. The main bundles currently live under `plugins/flow/`, `plugins/flow/`, and `plugins/ccc/`.
+This repository is an umbrella marketplace for separate **GitHub Copilot CLI** and **Claude Code** plugins. The main bundles currently live under `plugins/flow/`, `plugins/ccc/`, and `plugins/patterns/`.
 
 ## What to change
 
