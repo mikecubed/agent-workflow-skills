@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Marketplace metadata for workflow, clean-code enforcement, and design pattern plugins.",
-    "version": "3.0.0"
+    "version": "3.0.1"
   },
   "plugins": [
     {
       "name": "flow",
       "source": "./plugins/flow",
       "description": "Idea-to-done conductor, planning, delivery, codebase mapping, architecture review, brainstorm ideation, parallel implementation, systematic debugging, incident RCA, e2e test generation, review resolution, PR readiness, diff review, worktree lifecycle, swarm orchestration, contract generation, PR publication, release, knowledge capture, knowledge refresh, and SDD specification skills.",
-      "version": "3.0.0",
+      "version": "3.0.1",
       "author": {
         "name": "Michael Henderson"
       },

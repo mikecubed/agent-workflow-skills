@@ -6,6 +6,22 @@ The format is based on Keep a Changelog and the project follows Semantic Version
 
 ## [Unreleased]
 
+## [3.0.1] - 2026-05-04
+
+### Fixed (flow 3.0.1)
+
+- **SDD workflow restoration**: `flow` SDD agents now carry the detailed
+  specify, plan, and tasks workflow instructions that were accidentally dropped
+  when the old `sdd-workflow` command files were merged into `flow`.
+- **Flow-native SDD handoffs**: restored SDD agents keep the v3 `flow` shape
+  with hyphenated agent names such as `sdd-plan` and `sdd-tasks`, avoiding the
+  old dotted `sdd.plan` / `sdd.tasks` references.
+- **Regression coverage**: the flow plugin layout tests now verify that SDD
+  agents are declared, packaged, flow-native, and contain the detailed workflow
+  bodies.
+- **Version sync**: umbrella and flow metadata bumped from `3.0.0` to `3.0.1`
+  across package manifests, marketplace metadata, plugin manifests, and lockfile.
+
 ## [2.2.0] - 2026-04-15
 
 ### Added (workflow-orchestration 2.2.0)
