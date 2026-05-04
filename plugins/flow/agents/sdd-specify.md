@@ -7,7 +7,8 @@ handoffs:
     send: true
   - label: Iterate on Spec
     agent: sdd-specify
-    prompt: Refine the specification
+    prompt: Refine the specification in the current .sdd/{feature-dir} workspace
+    send: true
 ---
 
 ## User Input
@@ -31,14 +32,22 @@ Given the feature description in `$ARGUMENTS`, do this:
 
 1. **Check for headless mode**: If `$ARGUMENTS` contains `headless` or `--headless`, enable headless mode — auto-accept all recommended defaults and complete without pausing for user input.
 
-2. **Generate a feature directory name**:
+2. **Resolve the feature workspace**:
+   - If `$ARGUMENTS` names an existing `.sdd/{feature-dir}/` directory, use that directory.
+   - If the handoff context names the current `.sdd/{feature-dir}` workspace, use that directory.
+   - If this is an `Iterate on Spec` handoff, locate the existing `.sdd/{feature-dir}/spec.md` and update it in place.
+   - Load the existing `spec.md` before editing so refinement preserves prior user stories, requirements, clarification decisions, and success criteria.
+   - When updating an existing spec, preserve the existing `plan.md` / `tasks.md` chain by keeping the same feature directory and noting any downstream artifacts that may need regeneration.
+   - Only create a new feature directory when no existing workspace is identified.
+
+3. **Generate a feature directory name for new specifications only**:
    - Derive a short 2-4 word slug from the feature description (e.g., "user-auth", "analytics-dashboard")
    - Append an 8-character random alphanumeric suffix (e.g., `user-auth-a3f9b2c1`)
    - Full path: `.sdd/{slug}-{suffix}/`
 
-3. **Create the feature directory** and all required parent directories.
+4. **Create the feature directory** and all required parent directories when this is a new specification.
 
-4. **Use the canonical specification template embedded below**:
+5. **Use the canonical specification template embedded below**:
    ````md
 # Feature Specification: [FEATURE NAME]
 
@@ -116,21 +125,22 @@ Given the feature description in `$ARGUMENTS`, do this:
 - **SC-003**: [User satisfaction metric]
 ````
 
-5. **Generate the specification** by filling the template:
+6. **Generate or refine the specification** by filling the template:
    - Replace `[FEATURE NAME]` with a human-readable feature name
    - Replace `[DATE]` with today's date
    - Fill in user stories (at least 2), functional requirements, and success criteria
    - Mark genuinely unclear decisions as `[NEEDS CLARIFICATION: specific question]` — maximum 3 markers
+   - When refining, update only the sections implicated by the user request and preserve stable requirement IDs unless the change intentionally supersedes them
 
-6. **Write** the filled specification to `.sdd/{feature-dir}/spec.md`.
+7. **Write** the filled specification to `.sdd/{feature-dir}/spec.md`.
 
-7. **Quality validation** — validate the spec:
+8. **Quality validation** — validate the spec:
    - No implementation details
    - All mandatory sections completed
    - Requirements are testable and success criteria are measurable
 
-8. **Handle clarifications** (skip in headless mode — auto-resolve with defaults).
+9. **Handle clarifications** (skip in headless mode — auto-resolve with defaults).
 
-9. **Write quality checklist** to `.sdd/{feature-dir}/checklists/requirements.md`.
+10. **Write quality checklist** to `.sdd/{feature-dir}/checklists/requirements.md`.
 
-10. **Report completion** with feature directory path, spec file path, and checklist summary.
+11. **Report completion** with feature directory path, spec file path, checklist summary, and whether this was a new spec or an in-place refinement.

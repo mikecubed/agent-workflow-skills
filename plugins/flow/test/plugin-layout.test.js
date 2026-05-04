@@ -154,6 +154,7 @@ describe('flow skills layout', () => {
 
     assert.match(specify, /^---\ndescription: /);
     assert.match(specify, /agent: sdd-plan/);
+    assert.match(specify, /prompt: Refine the specification in the current \.sdd\/\{feature-dir\} workspace/);
     assert.doesNotMatch(specify, /agent: sdd\.plan/);
     assert.match(specify, /## Flow Agent Contract/);
     assert.match(specify, /## Outline/);
@@ -162,9 +163,12 @@ describe('flow skills layout', () => {
     assert.match(specify, /Functional Requirements/);
     assert.match(specify, /Success Criteria/);
     assert.match(specify, /checklists\/requirements\.md/);
+    assert.match(specify, /Load the existing `spec\.md`/);
+    assert.match(specify, /preserve the existing `plan\.md` \/ `tasks\.md` chain/i);
 
     assert.match(plan, /^---\ndescription: /);
     assert.match(plan, /agent: sdd-tasks/);
+    assert.match(plan, /prompt: Refine the implementation plan in the current \.sdd\/\{feature-dir\} workspace/);
     assert.doesNotMatch(plan, /agent: sdd\.tasks/);
     assert.match(plan, /## Flow Agent Contract/);
     assert.match(plan, /Technical Context/);
@@ -173,15 +177,20 @@ describe('flow skills layout', () => {
     assert.match(plan, /data-model\.md/);
     assert.match(plan, /contracts\//);
     assert.match(plan, /quickstart\.md/);
+    assert.match(plan, /Load the existing `plan\.md`/);
+    assert.match(plan, /preserve prior assumptions, risk notes, manual edits, and design decisions/i);
 
     assert.match(tasks, /^---\ndescription: /);
     assert.match(tasks, /agent: sdd-tasks/);
+    assert.match(tasks, /prompt: Refine the task list in the current \.sdd\/\{feature-dir\} workspace/);
     assert.doesNotMatch(tasks, /agent: sdd\.tasks/);
     assert.match(tasks, /## Flow Agent Contract/);
     assert.match(tasks, /strict `T###` format/);
     assert.match(tasks, /Mark tasks that can run in parallel with `\[P\]`/);
     assert.match(tasks, /per-story breakdown/);
     assert.match(tasks, /suggested MVP scope/);
+    assert.match(tasks, /Load the existing `tasks\.md`/);
+    assert.match(tasks, /preserve prior task IDs, ordering adjustments, and manually curated notes/i);
   });
 
   it('keeps deliver coordinator-shaped with explicit direct-path, deflection, and handoff contracts', () => {

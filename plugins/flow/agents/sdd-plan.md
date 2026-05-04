@@ -7,7 +7,8 @@ handoffs:
     send: true
   - label: Iterate on Plan
     agent: sdd-plan
-    prompt: Refine the implementation plan
+    prompt: Refine the implementation plan in the current .sdd/{feature-dir} workspace
+    send: true
 ---
 
 ## User Input
@@ -33,6 +34,7 @@ workspace.
 
 2. **Locate the feature directory**.
    - Prefer a feature directory explicitly named in `$ARGUMENTS`.
+   - Prefer a feature directory explicitly named in `$ARGUMENTS` or the handoff context.
    - Otherwise, find the most recent `.sdd/{feature-dir}/spec.md`.
    - If multiple candidates are plausible and headless mode is not active, ask the user to choose.
 
@@ -40,7 +42,13 @@ workspace.
    - Preserve requirement IDs, user stories, acceptance scenarios, and success criteria.
    - If the spec contains `[NEEDS CLARIFICATION: ...]` markers, resolve them before planning unless headless mode is active.
 
-4. **Use the canonical plan template** with these sections:
+4. **Load the existing `plan.md` when iterating**.
+   - If `.sdd/{feature-dir}/plan.md` already exists, read it before generating updates.
+   - Preserve prior assumptions, risk notes, manual edits, and design decisions unless the current request explicitly changes them.
+   - Update only the sections implicated by the changed spec or user request.
+   - Record superseded assumptions instead of silently deleting them.
+
+5. **Use the canonical plan template** with these sections:
    - Summary
    - Technical Context
    - Constitution / Quality Gates
@@ -51,17 +59,17 @@ workspace.
    - Complexity Tracking
    - Progress Tracking
 
-5. **Fill the plan template**.
+6. **Fill or refine the plan template**.
    - Map each design choice back to the relevant requirement or user story.
    - Keep the plan implementation-oriented but avoid writing the task list here.
    - Record risks, assumptions, and validation commands.
 
-6. **Generate supporting artifacts as needed**:
+7. **Generate or update supporting artifacts as needed**:
    - `.sdd/{feature-dir}/research.md`
    - `.sdd/{feature-dir}/data-model.md`
    - `.sdd/{feature-dir}/contracts/`
    - `.sdd/{feature-dir}/quickstart.md`
 
-7. **Write** the plan to `.sdd/{feature-dir}/plan.md`.
+8. **Write** the plan to `.sdd/{feature-dir}/plan.md`.
 
-8. **Report completion** with paths to all generated artifacts and the recommended handoff to `sdd-tasks`.
+9. **Report completion** with paths to all generated artifacts, whether this was a new plan or an in-place refinement, and the recommended handoff to `sdd-tasks`.
