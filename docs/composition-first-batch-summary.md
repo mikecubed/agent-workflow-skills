@@ -46,4 +46,3 @@ Pending coordinator publication after final integration validation.
 | `rescue-attempts` | 0 |
 | `abandonment-events` | 0 |
 | `re-review-loops` | `ccc-arch-rules`: 0; `patterns-composition`: 0; `flow-sdd-arch`: 2 |
-
